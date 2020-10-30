@@ -1,0 +1,15 @@
+{
+  "name": "relay-js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Brandon Smith <brandon@16cards.com> (http://16cards.com/)",
+  "license": "ISC",
+  "dependencies": {
+    "ws": "~7.3.1"
+  }
+}
