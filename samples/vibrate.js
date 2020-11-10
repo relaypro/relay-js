@@ -1,12 +1,12 @@
 
 const createApp = (relay) => {
-  return {
-    async onStart(state) {
-      await relay.say(state, `This is a vibrate pattern`)
-      await relay.vibrate(state, [100, 500, 500,  500, 500, 500])
-      await relay.terminate(state)
-    }
-  }
+
+  relay.on(`start`, async () => {
+    await relay.say(`This is a vibrate pattern`)
+    await relay.vibrate([100, 500, 500,  500, 500, 500])
+    await relay.terminate()
+  })
+
 }
 
 export default createApp

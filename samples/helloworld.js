@@ -1,15 +1,13 @@
 
 const createApp = (relay) => {
-  return {
-    async onStart(state) {
-      const greeting = await relay.getVar(state, `greeting`)
-      const name = await relay.getDeviceName(state)
-      await relay.say(state, `What is your name ?`)
-      const user = await relay.listen(state)
-      await relay.say(state, `Hello ${user}! ${greeting} ${name}`)
-      await relay.terminate(state)
-    }
-  }
+  relay.on(`start`, async () => {
+    const greeting = await relay.getVar(`greeting`)
+    const name = await relay.getDeviceName()
+    await relay.say(`What is your name ?`)
+    const user = await relay.listen()
+    await relay.say(`Hello ${user}! ${greeting} ${name}`)
+    await relay.terminate()
+  })
 }
 
 export default createApp

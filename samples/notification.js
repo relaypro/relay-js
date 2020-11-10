@@ -1,19 +1,17 @@
 
 const createApp = (relay) => {
-  return {
-    async onStart(state) {
-      const text = await relay.getVar(state, `text`)
-      const target = await relay.getVar(state, `targets`)
-      const type = await relay.getVar(state, `type`)
+  relay.on(`start`, async () => {
+    const text = await relay.getVar(`text`)
+    const target = await relay.getVar(`targets`)
+    const type = await relay.getVar(`type`)
 
-      await relay[type](state, text, target)
-    },
+    await relay[type](text, target)
+  })
 
-    async onNotification(state, source, actionType) {
-      await relay.say(state, `ack ack baby ! ${source} acknowledged the alert`)
-      await relay.terminate(state)
-    }
-  }
+  relay.on(`notification`, async (source, event) => {
+    await relay.say(`ack ack baby ! ${source} acknowledged the alert`)
+    await relay.terminate()
+  })
 }
 
 export default createApp

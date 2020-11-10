@@ -1,14 +1,12 @@
 
 const createApp = (relay) => {
-  return {
-    async onStart(state) {
-      const name = await relay.getDeviceName(state)
-      await relay.say(state, `The name of this device is ${name}`)
-      const location = await relay.getDeviceLocation(state)
-      await relay.say(state, `The device is located at the following street address ${location}`)
-      await relay.terminate()
-    }
-  }
+  relay.on(`start`, async () => {
+    const name = await relay.getDeviceName()
+    await relay.say(`The name of this device is ${name}`)
+    const location = await relay.getDeviceLocation()
+    await relay.say(`The device is located at the following street address ${location}`)
+    await relay.terminate()
+  })
 }
 
 export default createApp
