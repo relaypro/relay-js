@@ -1,19 +1,23 @@
 import chai from 'chai'
 
 import WebSocket from 'ws'
-import { createRelayEventAdapter } from '../lib/events-api.js'
+import relay from '../lib/sdk.js'
 
 // const should = chai.should()
 const { expect } = chai
 
 describe('Events API Tests', () => {
-
+  let app = undefined
   let adapter = undefined
   let ibot = undefined
 
   before(done => {
-    createRelayEventAdapter()
-      .then(a => adapter = a)
+    app = relay({ STRICT_PATH: `0`})
+
+    app.workflow(relayAdapter => {
+      adapter = relayAdapter
+    })
+
     ibot = new WebSocket(`ws://localhost:8080`)
     // client.on(`message`, (msg) => console.log(`message`, msg))
     ibot.on(`open`, () => {
@@ -224,7 +228,7 @@ describe('Events API Tests', () => {
       })
       adapter.listen(phrases)
         .then(message => {
-          expect(message).to.deep.include({ text: `hello` })
+          expect(message).to.deep.equal(`hello`)
           done()
         })
         .catch(done)
