@@ -6,7 +6,7 @@ import relay from '../lib/sdk.js'
 // const should = chai.should()
 const { expect } = chai
 
-describe('Events API Tests', () => {
+describe(`Events API Tests`, () => {
   let app = undefined
   let adapter = undefined
   let ibot = undefined
@@ -31,7 +31,7 @@ describe('Events API Tests', () => {
     done()
   })
 
-  describe('top-level events', () => {
+  describe(`top-level events`, () => {
 
     it(`should emit 'start' when receiving start event`, done => {
       adapter.on(`start`, () => {
@@ -256,8 +256,8 @@ describe('Events API Tests', () => {
     })
 
     it(`should send 'notification' of type 'broadcast'`, done => {
-      const text = 'hello world'
-      const target = ['all']
+      const text = `hello world`
+      const target = [`all`]
       ibot.once(`message`, msg => {
         const message = JSON.parse(msg)
         expect(message).to.have.property(`_id`)
@@ -268,8 +268,8 @@ describe('Events API Tests', () => {
     })
 
     it(`should send 'notification' of type 'background'`, done => {
-      const text = 'hello world'
-      const target = ['all']
+      const text = `hello world`
+      const target = [`all`]
       ibot.once(`message`, msg => {
         const message = JSON.parse(msg)
         expect(message).to.have.property(`_id`)
@@ -280,8 +280,8 @@ describe('Events API Tests', () => {
     })
 
     it(`should send 'notification' of type 'foreground'`, done => {
-      const text = 'hello world'
-      const target = ['all']
+      const text = `hello world`
+      const target = [`all`]
       ibot.once(`message`, msg => {
         const message = JSON.parse(msg)
         expect(message).to.have.property(`_id`)

@@ -1,0 +1,62 @@
+{
+  "env": {
+    "es2020": true,
+    "node": true,
+    "mocha": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:eslint-comments/recommended",
+    "plugin:import/warnings",
+    "plugin:node/recommended"
+  ],
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 2020
+  },
+  "plugins": [
+    "mocha",
+    "promise"
+  ],
+  "rules": {
+    "indent": [
+      "error",
+      2,
+      {
+        "SwitchCase": 1
+      }
+    ],
+    "linebreak-style": [
+      "error",
+      "unix"
+    ],
+    "no-console": [
+      "error",
+      {
+        "allow": [
+          "log",
+          "error",
+          "warn",
+          "info",
+          "time",
+          "timeEnd"
+        ]
+      }
+    ],
+    "no-trailing-spaces": "error",
+    "quotes": [
+      "warn",
+      "backtick",
+      {
+        "avoidEscape": true
+      }
+    ],
+    "semi": [
+      "warn",
+      "never"
+    ],
+    "node/no-unpublished-import": "off"
+  },
+  "overrides": [
+  ]
+}

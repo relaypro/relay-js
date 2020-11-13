@@ -2,7 +2,7 @@
 const createApp = (relay) => {
   relay.on(`start`, async () => {
     await relay.setVar(`tick_num`, 1)
-    await relay.startTimer(await relay.getVar(interval, 60))
+    await relay.startTimer(await relay.getVar(`interval`, 60))
     relay.say(`starting timer`)
   })
 
@@ -16,7 +16,7 @@ const createApp = (relay) => {
   })
 
   relay.on(`timer`, async () => {
-    const num = relay.getVar(`tick_num`)
+    let num = relay.getVar(`tick_num`)
     const count = relay.getVar(`count`, 5)
 
     if (num < count) {
