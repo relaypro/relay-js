@@ -1,7 +1,7 @@
 import chai from 'chai'
 
 import WebSocket from 'ws'
-import relay from '../lib/sdk.js'
+import relay from '../index.js'
 
 // const should = chai.should()
 const { expect } = chai
