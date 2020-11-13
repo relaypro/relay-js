@@ -149,6 +149,29 @@ describe(`Events API Tests`, () => {
       adapter.setVar(name, value)
     })
 
+    it(`should send 'set_var' multiple times for batch 'set'`, done => {
+      const name1 = `name1`
+      const value1 = `value1`
+      const name2 = `name2`
+      const value2 = `value2`
+      const handler = msg => {
+        // console.log(`message`, msg)
+        const message = JSON.parse(msg)
+        expect(message).to.have.property(`_id`)
+        if (message.name === `name1`) {
+          expect(message).to.deep.include({ _type: `wf_api_set_var_request`, name: name1, value: value1 })
+        } else if (message.name === `name2`) {
+          expect(message).to.deep.include({ _type: `wf_api_set_var_request`, name: name2, value: value2 })
+        }
+      }
+      ibot.on(`message`, handler)
+      adapter.set({ [name1]: value1, [name2]: value2 })
+        .then(() => {
+          ibot.off(`message`, handler)
+          done()
+        })
+    })
+
     it(`should send 'get_var'`, done => {
       const name = `name`
       const value = `hello from the other side`
@@ -162,9 +185,36 @@ describe(`Events API Tests`, () => {
           value,
         }))
       })
-      adapter.getVar(name)
-        .then(val => {
+      adapter.get(name)
+        .then((val) => {
           expect(val).to.equal(value)
+          done()
+        })
+    })
+
+    it(`should send 'get_var' multiple times for batch 'get'`, done => {
+      const name1 = `name1`
+      const value1 = `hello from the other side`
+
+      const name2 = `name2`
+      const value2 = `hello from the other side, too`
+
+      const handler = msg => {
+        const message = JSON.parse(msg)
+        expect(message).to.have.property(`_id`)
+        expect(message).to.deep.include({ _type: `wf_api_get_var_request` })
+        ibot.send(JSON.stringify({
+          _id: message._id,
+          _type: `wf_api_get_var_response`,
+          value: message.name === name1 ? value1 : value2,
+        }))
+      }
+      ibot.on(`message`, handler)
+      adapter.get([name1, name2])
+        .then(([val1, val2]) => {
+          ibot.off(`message`, handler)
+          expect(val1).to.equal(value1)
+          expect(val2).to.equal(value2)
           done()
         })
     })
