@@ -73,80 +73,68 @@ describe(`Events API Tests`, () => {
 
   describe(`send and receive api requests`, () => {
 
-    it(`should send data for request 'cast' request over websocket`, done => {
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.include({ _type: `wf_api_test_request`, val: `val` })
-        done()
+    const basicCommands = [
+      { command: `say`, args: { text: `hello, brandon` } },
+      { command: `play`, args: { filename: `123.wav` } },
+      { command: `vibrate`, args: { pattern: [100, 500, 500,  500, 500, 500] }},
+      { command: `set_led`, fn: `setLED`, args: { effect: `rainbow` } },
+      { command: `set_var`, fn: `setVar`, args: { name: `name`, value: `value` } },
+      { command: `get_var`, fn: `getVar`, args: { name: `name` }, response: { value: `hello from the other side` } },
+      { command: `start_timer`, fn: `startTimer`, args: { timeout: 60 } },
+      { command: `stop_timer`, fn: `stopTimer`, args: {} },
+      { command: `notification`, fn: `broadcast`, args: { text: `hello world`, target: [`all`]}, type: `broadcast` },
+      { command: `notification`, fn: `notify`, args: { text: `hello world`, target: [`all`]}, type: `background` },
+      { command: `notification`, fn: `alert`, args: { text: `hello world`, target: [`all`]}, type: `foreground` },
+      { command: `terminate`, args: {} },
+    ]
+
+    basicCommands.forEach(test => {
+      it(`should send '${test.command}'`, done => {
+        const handler = msg => {
+          const message = JSON.parse(msg)
+          // console.log(`message`, message)
+          expect(message).to.have.property(`_id`)
+          expect(message).to.deep.include({ _type: `wf_api_${test.command}_request`, ...test.args })
+          ibot.send(JSON.stringify({
+            _id: message._id,
+            _type: `wf_api_${test.command}_response`,
+            ...test.response,
+          }))
+        }
+
+        ibot.on(`message`, handler)
+
+        adapter[test.fn ?? test.command](...Object.values(test.args))
+          .then(result => {
+            ibot.off(`message`, handler)
+            // console.log(`result`, result)
+            expect(result).to.equal(test?.response?.value ?? true)
+            done()
+          })
       })
-      adapter.send(`test`, { val: `val` })
     })
 
-    it(`should send and receive for 'call' request over websocket`, done => {
+    it(`should send 'listen'`, done => {
+      const transcribe = true
+      const timeout = 60
+      const phrases = [`hello`]
       ibot.once(`message`, msg => {
         const message = JSON.parse(msg)
         expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_test_request`, val: `val` })
-        done()
+        expect(message).to.deep.include({ _type: `wf_api_listen_request`, phrases, transcribe, timeout })
+        ibot.send(JSON.stringify({
+          _id: message._id,
+          _type: `wf_api_listen_response`,
+          text: `hello`,
+          audio: `dflkajdslk`
+        }))
       })
-      adapter.sendReceive(`test`,  { val: `val` })
-    })
-
-    it(`should send 'say'`, done => {
-      const text = `hello, brandon`
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_say_request`, text })
-        done()
-      })
-      adapter.say(text)
-    })
-
-    it(`should send 'play'`, done => {
-      const filename = `123.wav`
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_play_request`, filename })
-        done()
-      })
-      adapter.play(filename)
-    })
-
-    it(`should send 'vibrate'`, done => {
-      const pattern = [100, 500, 500,  500, 500, 500]
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_vibrate_request`, pattern })
-        done()
-      })
-      adapter.vibrate(pattern)
-    })
-
-    it(`should send 'set_led'`, done => {
-      const effect = `rainbow`
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_set_led_request`, effect, args: {} })
-        done()
-      })
-      adapter.setLED(effect)
-    })
-
-    it(`should send 'set_var'`, done => {
-      const name = `name`
-      const value = `value`
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_set_var_request`, name, value })
-        done()
-      })
-      adapter.setVar(name, value)
+      adapter.listen(phrases)
+        .then(message => {
+          expect(message).to.deep.equal(`hello`)
+          done()
+        })
+        .catch(done)
     })
 
     it(`should send 'set_var' multiple times for batch 'set'`, done => {
@@ -155,7 +143,6 @@ describe(`Events API Tests`, () => {
       const name2 = `name2`
       const value2 = `value2`
       const handler = msg => {
-        // console.log(`message`, msg)
         const message = JSON.parse(msg)
         expect(message).to.have.property(`_id`)
         if (message.name === `name1`) {
@@ -163,31 +150,17 @@ describe(`Events API Tests`, () => {
         } else if (message.name === `name2`) {
           expect(message).to.deep.include({ _type: `wf_api_set_var_request`, name: name2, value: value2 })
         }
+        ibot.send(JSON.stringify({
+          _id: message._id,
+          _type: `wf_api_set_var_response`,
+        }))
       }
+
       ibot.on(`message`, handler)
+
       adapter.set({ [name1]: value1, [name2]: value2 })
         .then(() => {
           ibot.off(`message`, handler)
-          done()
-        })
-    })
-
-    it(`should send 'get_var'`, done => {
-      const name = `name`
-      const value = `hello from the other side`
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_get_var_request`, name })
-        ibot.send(JSON.stringify({
-          _id: message._id,
-          _type: `wf_api_get_var_response`,
-          value,
-        }))
-      })
-      adapter.get(name)
-        .then((val) => {
-          expect(val).to.equal(value)
           done()
         })
     })
@@ -261,95 +234,6 @@ describe(`Events API Tests`, () => {
         .catch(done)
     })
 
-    it(`should send 'listen'`, done => {
-      const transcribe = true
-      const timeout = 60
-      const phrases = [`hello`]
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_listen_request`, phrases, transcribe, timeout })
-        ibot.send(JSON.stringify({
-          _id: message._id,
-          _type: `wf_api_listen_response`,
-          text: `hello`,
-          audio: `dflkajdslk`
-        }))
-      })
-      adapter.listen(phrases)
-        .then(message => {
-          expect(message).to.deep.equal(`hello`)
-          done()
-        })
-        .catch(done)
-    })
-
-    it(`should send 'start_timer'`, done => {
-      const timeout = 60
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_start_timer_request`, timeout })
-        done()
-      })
-      adapter.startTimer(timeout)
-    })
-
-    it(`should send 'stop_timer'`, done => {
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_stop_timer_request` })
-        done()
-      })
-      adapter.stopTimer()
-    })
-
-    it(`should send 'notification' of type 'broadcast'`, done => {
-      const text = `hello world`
-      const target = [`all`]
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_notification_request`, type: `broadcast`, text, target })
-        done()
-      })
-      adapter.broadcast(text, target)
-    })
-
-    it(`should send 'notification' of type 'background'`, done => {
-      const text = `hello world`
-      const target = [`all`]
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_notification_request`, type: `background`, text, target })
-        done()
-      })
-      adapter.notify(text, target)
-    })
-
-    it(`should send 'notification' of type 'foreground'`, done => {
-      const text = `hello world`
-      const target = [`all`]
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_notification_request`, type: `foreground`, text, target })
-        done()
-      })
-      adapter.alert(text, target)
-    })
-
-    it(`should send 'terminate'`, done => {
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_terminate_request` })
-        done()
-      })
-      adapter.terminate()
-    })
   })
 
 })
