@@ -85,7 +85,6 @@ describe(`Events API Tests`, () => {
       { command: `notification`, fn: `broadcast`, args: { text: `hello world`, target: [`all`]}, type: `broadcast` },
       { command: `notification`, fn: `notify`, args: { text: `hello world`, target: [`all`]}, type: `background` },
       { command: `notification`, fn: `alert`, args: { text: `hello world`, target: [`all`]}, type: `foreground` },
-      { command: `terminate`, args: {} },
     ]
 
     basicCommands.forEach(test => {
@@ -112,6 +111,16 @@ describe(`Events API Tests`, () => {
             done()
           })
       })
+    })
+
+    it(`should send 'terminate'`, done => {
+      ibot.once(`message`, msg => {
+        const message = JSON.parse(msg)
+        expect(message).to.have.property(`_id`)
+        expect(message).to.deep.include({ _type: `wf_api_terminate_request` })
+        done()
+      })
+      adapter.terminate()
     })
 
     it(`should send 'listen'`, done => {
