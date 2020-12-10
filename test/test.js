@@ -225,7 +225,7 @@ describe(`Events API Tests`, () => {
     })
 
     it(`should send 'set_device_info_request'`, done => {
-      const field = `name`
+      const field = `label`
       const value = `HAL 9000`
       ibot.once(`message`, msg => {
         const message = JSON.parse(msg)
