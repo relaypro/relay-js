@@ -8,7 +8,7 @@ const createApp = (relay) => {
     await relay[type](text, target)
   })
 
-  relay.on(`notification`, async (source, name, event, state) => {
+  relay.on(`notification`, async (source/*, name, event, state*/) => {
     await relay.say(`ack ack baby ! ${source} acknowledged the alert`)
     await relay.terminate()
   })

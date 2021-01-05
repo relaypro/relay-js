@@ -6,6 +6,14 @@ import relay from '../index.js'
 // const should = chai.should()
 const { expect } = chai
 
+const toCamelCase = s => {
+  return s.replace(/([-_][a-z])/ig, match => {
+    return match.toUpperCase()
+      .replace(`-`, ``)
+      .replace(`_`, ``)
+  })
+}
+
 describe(`Events API Tests`, () => {
   let app = undefined
   let adapter = undefined
@@ -60,13 +68,15 @@ describe(`Events API Tests`, () => {
     })
 
     it(`should emit 'notification' when receiving notification event`, done => {
-      adapter.on(`notification`, (source, event) => {
+      adapter.on(`notification`, (source, name, event, notification_state) => {
         expect(source).to.equal(`someone`)
+        expect(name).to.equal(`name`)
         expect(event).to.equal(`unknown`)
+        expect(notification_state).to.deep.equal({})
         done()
       })
 
-      ibot.send(JSON.stringify({ _type: `wf_api_notification_event`, source: `someone`, event: `unknown` }))
+      ibot.send(JSON.stringify({ _type: `wf_api_notification_event`, source: `someone`, name: `name`, event: `unknown`, notification_state: {} }))
     })
 
   })
@@ -77,14 +87,26 @@ describe(`Events API Tests`, () => {
       { command: `say`, args: { text: `hello, brandon` } },
       { command: `play`, args: { filename: `123.wav` } },
       { command: `vibrate`, args: { pattern: [100, 500, 500,  500, 500, 500] }},
-      { command: `set_led`, fn: `setLED`, args: { effect: `rainbow` } },
-      { command: `set_var`, fn: `setVar`, args: { name: `name`, value: `value` } },
-      { command: `get_var`, fn: `getVar`, args: { name: `name` }, response: { value: `hello from the other side` } },
-      { command: `start_timer`, fn: `startTimer`, args: { timeout: 60 } },
-      { command: `stop_timer`, fn: `stopTimer`, args: {} },
-      { command: `notification`, fn: `broadcast`, args: { text: `hello world`, target: [`all`]}, type: `broadcast` },
-      { command: `notification`, fn: `notify`, args: { text: `hello world`, target: [`all`]}, type: `background` },
-      { command: `notification`, fn: `alert`, args: { text: `hello world`, target: [`all`]}, type: `foreground` },
+      { command: `set_var`, args: { name: `name`, value: `value` } },
+      { command: `get_var`, args: { name: `name` }, response: { value: `hello from the other side` }, assertResponseField: `value` },
+      { command: `start_timer`, args: { timeout: 60 } },
+      { command: `stop_timer`, args: {} },
+      { command: `notification`, fn: `broadcast`, args: { text: `hello world`, target: [`all`], type: `broadcast` } },
+      { command: `notification`, fn: `notify`, args: { text: `hello world`, target: [`all`], type: `notify` } },
+      { command: `notification`, fn: `alert`, args: { name: `name`, text: `hello world`, target: [`all`], type: `alert` } },
+      { command: `set_led`, fn:`switchLedOn`, args: { led: 1, color: `00FF00`}, assertArgs: { effect: `static`, args: { colors: { [`1`]: `00FF00`}}}},
+      { command: `set_led`, fn:`switchAllLedOn`, args: { color: `00FF00`}, assertArgs: { effect: `static`, args: { colors: { ring: `00FF00`}}}},
+      { command: `set_led`, fn:`rainbow`, args: { rotations: 10}, assertArgs: { effect: `rainbow`, args: { rotations:10 }}},
+      { command: `set_led`, fn:`rotate`, args: {}, assertArgs: { effect: `rotate`, args: { rotations: -1, colors: {[`1`]: `FFFFFF`} }}},
+      { command: `set_led`, fn:`flash`, args: {}, assertArgs: { effect: `flash`, args: { count: -1, colors: {ring: `0000FF`} }}},
+      { command: `set_led`, fn:`breathe`, args: {}, assertArgs: { effect: `breathe`, args: { count: -1, colors: {ring: `0000FF`} }}},
+      { command: `create_incident`, args: { type: `tester` }, response: { incident_id: `123abc`}, assertResponseField: `incident_id` },
+      { command: `resolve_incident`, args: { incident_id: `tester`, reason: `done` } },
+      { command: `set_channel`, args: { channel_name: `channel`, target: [`target`] } },
+      { command: `set_device_info`, fn: `setDeviceName`, args: { value: `HAL 9000` }, assertArgs: { field: `label`, value: `HAL 9000`} },
+      { command: `set_device_info`, fn: `setDeviceChannel`, args: { value: `some channel` }, assertArgs: { field: `channel`, value: `some channel`} },
+      { command: `get_device_info`, fn: `getDeviceBattery`, args: {}, assertArgs: { query: `battery`, refresh: false }, response: { battery: 75 }, assertResponseField: `battery` },
+      { command: `get_device_info`, fn: `getDeviceBattery`, args: { refresh: true }, assertArgs: { query: `battery`, refresh: true }, response: { battery: 75 }, assertResponseField: `battery` },
     ]
 
     basicCommands.forEach(test => {
@@ -93,7 +115,7 @@ describe(`Events API Tests`, () => {
           const message = JSON.parse(msg)
           // console.log(`message`, message)
           expect(message).to.have.property(`_id`)
-          expect(message).to.deep.include({ _type: `wf_api_${test.command}_request`, ...test.args })
+          expect(message).to.deep.include({ _type: `wf_api_${test.command}_request`, ...(test.assertArgs ?? test.args) })
           ibot.send(JSON.stringify({
             _id: message._id,
             _type: `wf_api_${test.command}_response`,
@@ -103,11 +125,11 @@ describe(`Events API Tests`, () => {
 
         ibot.on(`message`, handler)
 
-        adapter[test.fn ?? test.command](...Object.values(test.args))
+        adapter[test.fn ?? toCamelCase(test.command)](...Object.values(test.args))
           .then(result => {
             ibot.off(`message`, handler)
             // console.log(`result`, result)
-            expect(result).to.equal(test?.response?.value ?? true)
+            expect(result).to.equal(test.response?.[test.assertResponseField] ?? true)
             done()
           })
       })
@@ -199,48 +221,6 @@ describe(`Events API Tests`, () => {
           expect(val2).to.equal(value2)
           done()
         })
-    })
-
-    it(`should send 'get_device_info_request'`, done => {
-      const query = `battery`
-      const refresh = true
-      const battery = 24
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_get_device_info_request`, query, refresh })
-        ibot.send(JSON.stringify({
-          _id: message._id,
-          _type: `wf_api_get_device_info_response`,
-          name: `battery`,
-          battery,
-        }))
-      })
-      adapter.getDeviceBattery(refresh)
-        .then(val => {
-          expect(val).to.equal(battery)
-          done()
-        })
-        .catch(done)
-    })
-
-    it(`should send 'set_device_info_request'`, done => {
-      const field = `label`
-      const value = `HAL 9000`
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_set_device_info_request`, field, value })
-        ibot.send(JSON.stringify({
-          _id: message._id,
-          _type: `wf_api_set_device_info_response`,
-        }))
-      })
-      adapter.setDeviceName(value)
-        .then(() => {
-          done()
-        })
-        .catch(done)
     })
 
   })
