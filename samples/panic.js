@@ -10,9 +10,14 @@ const createApp = (relay) => {
     let location
     try {
       location = await relay.getDeviceIndoorLocation(true)
+      if (location === `location_not_found`) {
+        location = `Unknown Location`
+      }
     } catch {
-      location = `Unknown`
+      location = `Unknown Location`
     }
+
+    console.log(`Retrieved location ${location}`)
 
     const name = await relay.getDeviceName()
     console.log(`Retrieved device name ${name}`)
