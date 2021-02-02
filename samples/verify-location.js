@@ -5,7 +5,7 @@ const createApp = (relay) => {
     await relay.say(`Verifying if ${name} is in location ${location}`)
 
     try {
-      const indoorLocation = await relay.getDeviceIndoorLocation()
+      const indoorLocation = await relay.getDeviceIndoorLocation(true)
       await relay.say(`The device's indoor location is ${indoorLocation}`)
     } catch (err) {
       console.error(`error getting indoor location`, err)
