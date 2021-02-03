@@ -1,11 +1,7 @@
-# node.js
-#
-node_modules/
+node_modules
+dist
 npm-debug.log
 yarn-error.log
-
-# OSX
-#
 .DS_Store
-
 .vscode
+tmp

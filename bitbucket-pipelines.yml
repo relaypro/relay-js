@@ -1,6 +1,6 @@
 #  relay-js CI
 
-image: node:14.15.0
+image: node:14.15.4
 
 pipelines:
   default:
@@ -10,11 +10,14 @@ pipelines:
             caches:
               - node
             script:
+              - cd packages/sdk
               - npm install
+              - npm run build
               - npm test
         - step:
             name: Code linting
             script:
+              - cd packages/sdk
               - npm install eslint
               - npx eslint .
             caches:

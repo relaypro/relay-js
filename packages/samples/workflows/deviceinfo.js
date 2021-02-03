@@ -1,4 +1,3 @@
-
 const createApp = (relay) => {
   relay.on(`start`, async () => {
     const name = await relay.getDeviceName()

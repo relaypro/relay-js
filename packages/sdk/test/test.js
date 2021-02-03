@@ -1,9 +1,10 @@
-import chai from 'chai'
+// eslint-disable-next-line eslint-comments/disable-enable-pair
+/* eslint-disable @typescript-eslint/no-var-requires */
+const chai = require(`chai`)
 
-import WebSocket from 'ws'
-import relay from '../index.js'
+const WebSocket = require(`ws`)
+const { relay } = require(`../dist/index.js`)
 
-// const should = chai.should()
 const { expect } = chai
 
 const toCamelCase = s => {
@@ -27,7 +28,6 @@ describe(`Events API Tests`, () => {
     })
 
     ibot = new WebSocket(`ws://localhost:8080`)
-    // client.on(`message`, (msg) => console.log(`message`, msg))
     ibot.on(`open`, () => {
       done()
     })
@@ -58,7 +58,8 @@ describe(`Events API Tests`, () => {
     })
 
     it(`should emit 'button' when receiving button event`, done => {
-      adapter.on(`button`, (button, taps) => {
+      adapter.on(`button`, ({ button, taps }) => {
+        console.log(`button`, button)
         expect(button).to.equal(`channel`)
         expect(taps).to.equal(`single`)
         done()
@@ -68,7 +69,7 @@ describe(`Events API Tests`, () => {
     })
 
     it(`should emit 'notification' when receiving notification event`, done => {
-      adapter.on(`notification`, (source, name, event, notification_state) => {
+      adapter.on(`notification`, ({ source, name, event, notification_state }) => {
         expect(source).to.equal(`someone`)
         expect(name).to.equal(`name`)
         expect(event).to.equal(`unknown`)
@@ -128,9 +129,15 @@ describe(`Events API Tests`, () => {
         adapter[test.fn ?? toCamelCase(test.command)](...Object.values(test.args))
           .then(result => {
             ibot.off(`message`, handler)
-            // console.log(`result`, result)
-            expect(result).to.equal(test.response?.[test.assertResponseField] ?? true)
-            done()
+            if (result !== undefined) {
+              // console.log(`result`, result)
+            }
+            try {
+              expect(result).to.equal(test.response?.[test.assertResponseField] ?? undefined)
+              done()
+            } catch(err) {
+              console.error(err)
+            }
           })
       })
     })
@@ -162,7 +169,7 @@ describe(`Events API Tests`, () => {
       })
       adapter.listen(phrases)
         .then(message => {
-          expect(message).to.deep.equal(`hello`)
+          expect(message).to.deep.equal({ text: `hello` })
           done()
         })
         .catch(done)

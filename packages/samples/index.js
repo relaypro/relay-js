@@ -1,16 +1,16 @@
-import relay from '../index.js'
+import { relay } from '@relaypro/sdk'
 
-import helloworld from './helloworld.js'
-import deviceinfo from './deviceinfo.js'
-import interval from './interval.js'
-import notification from './notification.js'
-import vibrate from './vibrate.js'
+import helloworld from './workflows/helloworld.js'
+import deviceinfo from './workflows/deviceinfo.js'
+import interval from './workflows/interval.js'
+import notification from './workflows/notification.js'
+import vibrate from './workflows/vibrate.js'
 
 const app = relay()
 
 // "named" workflows must match the WS path
 // e.g. ws://host:port/helloworld
-app.workflow(`helloworld`, helloworld)
+// app.workflow(`helloworld`, helloworld)
 app.workflow(`deviceinfo`, deviceinfo)
 app.workflow(`interval`, interval)
 app.workflow(`notification`, notification)
