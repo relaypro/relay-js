@@ -1,6 +1,6 @@
 # relay-js
 
-relay-js SDK is a node.js library for interacting with Relay.
+relay-js SDK is a node.js library for interacting with Relay. For full documentation visit [api-docs.relaypro.com](https://api-docs.relaypro.com)
 
 ## Installation
 
