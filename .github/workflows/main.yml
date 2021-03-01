@@ -23,7 +23,6 @@ jobs:
 
       - name: Build test and lint
         run: |
-          cd packages/sdk
           npm ci
           npm run build
           npm test
