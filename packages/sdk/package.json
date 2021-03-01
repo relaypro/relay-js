@@ -4,6 +4,12 @@
   "description": "Workflow SDK Relay on Node.js",
   "license": "MIT",
   "repository": "github:relaypro/relay-js",
+  "keywords": [
+    "Relay Pro",
+    "Relay",
+    "Voice"
+  ],
+  "homepage": "api-docs.relaypro.com",
   "main": "dist/index.js",
   "engines": {
     "node": ">=14.15.0"
