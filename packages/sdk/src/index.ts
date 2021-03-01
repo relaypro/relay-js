@@ -32,7 +32,7 @@ interface WorkflowEvents {
 
 const createWorkflow = (fn: Workflow): Workflow => fn
 
-const WORKFLOW_EVENT_REGEX = /^wf_api_([a-z]*)_event$/
+const WORKFLOW_EVENT_REGEX = /^wf_api_(\w+)_event$/
 
 class RelayEventAdapter {
   private websocket: WebSocket | null = null
