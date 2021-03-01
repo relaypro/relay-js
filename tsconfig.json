@@ -21,6 +21,11 @@
     "useDefineForClassFields": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "importHelpers": true
-	}
+    "importHelpers": true,
+    "outDir": "dist",
+    "rootDir": "src"
+	},
+  "include": [
+    "src/**/*"
+  ]
 }
