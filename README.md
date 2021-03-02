@@ -5,7 +5,7 @@ relay-js SDK is a node.js library for interacting with Relay. For full documenta
 ## Installation
 
 ```bash
-npm install git+https@bitbucket.org:republicwireless/relay-js.git
+npm install @relaypro/sdk 
 ```
 
 ## Usage
@@ -23,16 +23,15 @@ app.workflow(`helloworld`, workflow => {
 })
 ```
 
-## ibot Configuration
+## Workflow Registration
 
-Configuration a Relay to trigger a workflow, and thus connect
-to a running Node.js process leveraging the relay-js SDK
-is currently still "involved". Consult the ibot team.
+To register your workflow on a Relay device see https://api-docs.relaypro.com/docs/register-workflows
+
 
 ## Development
 
 ```bash
-git clone git@bitbucket.org:republicwireless/relay-js.git
+git clone git@github.com:relaypro/relay-js.git
 cd relay-js
 npm install
 npm test
