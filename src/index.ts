@@ -6,7 +6,7 @@ import * as enums from './enums'
 import { safeParse, noop, makeId } from './utils'
 
 import { PORT, HEARTBEAT, STRICT_PATH, TIMEOUT, REFRESH_TIMEOUT } from './constants'
-import { LedIndex, BaseCall, ButtonEvent, Call, ConnectedCall, DisconnectedCall, FailedCall, LocalWebSocket, NotificationEvent, Options, ReceivedCall, Relay, StartedCall, Workflow } from './types'
+import { LedIndex, BaseCall, ButtonEvent, Call, ConnectedCall, DisconnectedCall, FailedCall, LocalWebSocket, NotificationEvent, Options, ReceivedCall, Relay, StartedCall, Workflow, IncidentEvent, NotificationOptions } from './types'
 
 const {
   Event,
@@ -23,6 +23,7 @@ interface WorkflowEvents {
   [Event.BUTTON]: (event: ButtonEvent) => void,
   [Event.TIMER]: (event: Record<string, never>) => void,
   [Event.NOTIFICATION]: (event: NotificationEvent) => void,
+  [Event.INCIDENT]: (event: IncidentEvent) => void,
   [Event.CALL_CONNECTED]: (event: ConnectedCall) => void,
   [Event.CALL_DISCONNECTED]: (event: DisconnectedCall) => void,
   [Event.CALL_FAILED]: (event: FailedCall) => void,
@@ -244,8 +245,8 @@ class RelayEventAdapter {
     await this.setDeviceInfo(DeviceInfoField.CHANNEL, channel)
   }
 
-  async setChannel(name:string, target: string[]): Promise<void> {
-    await this._cast(`set_channel`, { channel_name: name, target })
+  async setChannel(name:string, target: string[], suppressTTS=true): Promise<void> {
+    await this._cast(`set_channel`, { channel_name: name, target, suppress_tts: suppressTTS })
   }
 
   async placeCall(call: Call): Promise<void> {
@@ -312,20 +313,20 @@ class RelayEventAdapter {
     await this._cast(`stop_timer`)
   }
 
-  private async _sendNotification(type: enums.Notification, text: undefined|string, target: string[], name?: string): Promise<void> {
-    await this._cast(`notification`, { type, name, text, target })
+  private async _sendNotification(type: enums.Notification, text: undefined|string, target: string[], name?: string, pushOptions?: NotificationOptions): Promise<void> {
+    await this._cast(`notification`, { type, name, text, target, push_opts: pushOptions })
   }
 
-  async broadcast(text: string, target: string[]): Promise<void> {
-    await this._sendNotification(Notification.BROADCAST, text, target)
+  async broadcast(name: string, text: string, target: string[], pushOptions?: NotificationOptions): Promise<void> {
+    await this._sendNotification(Notification.BROADCAST, text, target, name, pushOptions)
   }
 
-  async notify(text: string, target: string[]): Promise<void> {
-    await this._sendNotification(Notification.NOTIFY, text, target)
+  async notify(name: string, text: string, target: string[], pushOptions?: NotificationOptions): Promise<void> {
+    await this._sendNotification(Notification.NOTIFY, text, target, name, pushOptions)
   }
 
-  async alert(name: string, text: string, target: string[]): Promise<void> {
-    await this._sendNotification(Notification.ALERT, text, target, name)
+  async alert(name: string, text: string, target: string[], pushOptions?: NotificationOptions): Promise<void> {
+    await this._sendNotification(Notification.ALERT, text, target, name, pushOptions)
   }
 
   async cancelAlert(name: string, target: string[]): Promise<void> {

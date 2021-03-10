@@ -3,6 +3,7 @@ export enum Event {
   BUTTON = `button`,
   TIMER = `timer`,
   NOTIFICATION = `notification`,
+  INCIDENT = `incident`,
   CALL_CONNECTED = `call_connected`,
   CALL_DISCONNECTED = `call_disconnected`,
   CALL_FAILED = `call_failed`,
@@ -61,4 +62,20 @@ export enum Notification {
   ALERT = `alert`,
   NOTIFY = `notify`,
   CANCEL = `cancel`,
+}
+
+export enum IncidentStatus {
+  RESOLVED = `resolved`,
+  CANCELLED = `cancelled`,
+}
+
+export enum NotificationPriority {
+  NORMAL = `normal`,
+  HIGH = `high`,
+  CRITICAL = `critical`,
+}
+
+export enum NotificationSound {
+  DEFAULT = `default`,
+  SOS = `sos`,
 }

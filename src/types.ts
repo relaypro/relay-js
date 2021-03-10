@@ -2,7 +2,7 @@ import http from 'http'
 import https from 'https'
 
 import WebSocket from 'ws'
-import { Button, Taps } from './enums'
+import { Button, IncidentStatus, NotificationPriority, NotificationSound, Taps } from './enums'
 import { RelayEventAdapter } from './index'
 
 export type LedIndex = `ring`|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|`1`|`2`|`3`|`4`|`5`|`6`|`7`|`8`|`9`|`10`|`11`|`12`|`13`|`14`|`15`|`16`
@@ -42,6 +42,13 @@ export interface ButtonEvent {
   taps: Taps,
 }
 
+export interface NotificationOptions {
+  priority: NotificationPriority,
+  title: string,
+  body: string,
+  sound: NotificationSound,
+}
+
 export interface NotificationState {
   acknowledged: string[],
   created: string[],
@@ -76,3 +83,9 @@ export interface DisconnectedCall extends ConnectedCall {
 }
 export type FailedCall = DisconnectedCall
 export type Call = StartedCall | ReceivedCall | ConnectedCall | DisconnectedCall | FailedCall
+
+export interface IncidentEvent {
+  type: IncidentStatus,
+  incident_id: string,
+  reason: string,
+}
