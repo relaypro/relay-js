@@ -4,8 +4,6 @@ const chai = require(`chai`)
 
 const Queue = require(`../dist/queue.js`).default
 
-const { noop } = require(`../dist/utils`)
-
 const { expect } = chai
 
 describe(`Queue Tests`, () => {
