@@ -1,12 +1,21 @@
-import WebSocket from 'ws'
-import events from 'events'
+import WebSocket, { OPEN } from 'ws'
 
 import * as enums from './enums'
 
 import { safeParse, noop, makeId } from './utils'
 
-import { PORT, HEARTBEAT, STRICT_PATH, TIMEOUT, REFRESH_TIMEOUT } from './constants'
-import { LedIndex, BaseCall, ButtonEvent, Call, ConnectedCall, DisconnectedCall, FailedCall, LocalWebSocket, NotificationEvent, Options, ReceivedCall, Relay, StartedCall, Workflow, IncidentEvent, NotificationOptions } from './types'
+import { PORT, HEARTBEAT, TIMEOUT, REFRESH_TIMEOUT } from './constants'
+import {
+  BaseCall, ButtonEvent, Call, ConnectedCall, DisconnectedCall, FailedCall, ReceivedCall, StartedCall,
+  NotificationEvent,
+  NotificationOptions,
+  IncidentEvent,
+  LocalWebSocket,
+  Options,
+  Relay, Workflow,
+  LedIndex,
+} from './types'
+import Queue from './queue'
 
 const {
   Event,
@@ -18,17 +27,19 @@ const {
 
 export * from './enums'
 
-interface WorkflowEvents {
-  [Event.START]: (event: Record<string, never>) => void,
-  [Event.BUTTON]: (event: ButtonEvent) => void,
-  [Event.TIMER]: (event: Record<string, never>) => void,
-  [Event.NOTIFICATION]: (event: NotificationEvent) => void,
-  [Event.INCIDENT]: (event: IncidentEvent) => void,
-  [Event.CALL_CONNECTED]: (event: ConnectedCall) => void,
-  [Event.CALL_DISCONNECTED]: (event: DisconnectedCall) => void,
-  [Event.CALL_FAILED]: (event: FailedCall) => void,
-  [Event.CALL_RECEIVED]: (event: ReceivedCall) => void,
-  [Event.CALL_START_REQUEST]: (event: StartedCall) => void,
+type WorkflowEventHandlers = {
+  [Event.ERROR]?: (error: Error) => Promise<void>,
+  [Event.START]?: (event: Record<string, never>) => Promise<void>,
+  [Event.END]?: (event: Record<string, never>) => Promise<void>,
+  [Event.BUTTON]?: (event: ButtonEvent) => Promise<void>,
+  [Event.TIMER]?: (event: Record<string, never>) => Promise<void>,
+  [Event.NOTIFICATION]?: (event: NotificationEvent) => Promise<void>,
+  [Event.INCIDENT]?: (event: IncidentEvent) => Promise<void>,
+  [Event.CALL_CONNECTED]?: (event: ConnectedCall) => Promise<void>,
+  [Event.CALL_DISCONNECTED]?: (event: DisconnectedCall) => Promise<void>,
+  [Event.CALL_FAILED]?: (event: FailedCall) => Promise<void>,
+  [Event.CALL_RECEIVED]?: (event: ReceivedCall) => Promise<void>,
+  [Event.CALL_START_REQUEST]?: (event: StartedCall) => Promise<void>,
 }
 
 const createWorkflow = (fn: Workflow): Workflow => fn
@@ -36,37 +47,65 @@ const createWorkflow = (fn: Workflow): Workflow => fn
 const WORKFLOW_EVENT_REGEX = /^wf_api_(\w+)_event$/
 
 class RelayEventAdapter {
-  private websocket: WebSocket | null = null
-  private emitter: events.EventEmitter | null = null
+  private websocket: LocalWebSocket | null = null
+  private workQueue: Queue | null = null
+  private handlers: WorkflowEventHandlers = {}
 
-  constructor(websocket: WebSocket) {
+  constructor(websocket: LocalWebSocket) {
     console.log(`creating event adapter`)
-    this.emitter = new events.EventEmitter()
+    this.workQueue = new Queue()
     this.websocket = websocket
     this.websocket.on(`close`, this.onClose.bind(this))
+    this.websocket.on(`error`, this.onError.bind(this))
     this.websocket.on(`message`, this.onMessage.bind(this))
   }
 
-  on<U extends keyof WorkflowEvents>(event: U, listener: WorkflowEvents[U]): void {
-    this.emitter?.on(event, listener)
+  on<U extends keyof WorkflowEventHandlers>(event: U, listener: WorkflowEventHandlers[U]): void {
+    this.off(event)
+    this.handlers[event] = listener
   }
 
-  off<U extends keyof WorkflowEvents>(event: U, listener: WorkflowEvents[U]): void {
-    this.emitter?.off(event, listener)
+  off<U extends keyof WorkflowEventHandlers>(event: U): void {
+    const { [event]: handler, ...rest } = this.handlers
+    if (handler) {
+      this.handlers = rest
+    }
   }
 
-  private async onClose(): Promise<void> {
+  private onClose(): void {
     this.websocket = null
+  }
+
+  private onError(error: Error): void {
+    this.workQueue?.enqueue(async () => {
+      if (this.handlers?.[Event.ERROR]) {
+        try {
+          await this.handlers?.[Event.ERROR]?.(error)
+        } catch(err) {
+          console.log(`\`error\` handler failed`)
+          console.error(err)
+        }
+      } else { // if no handler, log
+        console.error(error)
+      }
+    })
   }
 
   private onMessage(msg: string): void {
     const message = safeParse(msg)
-    if (this.emitter && message?._type && !message?._id) { // not interested in response events (marked by correlation id)
+    if (this.workQueue && message?._type && !message?._id) { // not interested in response events (marked by correlation id)
       const eventNameParts = message._type.match(WORKFLOW_EVENT_REGEX)
       if (eventNameParts?.[1]) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { _type, ...args } = message
-        this.emitter.emit(eventNameParts?.[1], args)
+        this.workQueue?.enqueue(async () => {
+          const event = eventNameParts?.[1] as keyof WorkflowEventHandlers
+          try {
+            await this.handlers?.[event]?.(args as never)
+          } catch (err) {
+            this.onError(err)
+          }
+        })
       } else {
         console.log(`Unknown message =>`, message)
       }
@@ -85,8 +124,12 @@ class RelayEventAdapter {
 
   private async _send(type: string, payload={}, id?: string): Promise<void|Record<string, unknown>> {
     return new Promise((resolve, reject) => {
-      if (!this.websocket) {
-        reject(`websocket-not-connected`)
+      if (!(this.websocket?.isAlive && this.websocket?.readyState === OPEN)) {
+        console.error({
+          isAlive: this.websocket?.isAlive,
+          readyState: this.websocket?.readyState,
+        })
+        reject(new Error(`websocket-not-connected`))
         return
       }
 
@@ -100,7 +143,7 @@ class RelayEventAdapter {
 
       this.websocket.send(messageStr, (err) => {
         if (err) {
-          reject(`failed-to-send`)
+          reject(new Error(`failed-to-send`))
         } else {
           resolve()
         }
@@ -116,7 +159,7 @@ class RelayEventAdapter {
     return new Promise((resolve, reject) => {
       const timeoutHandle = setTimeout(() => {
         this.websocket?.off?.(`message`, responseListener)
-        reject(`failed-to-receive-response-timeout`)
+        reject(new Error(`failed-to-receive-response-timeout`))
       }, timeout)
 
       const responseListener = (msg: string) => {
@@ -130,7 +173,7 @@ class RelayEventAdapter {
             if (_type === `wf_api_${type}_response`) {
               resolve(Object.keys(params).length > 0 ? params as Record<string, unknown> : undefined)
             } else if (_type === `wf_api_error_response`) {
-              reject(event?.error)
+              reject(new Error(event?.error ?? `Unknown error`))
             } else {
               console.log(`Unknown response`, event)
               reject(new Error(`Unknown response`))
@@ -352,7 +395,7 @@ class RelayEventAdapter {
   }
 
   async terminate(): Promise<void> {
-    await this._send(`terminate`)
+    await this._cast(`terminate`)
   }
 }
 
@@ -376,11 +419,12 @@ const initializeRelaySdk = (options: Options={}): Relay => {
     server.shouldHandle = (request) => {
       console.info(`WebSocket request =>`, request.url)
       if (request.url) {
-        const shouldEnforceStrictPaths = (options.STRICT_PATH ?? STRICT_PATH) === `1`
         const path = request.url.slice(1)
-        const hasDefaultWorkflow = workflows?.has(DEFAULT_WORKFLOW)
-        const hasNamedWorkflow = workflows?.has(path)
-        return (shouldEnforceStrictPaths ? hasNamedWorkflow : hasDefaultWorkflow) ?? false
+        if (path) {
+          return !!workflows?.has(path)
+        } else {
+          return !!workflows?.has(DEFAULT_WORKFLOW)
+        }
       } else {
         return false
       }
@@ -438,14 +482,12 @@ const initializeRelaySdk = (options: Options={}): Relay => {
           if ((typeof path === `function`)) {
             console.info(`Default workflow set`)
             workflows.set(DEFAULT_WORKFLOW, path)
-          } else if (typeof path === `string`) {
+          } else if (typeof path === `string` && typeof workflow === `function`) {
             const strippedPath = path.replace(/^\/+/,``)
             workflows.set(strippedPath, workflow)
           } else {
             throw new Error(`First argument for workflow must either be a string or a function`)
           }
-        } else {
-          console.error(`workflows is not initialized`)
         }
       }
     }

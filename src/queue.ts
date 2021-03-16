@@ -2,13 +2,13 @@ interface Params {
   max?: number
 }
 
-type fn = { (): PromiseLike<void> }
+type work = { (): PromiseLike<void> }
 
 export default class Queue {
 
   private max: number
   private numActive: number
-  private queue: fn[]
+  private queue: work[]
 
   constructor(params: Params={}) {
     const { max=1 } = params
@@ -18,6 +18,7 @@ export default class Queue {
   }
 
   private next() {
+    // console.log(`${this.queue.length} : ${this.numActive} : ${this.max}`)
     if (this.queue.length) {
       if (this.numActive < this.max) {
         const fn = this.queue.shift()
@@ -26,12 +27,14 @@ export default class Queue {
     }
   }
 
-  private execute(fn: fn) {
+  private execute(fn: work) {
     this.numActive++
     new Promise<void>(resolve => {
       const obj = fn()
       if (typeof obj?.then === `function`) {
-        resolve()
+        obj.then(() => {
+          resolve()
+        })
       }
     }).finally(() => {
       this.numActive--
@@ -39,7 +42,7 @@ export default class Queue {
     })
   }
 
-  enqueue(fn: fn): void {
+  enqueue(fn: work): void {
     this.queue.push(fn)
     this.next()
   }

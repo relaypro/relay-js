@@ -1,5 +1,7 @@
 export enum Event {
+  ERROR = `error`,
   START = `start`,
+  END = `end`,
   BUTTON = `button`,
   TIMER = `timer`,
   NOTIFICATION = `notification`,

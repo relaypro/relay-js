@@ -10,7 +10,7 @@ export type LedIndex = `ring`|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|`1`|`2`|`3`
 export interface Msg {
   _id: string,
   _type: string,
-  error?: unknown,
+  error?: string,
   button?: string,
   taps?: string,
   source?: string,
@@ -20,7 +20,6 @@ export interface Msg {
 }
 
 export interface Options {
-  STRICT_PATH?: string,
   server?: http.Server | https.Server
 }
 

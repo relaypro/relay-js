@@ -1,9 +1,13 @@
 // eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable @typescript-eslint/no-var-requires */
 const chai = require(`chai`)
+const chaiAsPromised = require(`chai-as-promised`)
 
 const WebSocket = require(`ws`)
+const { Event } = require(`../dist/enums.js`)
 const { relay } = require(`../dist/index.js`)
+
+chai.use(chaiAsPromised)
 
 const { expect } = chai
 
@@ -16,21 +20,33 @@ const toCamelCase = s => {
 }
 
 describe(`Events API Tests`, () => {
+
   let app = undefined
   let adapter = undefined
   let ibot = undefined
 
   before(done => {
-    app = relay({ STRICT_PATH: `0`})
+    app = relay()
 
     app.workflow(relayAdapter => {
       adapter = relayAdapter
     })
 
+    app.workflow(`tester`, () => { return })
+
     ibot = new WebSocket(`ws://localhost:8080`)
     ibot.on(`open`, () => {
       done()
     })
+    ibot.on(`error`, (error) => {
+      console.error(`before hook`, error)
+      done()
+    })
+  })
+
+  afterEach(done => {
+    Object.keys(Event).forEach(event => adapter?.off(event))
+    done()
   })
 
   after(done => {
@@ -92,26 +108,40 @@ describe(`Events API Tests`, () => {
       { command: `get_var`, args: { name: `name` }, response: { value: `hello from the other side` }, assertResponseField: `value` },
       { command: `start_timer`, args: { timeout: 60 } },
       { command: `stop_timer`, args: {} },
-      { command: `notification`, fn: `broadcast`, args: { text: `hello world`, target: [`all`], type: `broadcast` } },
-      { command: `notification`, fn: `notify`, args: { text: `hello world`, target: [`all`], type: `notify` } },
+      { command: `notification`, fn: `broadcast`, args: { name: `name`, text: `hello world`, target: [`all`], type: `broadcast` } },
+      { command: `notification`, fn: `notify`, args: { name: `name`, text: `hello world`, target: [`all`], type: `notify` } },
       { command: `notification`, fn: `alert`, args: { name: `name`, text: `hello world`, target: [`all`], type: `alert` } },
+      { command: `notification`, fn: `cancelAlert`, args: { name: `name`, target:[`all`]}},
       { command: `set_led`, fn:`switchLedOn`, args: { led: 1, color: `00FF00`}, assertArgs: { effect: `static`, args: { colors: { [`1`]: `00FF00`}}}},
+      { command: `set_led`, fn:`switchAllLedOff`, assertArgs: { effect: `off`, args: {}}},
       { command: `set_led`, fn:`switchAllLedOn`, args: { color: `00FF00`}, assertArgs: { effect: `static`, args: { colors: { ring: `00FF00`}}}},
       { command: `set_led`, fn:`rainbow`, args: { rotations: 10}, assertArgs: { effect: `rainbow`, args: { rotations:10 }}},
-      { command: `set_led`, fn:`rotate`, args: {}, assertArgs: { effect: `rotate`, args: { rotations: -1, colors: {[`1`]: `FFFFFF`} }}},
-      { command: `set_led`, fn:`flash`, args: {}, assertArgs: { effect: `flash`, args: { count: -1, colors: {ring: `0000FF`} }}},
-      { command: `set_led`, fn:`breathe`, args: {}, assertArgs: { effect: `breathe`, args: { count: -1, colors: {ring: `0000FF`} }}},
+      { command: `set_led`, fn:`rotate`, assertArgs: { effect: `rotate`, args: { rotations: -1, colors: {[`1`]: `FFFFFF`} }}},
+      { command: `set_led`, fn:`flash`, assertArgs: { effect: `flash`, args: { count: -1, colors: {ring: `0000FF`} }}},
+      { command: `set_led`, fn:`breathe`, assertArgs: { effect: `breathe`, args: { count: -1, colors: {ring: `0000FF`} }}},
       { command: `create_incident`, args: { type: `tester` }, response: { incident_id: `123abc`}, assertResponseField: `incident_id` },
       { command: `resolve_incident`, args: { incident_id: `tester`, reason: `done` } },
       { command: `set_channel`, args: { channel_name: `channel`, target: [`target`] } },
       { command: `set_device_info`, fn: `setDeviceName`, args: { value: `HAL 9000` }, assertArgs: { field: `label`, value: `HAL 9000`} },
       { command: `set_device_info`, fn: `setDeviceChannel`, args: { value: `some channel` }, assertArgs: { field: `channel`, value: `some channel`} },
-      { command: `get_device_info`, fn: `getDeviceBattery`, args: {}, assertArgs: { query: `battery`, refresh: false }, response: { battery: 75 }, assertResponseField: `battery` },
+      { command: `get_device_info`, fn: `getDeviceBattery`, assertArgs: { query: `battery`, refresh: false }, response: { battery: 75 }, assertResponseField: `battery` },
+      { command: `get_device_info`, fn: `getDeviceName`, assertArgs: { query: `name`, refresh: false }, response: { name: `hello` }, assertResponseField: `name` },
       { command: `get_device_info`, fn: `getDeviceBattery`, args: { refresh: true }, assertArgs: { query: `battery`, refresh: true }, response: { battery: 75 }, assertResponseField: `battery` },
+      { command: `get_device_info`, fn: `getDeviceLocation`, assertArgs: { query: `address`, refresh: false }, response: { address: `hello` }, assertResponseField: `address` },
+      { command: `get_device_info`, fn: `getDeviceAddress`, assertArgs: { query: `address`, refresh: false }, response: { address: `hello` }, assertResponseField: `address` },
+      { command: `get_device_info`, fn: `getDeviceId`, assertArgs: { query: `id`, refresh: false }, response: { id: `hello` }, assertResponseField: `id` },
+      { command: `get_device_info`, fn: `getDeviceCoordinates`, assertArgs: { query: `latlong`, refresh: false }, response: { latlong: `hello` }, assertResponseField: `latlong` },
+      { command: `get_device_info`, fn: `getDeviceLatLong`, assertArgs: { query: `latlong`, refresh: false }, response: { latlong: `hello` }, assertResponseField: `latlong` },
+      { command: `get_device_info`, fn: `getDeviceIndoorLocation`, assertArgs: { query: `indoor_location`, refresh: false }, response: { indoor_location: `hello` }, assertResponseField: `indoor_location` },
+      { command: `listen`, fn: `listen`, args: { phrases: [`hello`] }, response: { text: `hello` }, fullResponse:true },
+      { command: `terminate` },
+      { command: `call`, fn: `placeCall` },
+      { command: `answer`, fn: `answerCall`, args: { call_id: `123`} },
+      { command: `hangup`, fn: `hangupCall`, args: { call_id: `123`} },
     ]
 
     basicCommands.forEach(test => {
-      it(`should send '${test.command}'`, done => {
+      it(`should send '${test.command}' ${test.fn && `with '${test.fn}'`}`, done => {
         const handler = msg => {
           const message = JSON.parse(msg)
           // console.log(`message`, message)
@@ -126,53 +156,23 @@ describe(`Events API Tests`, () => {
 
         ibot.on(`message`, handler)
 
-        adapter[test.fn ?? toCamelCase(test.command)](...Object.values(test.args))
+        adapter[test.fn ?? toCamelCase(test.command)](...Object.values(test.args ?? {}))
           .then(result => {
             ibot.off(`message`, handler)
             if (result !== undefined) {
               // console.log(`result`, result)
             }
             try {
-              expect(result).to.equal(test.response?.[test.assertResponseField] ?? undefined)
-              done()
+              expect(result).to.eql(
+                test.fullResponse ? test.response : (test.response?.[test.assertResponseField] ?? undefined))
             } catch(err) {
               console.error(err)
+            } finally {
+              done()
             }
           })
+          .catch(err => console.error(err))
       })
-    })
-
-    it(`should send 'terminate'`, done => {
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_terminate_request` })
-        done()
-      })
-      adapter.terminate()
-    })
-
-    it(`should send 'listen'`, done => {
-      const transcribe = true
-      const timeout = 60
-      const phrases = [`hello`]
-      ibot.once(`message`, msg => {
-        const message = JSON.parse(msg)
-        expect(message).to.have.property(`_id`)
-        expect(message).to.deep.include({ _type: `wf_api_listen_request`, phrases, transcribe, timeout })
-        ibot.send(JSON.stringify({
-          _id: message._id,
-          _type: `wf_api_listen_response`,
-          text: `hello`,
-          audio: `dflkajdslk`
-        }))
-      })
-      adapter.listen(phrases)
-        .then(message => {
-          expect(message).to.deep.equal({ text: `hello` })
-          done()
-        })
-        .catch(done)
     })
 
     it(`should send 'set_var' multiple times for batch 'set'`, done => {
@@ -230,6 +230,67 @@ describe(`Events API Tests`, () => {
         })
     })
 
+  })
+
+  describe(`Error handling`, () => {
+
+    it(`should reject when ibot responds with error_response`, async () => {
+      const handler = msg => {
+        const message = JSON.parse(msg)
+        expect(message).to.have.property(`_id`)
+        expect(message).to.deep.include({ _type: `wf_api_get_var_request` })
+        ibot.send(JSON.stringify({
+          _id: message._id,
+          _type: `wf_api_error_response`,
+          error: `fake-error`,
+        }))
+      }
+
+      ibot.on(`message`, handler)
+
+      const p = adapter.get([`hello`])
+      return expect(p).to.eventually.be.rejectedWith(Error)
+    })
+
+    it(`should emit 'error' event handler doesn't catch error`, done => {
+      adapter.on(`start`, () => {
+        throw new Error(`test`)
+      })
+
+      adapter.on(`error`, (error) => {
+        expect(error).to.exist
+          .and.to.be.an(`error`)
+          .and.to.have.property(`message`, `test`)
+        done()
+      })
+
+      ibot.send(JSON.stringify({ _type: `wf_api_start_event` }))
+    })
+
+    it(`should throw an error when registering workflow incorrectly`, done => {
+      expect(() => app.workflow()).to.throw(Error)
+      expect(() => app.workflow(1)).to.throw(Error)
+      expect(() => app.workflow(`hello`)).to.throw(Error)
+      done()
+    })
+
+    it(`should terminate ws when named workflow does not exist`, done => {
+      const client = new WebSocket(`ws://localhost:8080/tester2`)
+      client.on(`error`, error => {
+        expect(error).to.exist
+          .and.to.be.an(`error`)
+          .and.to.have.property(`message`, `Unexpected server response: 400`)
+      })
+      client.on(`close`, (code) => {
+        expect(code).to.eq(1006)
+        done()
+      })
+    })
+
+    it(`should throw error when initializing relay sdk multiple times`, done => {
+      expect(() => relay()).to.throw(Error)
+      done()
+    })
   })
 
 })
