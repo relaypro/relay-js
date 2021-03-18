@@ -12,10 +12,14 @@ on:
 
 jobs:
   build:
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      README_CATEGORY: ${{ secrets.README_CATEGORY }}
+      README_TOKEN: ${{ secrets.README_TOKEN }}
     runs-on: ubuntu-latest
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2.1.5
         with:
@@ -24,6 +28,8 @@ jobs:
       - name: Build test and lint
         run: |
           npm ci
-          npm run build
           npm test
           npx eslint .
+#          npx typedoc
+#          npx concat-md --toc --decrease-title-levels --dir-name-as-title docs > concat-docs/relay-js.md
+#          npm run doc-sync -- "$README_TOKEN" "$README_CATEGORY"

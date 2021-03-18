@@ -6,3 +6,5 @@ yarn-error.log
 .vscode
 tmp
 .nyc_output
+docs
+concat-docs
