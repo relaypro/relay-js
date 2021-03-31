@@ -138,6 +138,8 @@ describe(`Events API Tests`, () => {
       { command: `call`, fn: `placeCall` },
       { command: `answer`, fn: `answerCall`, args: { call_id: `123`} },
       { command: `hangup`, fn: `hangupCall`, args: { call_id: `123`} },
+      { command: `device_power_off`, fn: `restartDevice`, args: { restart: true} },
+      { command: `device_power_off`, fn: `powerDownDevice`, args: { restart: false} },
     ]
 
     basicCommands.forEach(test => {
