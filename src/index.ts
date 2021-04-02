@@ -4,7 +4,7 @@ import * as enums from './enums'
 
 import { safeParse, noop, makeId } from './utils'
 
-import { PORT, HEARTBEAT, TIMEOUT, REFRESH_TIMEOUT } from './constants'
+import { PORT, HEARTBEAT, TIMEOUT, REFRESH_TIMEOUT, NOTIFICATION_TIMEOUT } from './constants'
 import {
   BaseCall, ButtonEvent, Call, ConnectedCall, DisconnectedCall, FailedCall, ReceivedCall, StartedCall,
   NotificationEvent,
@@ -365,15 +365,23 @@ class RelayEventAdapter {
   }
 
   private async _sendNotification(type: enums.Notification, text: undefined|string, target: string[], name?: string, pushOptions?: NotificationOptions): Promise<void> {
-    await this._cast(`notification`, { type, name, text, target, push_opts: pushOptions })
+    await this._cast(`notification`, { type, name, text, target, push_opts: pushOptions }, NOTIFICATION_TIMEOUT)
   }
 
   async broadcast(name: string, text: string, target: string[], pushOptions?: NotificationOptions): Promise<void> {
     await this._sendNotification(Notification.BROADCAST, text, target, name, pushOptions)
   }
 
+  async cancelBroadcast(name: string, target: string[]): Promise<void> {
+    await this._sendNotification(Notification.CANCEL, undefined, target, name)
+  }
+
   async notify(name: string, text: string, target: string[], pushOptions?: NotificationOptions): Promise<void> {
     await this._sendNotification(Notification.NOTIFY, text, target, name, pushOptions)
+  }
+
+  async cancelNotify(name: string, target: string[]): Promise<void> {
+    await this._sendNotification(Notification.CANCEL, undefined, target, name)
   }
 
   async alert(name: string, text: string, target: string[], pushOptions?: NotificationOptions): Promise<void> {

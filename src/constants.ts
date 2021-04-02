@@ -3,3 +3,4 @@ export const HEARTBEAT = process.env.HEARTBEAT ? parseInt(process.env.HEARTBEAT)
 
 export const TIMEOUT = 5000
 export const REFRESH_TIMEOUT = 45000
+export const NOTIFICATION_TIMEOUT = 60000
