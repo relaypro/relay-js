@@ -14,6 +14,8 @@ import {
   Options,
   Relay, Workflow,
   LedIndex,
+  LedEffect,
+  LedInfo,
 } from './types'
 import Queue from './queue'
 
@@ -220,31 +222,35 @@ class RelayEventAdapter {
   }
 
   async switchLedOn(led: LedIndex, color: string): Promise<void> {
-    await this._cast(`set_led`, { effect: `static`, args: { colors: { [`${led}`]: color } } })
+    await this.ledAction(`static`, { colors: { [`${led}`]: color } })
   }
 
   async switchAllLedOn(color: string): Promise<void> {
-    await this._cast(`set_led`, { effect: `static`, args: { colors: { ring: color } } })
+    await this.ledAction(`static`, { colors: { ring: color } })
   }
 
   async switchAllLedOff(): Promise<void> {
-    await this._cast(`set_led`, { effect: `off`, args: {} })
+    await this.ledAction(`off`, {})
   }
 
   async rainbow(rotations=-1): Promise<void> {
-    await this._cast(`set_led`, { effect: `rainbow`, args: { rotations } })
+    await this.ledAction(`rainbow`, { rotations })
   }
 
-  async rotate(): Promise<void> {
-    await this._cast(`set_led`, { effect: `rotate`, args: { rotations: -1, colors: { [`1`]: `FFFFFF` } } })
+  async rotate(color=`FFFFFF`): Promise<void> {
+    await this.ledAction(`rotate`, { rotations: -1, colors: { [`1`]: color } })
   }
 
-  async flash(): Promise<void> {
-    await this._cast(`set_led`, { effect: `flash`, args: { count: -1, colors: { ring: `0000FF` } } })
+  async flash(color=`0000FF`): Promise<void> {
+    await this.ledAction(`flash`, { count: -1, colors: { ring: color } })
   }
 
-  async breathe(): Promise<void> {
-    await this._cast(`set_led`, { effect: `breathe`, args: { count: -1, colors: { ring: `0000FF` } } })
+  async breathe(color=`0000FF`): Promise<void> {
+    await this.ledAction(`breathe`, { count: -1, colors: { ring: color } })
+  }
+
+  async ledAction(effect: LedEffect, args: LedInfo): Promise<void> {
+    await this._cast(`set_led`, { effect, args })
   }
 
   private async _getDeviceInfo(query: enums.DeviceInfoQuery, refresh=false) {
@@ -296,8 +302,13 @@ class RelayEventAdapter {
     await this.setDeviceInfo(DeviceInfoField.CHANNEL, channel)
   }
 
-  async setChannel(name:string, target: string[], suppressTTS=true): Promise<void> {
-    await this._cast(`set_channel`, { channel_name: name, target, suppress_tts: suppressTTS })
+  async setDeviceMode(mode: `panic` | `alarm` | `none`): Promise<void>;
+  async setDeviceMode(mode: `panic` | `alarm` | `none`, target?: string[]): Promise<void> {
+    await this._cast(`set_device_mode`, { mode, target })
+  }
+
+  async setChannel(name:string, target: string[], { suppressTTS=false, disableHomeChannel=false }: { suppressTTS?: boolean, disableHomeChannel?: false }={}): Promise<void> {
+    await this._cast(`set_channel`, { channel_name: name, target, suppress_tts: suppressTTS, disable_home_channel: disableHomeChannel })
   }
 
   async placeCall(call: Call): Promise<void> {
