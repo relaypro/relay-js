@@ -30,7 +30,7 @@ export * from './enums'
 type WorkflowEventHandlers = {
   [Event.ERROR]?: (error: Error) => Promise<void>,
   [Event.START]?: (event: Record<string, never>) => Promise<void>,
-  [Event.END]?: (event: Record<string, never>) => Promise<void>,
+  [Event.STOP]?: (event: Record<string, never>) => Promise<void>,
   [Event.BUTTON]?: (event: ButtonEvent) => Promise<void>,
   [Event.TIMER]?: (event: Record<string, never>) => Promise<void>,
   [Event.NOTIFICATION]?: (event: NotificationEvent) => Promise<void>,
