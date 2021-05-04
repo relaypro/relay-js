@@ -38,7 +38,7 @@ type WorkflowEventHandlers = {
   [Event.START]?: (event: Record<string, never>) => Promise<void>,
   [Event.STOP]?: (event: Record<string, never>) => Promise<void>,
   [Event.BUTTON]?: (event: ButtonEvent) => Promise<void>,
-  [Event.TIMER]?: (event: Record<string, never>) => Promise<void>,
+  [Event.TIMER]?: (event: Record<`name`, string>) => Promise<void>,
   [Event.NOTIFICATION]?: (event: NotificationEvent) => Promise<void>,
   [Event.INCIDENT]?: (event: IncidentEvent) => Promise<void>,
   [Event.PROMPT_START]?: (event: Prompt) => Promise<void>,
@@ -200,6 +200,14 @@ class RelayEventAdapter {
 
   private async _call(type: string, payload={}, timeout=TIMEOUT): Promise<Record<string, unknown>> {
     return (await this._sendReceive(type, payload, timeout)) as Record<string, unknown>
+  }
+
+  async setTimer(type: enums.TimerType, name: string, timeout=60, timeout_type: enums.TimeoutType): Promise<void> {
+    await this._cast(`set_timer`, { type, name, timeout, timeout_type })
+  }
+
+  async clearTimer(name: string): Promise<void> {
+    await this._cast(`clear_timer`, { name })
   }
 
   async restartDevice(): Promise<void> {

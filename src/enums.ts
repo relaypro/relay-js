@@ -88,3 +88,15 @@ export enum NotificationSound {
   DEFAULT = `default`,
   SOS = `sos`,
 }
+
+export enum TimerType {
+  TIMEOUT = `timeout`,
+  INTERVAL = `interval`,
+}
+
+export enum TimeoutType {
+  MILLISECONDS = `ms`,
+  SECONDS = `secs`,
+  MINUTES = `mins`,
+  HOURS = `hrs`,
+}
