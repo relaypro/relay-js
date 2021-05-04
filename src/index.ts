@@ -356,6 +356,18 @@ class RelayEventAdapter {
     }
   }
 
+  async unsetVar(name: string): Promise<void> {
+    await this._cast(`unset_var`, { name })
+  }
+
+  async unset(names: string|string[]): Promise<void> {
+    if (Array.isArray(names)) {
+      Promise.all(names.map(name => this.unsetVar(name)))
+    } else {
+      return this.unsetVar(names)
+    }
+  }
+
   async getVar(name: string, defaultValue=undefined): Promise<string> {
     const { value } = (await this._call(`get_var`, { name }) ?? defaultValue) as Record<`value`, string>
     return value
@@ -363,9 +375,7 @@ class RelayEventAdapter {
 
   async get(names: string|string[]): Promise<string | string[]> {
     if (Array.isArray(names)) {
-      return Promise.all(
-        names.map(name => this.getVar(name))
-      )
+      return Promise.all(names.map(name => this.getVar(name)))
     } else {
       return this.getVar(names)
     }
