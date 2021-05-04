@@ -17,6 +17,7 @@ import {
   LedEffect,
   LedInfo,
   PlaceCall,
+  Prompt,
   RingingCall,
   RegisterRequest,
 } from './types'
@@ -40,6 +41,7 @@ type WorkflowEventHandlers = {
   [Event.TIMER]?: (event: Record<string, never>) => Promise<void>,
   [Event.NOTIFICATION]?: (event: NotificationEvent) => Promise<void>,
   [Event.INCIDENT]?: (event: IncidentEvent) => Promise<void>,
+  [Event.PROMPT_START]?: (event: Prompt) => Promise<void>,
   [Event.CALL_RINGING]?: (event: RingingCall) => Promise<void>,
   [Event.CALL_CONNECTED]?: (event: ConnectedCall) => Promise<void>,
   [Event.CALL_DISCONNECTED]?: (event: DisconnectedCall) => Promise<void>,
@@ -208,12 +210,24 @@ class RelayEventAdapter {
     return await this._cast(`device_power_off`, { restart: false })
   }
 
-  async say(text: string, lang=Language.ENGLISH): Promise<void> {
-    await this._cast(`say`, { text, lang })
+  async say(text: string, lang=Language.ENGLISH): Promise<string> {
+    const { id } = (await this._call(`say`, { text, lang })) as Record<`id`, string>
+    return id
   }
 
-  async play(filename: string): Promise<void> {
-    await this._cast(`play`, { filename })
+  async play(filename: string): Promise<string> {
+    const { id } = (await this._call(`play`, { filename })) as Record<`id`, string>
+    return id
+  }
+
+  async stopPlayback(id?: string|string[]): Promise<void> {
+    if (Array.isArray(id)) {
+      await this._cast(`stop_playback`, { ids: id })
+    } else if (typeof id === `string`) {
+      await this._cast(`stop_playback`, { ids: [id] })
+    } else {
+      await this._cast(`stop_playback`, {})
+    }
   }
 
   async translate(text: string, from=Language.ENGLISH, to=Language.SPANISH): Promise<string> {

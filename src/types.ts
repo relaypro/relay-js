@@ -107,3 +107,7 @@ export type IncidentEvent = {
   incident_id: string,
   reason: string,
 }
+
+export type Prompt = {
+  id: string,
+}
