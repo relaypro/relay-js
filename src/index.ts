@@ -6,7 +6,7 @@ import { safeParse, noop, makeId } from './utils'
 
 import { PORT, HEARTBEAT, TIMEOUT, REFRESH_TIMEOUT, NOTIFICATION_TIMEOUT } from './constants'
 import {
-  BaseCall, ButtonEvent, Call, ConnectedCall, DisconnectedCall, FailedCall, ReceivedCall, StartedCall,
+  BaseCall, ButtonEvent, ConnectedCall, DisconnectedCall, FailedCall, ReceivedCall, StartedCall,
   NotificationEvent,
   NotificationOptions,
   IncidentEvent,
@@ -16,6 +16,9 @@ import {
   LedIndex,
   LedEffect,
   LedInfo,
+  PlaceCall,
+  RingingCall,
+  RegisterRequest,
 } from './types'
 import Queue from './queue'
 
@@ -37,6 +40,7 @@ type WorkflowEventHandlers = {
   [Event.TIMER]?: (event: Record<string, never>) => Promise<void>,
   [Event.NOTIFICATION]?: (event: NotificationEvent) => Promise<void>,
   [Event.INCIDENT]?: (event: IncidentEvent) => Promise<void>,
+  [Event.CALL_RINGING]?: (event: RingingCall) => Promise<void>,
   [Event.CALL_CONNECTED]?: (event: ConnectedCall) => Promise<void>,
   [Event.CALL_DISCONNECTED]?: (event: DisconnectedCall) => Promise<void>,
   [Event.CALL_FAILED]?: (event: FailedCall) => Promise<void>,
@@ -311,32 +315,6 @@ class RelayEventAdapter {
     await this._cast(`set_channel`, { channel_name: name, target, suppress_tts: suppressTTS, disable_home_channel: disableHomeChannel })
   }
 
-  async placeCall(call: Call): Promise<void> {
-    await this._call(`call`, call)
-  }
-
-  private _buildCallIdRequestOrThrow(arg: string|Call): BaseCall {
-    if (typeof arg === `string`) {
-      return { call_id: arg }
-    } else if (typeof arg === `object`) {
-      if (typeof arg.call_id === `string`) {
-        return { call_id: arg.call_id }
-      } else {
-        throw new Error(`missing required parameter`)
-      }
-    } else {
-      throw new Error(`invalid argument type`)
-    }
-  }
-
-  async answerCall(callRequest: string|Call): Promise<void> {
-    await this._call(`answer`, this._buildCallIdRequestOrThrow(callRequest))
-  }
-
-  async hangupCall(callRequest: string|Call): Promise<void> {
-    await this._call(`hangup`, this._buildCallIdRequestOrThrow(callRequest))
-  }
-
   async setVar(name: string, value: string): Promise<void> {
     await this._cast(`set_var`, { name, value })
   }
@@ -423,6 +401,36 @@ class RelayEventAdapter {
 
   async terminate(): Promise<void> {
     await this._cast(`terminate`)
+  }
+
+  private _buildCallIdRequestOrThrow(arg: string|BaseCall): BaseCall {
+    if (typeof arg === `string`) {
+      return { call_id: arg }
+    } else if (typeof arg === `object`) {
+      if (typeof arg.call_id === `string`) {
+        return { call_id: arg.call_id }
+      } else {
+        throw new Error(`missing required parameter`)
+      }
+    } else {
+      throw new Error(`invalid argument type`)
+    }
+  }
+
+  async placeCall(call: PlaceCall): Promise<void> {
+    await this._cast(`call`, call)
+  }
+
+  async answerCall(callRequest: string|BaseCall): Promise<void> {
+    await this._cast(`answer`, this._buildCallIdRequestOrThrow(callRequest))
+  }
+
+  async hangupCall(callRequest: string|BaseCall): Promise<void> {
+    await this._cast(`hangup`, this._buildCallIdRequestOrThrow(callRequest))
+  }
+
+  async register(request: RegisterRequest): Promise<void> {
+    await this._cast(`register`, request)
   }
 }
 

@@ -2,7 +2,7 @@ import http from 'http'
 import https from 'https'
 
 import WebSocket from 'ws'
-import { Button, IncidentStatus, NotificationPriority, NotificationSound, Taps } from './enums'
+import { Button, CallDirection, IncidentStatus, NotificationPriority, NotificationSound, Taps } from './enums'
 import { RelayEventAdapter } from './index'
 
 export type LedIndex = `ring`|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|`1`|`2`|`3`|`4`|`5`|`6`|`7`|`8`|`9`|`10`|`11`|`12`|`13`|`14`|`15`|`16`
@@ -73,21 +73,29 @@ export interface NotificationEvent {
   notification_state: NotificationState,
 }
 
-export interface BaseCall {
+export type RegisterRequest = {
+  uri?: string,
+  password?: string,
+  expires?: number,
+}
+
+export type BaseCall = {
   call_id: string
 }
-export interface StartedCall extends BaseCall {
+export type StartedCall = BaseCall & {
   device_id: string,
   device_name: string,
 }
-export interface ReceivedCall extends StartedCall {
-  direction: string,
-}
-export interface ConnectedCall extends ReceivedCall {
+export type PlaceCall = Partial<Omit<StartedCall, `call_id`>>
+export type ReceivedCall = StartedCall & {
   start_time_epoch: number,
+  direction: CallDirection,
+}
+export type RingingCall = ReceivedCall
+export type ConnectedCall = ReceivedCall & {
   connect_time_epoch: number,
 }
-export interface DisconnectedCall extends ConnectedCall {
+export type DisconnectedCall = ConnectedCall & {
   reason: string,
   end_time_epoch: number,
 }
