@@ -6,11 +6,17 @@ export enum Event {
   TIMER = `timer`,
   NOTIFICATION = `notification`,
   INCIDENT = `incident`,
+  CALL_RINGING = `call_ringing`,
   CALL_CONNECTED = `call_connected`,
   CALL_DISCONNECTED = `call_disconnected`,
   CALL_FAILED = `call_failed`,
   CALL_RECEIVED = `call_received`,
   CALL_START_REQUEST = `call_start_request`,
+}
+
+export enum CallDirection {
+  INBOUND = `inbound`,
+  OUTBOUND = `outbound`,
 }
 
 export enum Button {
