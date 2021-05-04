@@ -211,11 +211,11 @@ class RelayEventAdapter {
   }
 
   async restartDevice(): Promise<void> {
-    return await this._cast(`device_power_off`, { restart: true })
+    await this._cast(`device_power_off`, { restart: true })
   }
 
   async powerDownDevice(): Promise<void> {
-    return await this._cast(`device_power_off`, { restart: false })
+    await this._cast(`device_power_off`, { restart: false })
   }
 
   async say(text: string, lang=Language.ENGLISH): Promise<string> {
