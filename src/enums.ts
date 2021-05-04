@@ -54,6 +54,7 @@ export enum Language {
 export enum DeviceInfoQuery {
   NAME = `name`,
   ID = `id`,
+  TYPE = `type`,
   ADDRESS = `address`,
   COORDINATES = `latlong`,
   BATTERY = `battery`,
@@ -64,6 +65,14 @@ export enum DeviceInfoQuery {
 export enum DeviceInfoField {
   LABEL = `label`,
   CHANNEL = `channel`,
+}
+
+export enum DeviceType {
+  RELAY = `relay`,
+  RELAY2 = `relay2`,
+  RELAY_APP = `relay_app`,
+  ROIP = `roip`,
+  DASH = `dash`,
 }
 
 export enum Notification {

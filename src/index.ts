@@ -316,6 +316,10 @@ class RelayEventAdapter {
     return await this._getDeviceInfo(DeviceInfoQuery.BATTERY, refresh) as number
   }
 
+  async getDeviceType(): Promise<enums.DeviceType> {
+    return await this._getDeviceInfo(DeviceInfoQuery.TYPE) as enums.DeviceType
+  }
+
   private async setDeviceInfo(field: enums.DeviceInfoField, value: string): Promise<void> {
     await this._cast(`set_device_info`, { field, value })
   }
