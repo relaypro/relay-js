@@ -18,7 +18,7 @@ export type LedInfo = {
   }
 }
 
-export interface Msg {
+export type Msg = {
   _id: string,
   _type: string,
   error?: string,
@@ -30,11 +30,11 @@ export interface Msg {
   notification_state?: string,
 }
 
-export interface Options {
+export type Options = {
   server?: http.Server | https.Server
 }
 
-export interface LocalWebSocket extends WebSocket {
+export type LocalWebSocket = WebSocket & {
   connectionId: string,
   isAlive: boolean,
 }
@@ -47,26 +47,26 @@ export interface Relay {
   workflow: (path: string, workflow: Workflow) => void
 }
 
-export interface ButtonEvent {
+export type ButtonEvent = {
   button: Button,
   taps: Taps,
 }
 
-export interface NotificationOptions {
+export type NotificationOptions = {
   priority: NotificationPriority,
   title: string,
   body: string,
   sound: NotificationSound,
 }
 
-export interface NotificationState {
+export type NotificationState = {
   acknowledged: string[],
   created: string[],
   cancelled: string[],
   timed_out: string[],
 }
 
-export interface NotificationEvent {
+export type NotificationEvent = {
   source: string,
   event: string,
   name: string,
@@ -102,7 +102,7 @@ export type DisconnectedCall = ConnectedCall & {
 export type FailedCall = DisconnectedCall
 export type Call = StartedCall | ReceivedCall | ConnectedCall | DisconnectedCall | FailedCall
 
-export interface IncidentEvent {
+export type IncidentEvent = {
   type: IncidentStatus,
   incident_id: string,
   reason: string,
