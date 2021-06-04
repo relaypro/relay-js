@@ -164,7 +164,7 @@ describe(`Events API Tests`, () => {
           .then(result => {
             ibot.off(`message`, handler)
             if (result !== undefined) {
-              console.log(`result`, result)
+              // console.log(`result`, result)
             }
             try {
               expect(result).to.eql(
