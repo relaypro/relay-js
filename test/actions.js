@@ -101,8 +101,8 @@ describe(`Events API Tests`, () => {
   describe(`send and receive api requests`, () => {
 
     const basicCommands = [
-      { command: `say`, args: { text: `hello, brandon` } },
-      { command: `play`, args: { filename: `123.wav` } },
+      { command: `say`, args: { text: `hello, brandon` }, response: { id: `abc` }, assertResponseField: `id` },
+      { command: `play`, args: { filename: `123.wav` }, response: { id: `abc` }, assertResponseField: `id` },
       { command: `vibrate`, args: { pattern: [100, 500, 500,  500, 500, 500] }},
       { command: `set_var`, args: { name: `name`, value: `value` } },
       { command: `get_var`, args: { name: `name` }, response: { value: `hello from the other side` }, assertResponseField: `value` },
@@ -143,17 +143,19 @@ describe(`Events API Tests`, () => {
     ]
 
     basicCommands.forEach(test => {
-      it(`should send '${test.command}' ${test.fn && `with '${test.fn}'`}`, done => {
+      it(`should send '${test.command}'${test.fn ? ` with '${test.fn}'`: ``}`, done => {
         const handler = msg => {
           const message = JSON.parse(msg)
           // console.log(`message`, message)
           expect(message).to.have.property(`_id`)
           expect(message).to.deep.include({ _type: `wf_api_${test.command}_request`, ...(test.assertArgs ?? test.args) })
-          ibot.send(JSON.stringify({
+          const response = {
             _id: message._id,
             _type: `wf_api_${test.command}_response`,
             ...test.response,
-          }))
+          }
+          // console.log(`response`, response)
+          ibot.send(JSON.stringify(response))
         }
 
         ibot.on(`message`, handler)
@@ -162,18 +164,16 @@ describe(`Events API Tests`, () => {
           .then(result => {
             ibot.off(`message`, handler)
             if (result !== undefined) {
-              // console.log(`result`, result)
+              console.log(`result`, result)
             }
             try {
               expect(result).to.eql(
                 test.fullResponse ? test.response : (test.response?.[test.assertResponseField] ?? undefined))
-            } catch(err) {
-              console.error(err)
-            } finally {
               done()
+            } catch(err) {
+              done(err)
             }
           })
-          .catch(err => console.error(err))
       })
     })
 
