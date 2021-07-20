@@ -28,21 +28,20 @@
     "dist"
   ],
   "dependencies": {
-    "tslib": "2.2.0",
-    "ws": "7.4.6"
+    "tslib": "2.3.0",
+    "ws": "7.5.3"
   },
   "devDependencies": {
-    "@types/chai": "4.2.18",
-    "@types/mocha": "8.2.2",
-    "@types/node": "15.6.1",
-    "@types/ws": "7.4.4",
-    "@typescript-eslint/eslint-plugin": "4.26.0",
-    "@typescript-eslint/parser": "4.26.0",
+    "@types/chai": "4.2.21",
+    "@types/mocha": "8.2.3",
+    "@types/node": "16.3.3",
+    "@types/ws": "7.4.7",
+    "@typescript-eslint/eslint-plugin": "4.28.4",
+    "@typescript-eslint/parser": "4.28.4",
     "chai": "4.3.4",
     "chai-as-promised": "7.1.1",
-    "concat-md": "0.3.5",
-    "del-cli": "3.0.1",
-    "eslint": "7.27.0",
+    "del-cli": "4.0.1",
+    "eslint": "7.31.0",
     "eslint-config-standard": "16.0.3",
     "eslint-plugin-eslint-comments": "3.2.0",
     "eslint-plugin-import": "2.23.4",
@@ -50,13 +49,13 @@
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "5.1.0",
     "got": "11.8.2",
-    "mocha": "8.4.0",
+    "mocha": "9.0.2",
     "np": "7.5.0",
     "nyc": "15.1.0",
-    "ts-node": "10.0.0",
-    "typedoc": "0.20.36",
-    "typedoc-plugin-markdown": "3.9.0",
-    "typescript": "4.3.2"
+    "ts-node": "10.1.0",
+    "typedoc": "0.21.4",
+    "typedoc-plugin-markdown": "3.10.3",
+    "typescript": "4.3.5"
   },
   "types": "dist/index.d.ts",
   "publishConfig": {
