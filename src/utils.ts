@@ -15,3 +15,11 @@ export const noop = (): void => { return }
 export const makeId = (): string => randomBytes(16).toString(`hex`)
 
 // export const promiseTry = (func: Function) => new Promise((resolve) => resolve(func()))
+
+export const filterInt = (value: string): number => {
+  if (/^[-+]?(\d+|Infinity)$/.test(value)) {
+    return Number(value)
+  } else {
+    return NaN
+  }
+}

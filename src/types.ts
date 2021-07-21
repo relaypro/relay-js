@@ -47,6 +47,10 @@ export interface Relay {
   workflow: (path: string, workflow: Workflow) => void
 }
 
+export type StopEvent = {
+  reason: `error` | `normal` | string
+}
+
 export type ButtonEvent = {
   button: Button,
   taps: Taps,

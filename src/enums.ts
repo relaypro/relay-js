@@ -60,6 +60,7 @@ export enum DeviceInfoQuery {
   BATTERY = `battery`,
   INDOOR_LOCATION = `indoor_location`,
   LOCATION = `location`,
+  USERNAME = `username`,
 }
 
 export enum DeviceInfoField {

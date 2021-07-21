@@ -2,7 +2,7 @@ import WebSocket, { OPEN } from 'ws'
 
 import * as enums from './enums'
 
-import { safeParse, noop, makeId } from './utils'
+import { safeParse, noop, makeId, filterInt } from './utils'
 
 import { PORT, HEARTBEAT, TIMEOUT, REFRESH_TIMEOUT, NOTIFICATION_TIMEOUT } from './constants'
 import {
@@ -20,6 +20,7 @@ import {
   Prompt,
   RingingCall,
   RegisterRequest,
+  StopEvent,
 } from './types'
 import Queue from './queue'
 
@@ -36,7 +37,7 @@ export * from './enums'
 type WorkflowEventHandlers = {
   [Event.ERROR]?: (error: Error) => Promise<void>,
   [Event.START]?: (event: Record<string, never>) => Promise<void>,
-  [Event.STOP]?: (event: Record<string, never>) => Promise<void>,
+  [Event.STOP]?: (event: StopEvent) => Promise<void>,
   [Event.BUTTON]?: (event: ButtonEvent) => Promise<void>,
   [Event.TIMER]?: (event: Record<`name`, string>) => Promise<void>,
   [Event.NOTIFICATION]?: (event: NotificationEvent) => Promise<void>,
@@ -320,6 +321,14 @@ class RelayEventAdapter {
     return await this._getDeviceInfo(DeviceInfoQuery.TYPE) as enums.DeviceType
   }
 
+  async getUserProfile(): Promise<string> {
+    return await this._getDeviceInfo(DeviceInfoQuery.USERNAME) as string
+  }
+
+  async setUserProfile(username: string, force=false): Promise<void> {
+    await this._cast(`set_user_profile`, { username, force })
+  }
+
   private async setDeviceInfo(field: enums.DeviceInfoField, value: string): Promise<void> {
     await this._cast(`set_device_info`, { field, value })
   }
@@ -467,6 +476,15 @@ class RelayEventAdapter {
 
   async register(request: RegisterRequest): Promise<void> {
     await this._cast(`register`, request)
+  }
+
+  async getUnreadInboxSize(): Promise<number> {
+    const { count } = await this._call(`inbox_count`) as Record<`count`, string>
+    return filterInt(count)
+  }
+
+  async playUnreadInboxMessages(): Promise<void> {
+    await this._cast(`play_inbox_messages`)
   }
 }
 
