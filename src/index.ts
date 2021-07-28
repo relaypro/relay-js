@@ -2,7 +2,7 @@ import WebSocket, { OPEN } from 'ws'
 
 import * as enums from './enums'
 
-import { safeParse, noop, makeId, filterInt } from './utils'
+import { safeParse, noop, makeId, filterInt, toString, arrayMapper, numberArrayMapper } from './utils'
 
 import { PORT, HEARTBEAT, TIMEOUT, REFRESH_TIMEOUT, NOTIFICATION_TIMEOUT } from './constants'
 import {
@@ -21,6 +21,8 @@ import {
   RingingCall,
   RegisterRequest,
   StopEvent,
+  Mapper,
+  AnyPrimitive,
 } from './types'
 import Queue from './queue'
 
@@ -351,7 +353,7 @@ class RelayEventAdapter {
   }
 
   async setVar(name: string, value: string): Promise<void> {
-    await this._cast(`set_var`, { name, value })
+    await this._cast(`set_var`, { name, value: toString(value) })
   }
 
   async set(obj: Record<string, string>, value?: string): Promise<void> {
@@ -382,9 +384,33 @@ class RelayEventAdapter {
     return value
   }
 
-  async get(names: string|string[]): Promise<string | string[]> {
+  async getMappedVar<Type>(name: string, mapper: Mapper<Type>, defaultValue=undefined): Promise<Type> {
+    const value = await this.getVar(name, defaultValue)
+    return mapper(value)
+  }
+
+  async getNumberVar(name: string, defaultValue=undefined): Promise<number> {
+    return await this.getMappedVar(name, Number, defaultValue)
+  }
+
+  async getArrayVar(name: string, defaultValue=undefined): Promise<string[]> {
+    return await this.getMappedVar(name, arrayMapper, defaultValue)
+  }
+
+  async getNumberArrayVar(name: string, defaultValue=undefined): Promise<number[]> {
+    return await this.getMappedVar(name, numberArrayMapper, defaultValue)
+  }
+
+  async get(names: string|string[], mappers: [Mapper<AnyPrimitive>]): Promise<AnyPrimitive | AnyPrimitive[]> {
     if (Array.isArray(names)) {
-      return Promise.all(names.map(name => this.getVar(name)))
+      if (Array.isArray(mappers) && names.length !== mappers.length) {
+        throw new Error(`"get(names, mappers) array length are not equal`)
+      }
+      return Promise.all(names.map(async(name, index) =>  {
+        const value = await this.getVar(name)
+        const mapper = mappers?.[index] || String
+        return mapper(value)
+      }))
     } else {
       return this.getVar(names)
     }

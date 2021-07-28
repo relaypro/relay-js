@@ -19,6 +19,7 @@
     "test": "nyc mocha --exit test/*",
     "release": "np",
     "build": "del-cli dist && tsc",
+    "build-test": "npm run build && npm run test",
     "build:check": "tsc --noEmit",
     "prepare": "npm run build",
     "concat-doc": "mkdir -p concat-docs && npx concat-md --toc --decrease-title-levels --dir-name-as-title docs > concat-docs/relay-js.md",

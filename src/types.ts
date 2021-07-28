@@ -5,6 +5,10 @@ import WebSocket from 'ws'
 import { Button, CallDirection, IncidentStatus, NotificationPriority, NotificationSound, Taps } from './enums'
 import { RelayEventAdapter } from './index'
 
+export type AnyPrimitive = symbol | string | boolean | number | [string|boolean|number]
+
+export type Mapper<Type> = (value: string) => Type
+
 export type LedIndex = `ring`|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|`1`|`2`|`3`|`4`|`5`|`6`|`7`|`8`|`9`|`10`|`11`|`12`|`13`|`14`|`15`|`16`
 export type LedEffect = `off` | `breathe`| `flash` | `rotate` | `rainbow` | `static`
 export type LedInfo = {

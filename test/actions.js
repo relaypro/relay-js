@@ -2,10 +2,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const chai = require(`chai`)
 const chaiAsPromised = require(`chai-as-promised`)
+const { describe } = require("mocha")
 
 const WebSocket = require(`ws`)
 const { Event } = require(`../dist/enums.js`)
 const { relay } = require(`../dist/index.js`)
+const { noop, safeParse, toString, arrayMapper, numberArrayMapper, booleanMapper } = require(`../dist/utils.js`)
 
 chai.use(chaiAsPromised)
 
@@ -205,36 +207,81 @@ describe(`Events API Tests`, () => {
         })
     })
 
-    it(`should send 'get_var' multiple times for batch 'get'`, done => {
-      const name1 = `name1`
-      const value1 = `hello from the other side`
+    describe(`'get' function`, () => {
 
-      const name2 = `name2`
-      const value2 = `hello from the other side, too`
+      const mockValues = {
+        name1: `hello from the other side`,
+        name2: `hello from the other side, too`,
+        number: `3.01`,
+        array: `1,2,3`,
+        json: `{"hello":"world"}`,
+        bool: `true`,
+        bool2: `false`,
+      }
 
       const handler = msg => {
         const message = JSON.parse(msg)
+        const value = mockValues[message.name]
         expect(message).to.have.property(`_id`)
         expect(message).to.deep.include({ _type: `wf_api_get_var_request` })
         ibot.send(JSON.stringify({
           _id: message._id,
           _type: `wf_api_get_var_response`,
-          value: message.name === name1 ? value1 : value2,
+          value,
         }))
       }
-      ibot.on(`message`, handler)
-      adapter.get([name1, name2])
-        .then(([val1, val2]) => {
-          ibot.off(`message`, handler)
-          expect(val1).to.equal(value1)
-          expect(val2).to.equal(value2)
-          done()
-        })
+
+      before(() => {
+        ibot.on(`message`, handler)
+      })
+
+      after(() => {
+        ibot.off(`message`, handler)
+      })
+
+      it(`should send 'get_var' multiple times for batch 'get'`, async () => {
+        try {
+          const [val1, val2] = await adapter.get([`name1`, `name2`])
+          expect(val1).to.equal(mockValues.name1)
+          expect(val2).to.equal(mockValues.name2)
+        } catch (err) {
+          console.error(err)
+        }
+      })
+
+      it(`should use provided mappers`, async () => {
+        const [val1, val2, val3, val4, val5, val6, val7] = await adapter.get(
+          [`name1`, `number`, `array`, `array`, `bool`, `bool2`, `json`],
+          [
+            String,
+            Number,
+            arrayMapper,
+            numberArrayMapper,
+            booleanMapper,
+            booleanMapper,
+            JSON.parse,
+          ]
+        )
+        expect(val1).to.equal(mockValues.name1)
+        expect(val2).to.equal(Number(mockValues.number))
+        expect(val2).to.be.a(`number`)
+        expect(val3).to.be.an(`array`)
+        expect(val3).to.eql([`1`, `2`, `3`])
+        expect(val4).to.be.an(`array`)
+        expect(val4).to.eql([1, 2, 3])
+        expect(val5).to.be.true
+        expect(val6).to.be.false
+        expect(val7).to.eql({ hello: `world` })
+      })
     })
 
   })
 
   describe(`Error handling`, () => {
+
+    it(`should return rejected promise when 'get' is called incorrectly`, async () => {
+      expect(adapter.get(`hello`, [])).to.be.rejected
+    })
 
     it(`should reject when ibot responds with error_response`, async () => {
       const handler = msg => {
