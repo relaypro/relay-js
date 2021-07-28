@@ -7,6 +7,7 @@ export enum Event {
   NOTIFICATION = `notification`,
   INCIDENT = `incident`,
   PROMPT_START = `prompt_start`,
+  PROMPT_STOP = `prompt_stop`,
   CALL_RINGING = `call_ringing`,
   CALL_CONNECTED = `call_connected`,
   CALL_DISCONNECTED = `call_disconnected`,

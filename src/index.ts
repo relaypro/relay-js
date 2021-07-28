@@ -45,6 +45,7 @@ type WorkflowEventHandlers = {
   [Event.NOTIFICATION]?: (event: NotificationEvent) => Promise<void>,
   [Event.INCIDENT]?: (event: IncidentEvent) => Promise<void>,
   [Event.PROMPT_START]?: (event: Prompt) => Promise<void>,
+  [Event.PROMPT_STOP]?: (event: Prompt) => Promise<void>,
   [Event.CALL_RINGING]?: (event: RingingCall) => Promise<void>,
   [Event.CALL_CONNECTED]?: (event: ConnectedCall) => Promise<void>,
   [Event.CALL_DISCONNECTED]?: (event: DisconnectedCall) => Promise<void>,
