@@ -2,9 +2,9 @@ import WebSocket, { OPEN } from 'ws'
 
 import * as enums from './enums'
 
-import { safeParse, noop, makeId, filterInt, toString, arrayMapper, numberArrayMapper } from './utils'
+import { safeParse, makeId, filterInt, toString, arrayMapper, numberArrayMapper } from './utils'
 
-import { PORT, HEARTBEAT, TIMEOUT, REFRESH_TIMEOUT, NOTIFICATION_TIMEOUT } from './constants'
+import { PORT, HEARTBEAT, TIMEOUT, REFRESH_TIMEOUT, NOTIFICATION_TIMEOUT, EVENT_TIMEOUT } from './constants'
 import {
   BaseCall, ButtonEvent, ConnectedCall, DisconnectedCall, FailedCall, ReceivedCall, StartedCall,
   NotificationEvent,
@@ -23,6 +23,7 @@ import {
   StopEvent,
   Mapper,
   AnyPrimitive,
+  Msg,
 } from './types'
 import Queue from './queue'
 
@@ -58,10 +59,15 @@ const createWorkflow = (fn: Workflow): Workflow => fn
 
 const WORKFLOW_EVENT_REGEX = /^wf_api_(\w+)_event$/
 
+type filter = (event: Msg) => boolean
+
+const all: filter = () => true
+
 class RelayEventAdapter {
   private websocket: LocalWebSocket | null = null
   private workQueue: Queue | null = null
   private handlers: WorkflowEventHandlers = {}
+  private defaultLogParameters: Record<string, string|number|boolean> = {}
 
   constructor(websocket: LocalWebSocket) {
     console.log(`creating event adapter`)
@@ -124,16 +130,6 @@ class RelayEventAdapter {
     }
   }
 
-  /*
-  private async stop(): Promise<void> {
-    console.log(`stopping event adapter`)
-    if (this.websocket) {
-      console.log(`terminating event adapter websocket`)
-      this.websocket.terminate()
-    }
-  }
-  */
-
   private async _send(type: string, payload={}, id?: string): Promise<void|Record<string, unknown>> {
     return new Promise((resolve, reject) => {
       if (!(this.websocket?.isAlive && this.websocket?.readyState === OPEN)) {
@@ -168,34 +164,59 @@ class RelayEventAdapter {
 
     await this._send(type, payload, id)
 
+    const event = await this._waitForEventCondition(
+      (event: Msg) => {
+        return ([`wf_api_${type}_response`, `wf_api_error_response`].includes(event._type)) && id === event._id
+      },
+      timeout
+    )
+
+    const { _id, _type, error, ...params } = event
+    console.log(`processing event ${_id} of type ${_type}`)
+
+    if (_type === `wf_api_${type}_response`) {
+      return Object.keys(params).length > 0 ? params as Record<string, unknown> : undefined
+    } else if (_type === `wf_api_error_response`) {
+      throw new Error(error ?? `Unknown error`)
+    } else {
+      console.error(`Unknown response`, event)
+      throw new Error(`Unknown response`)
+    }
+  }
+
+  private async _waitForEventCondition(filter: filter=all, timeout=EVENT_TIMEOUT): Promise<Msg> {
     return new Promise((resolve, reject) => {
       const timeoutHandle = setTimeout(() => {
         this.websocket?.off?.(`message`, responseListener)
-        reject(new Error(`failed-to-receive-response-timeout`))
+        reject(new Error(`failed-to-receive-event-timeout`))
       }, timeout)
 
       const responseListener = (msg: string) => {
         clearTimeout(timeoutHandle)
         const event = safeParse(msg)
         if (event) {
-          const { _id, _type, ...params } = event
-          if (_id === id) { // interested here in response events (marked by correlation id)
+          if (filter(event)) {
             // stop listening as soon as we have a correlated response
             this.websocket?.off(`message`, responseListener)
-            if (_type === `wf_api_${type}_response`) {
-              resolve(Object.keys(params).length > 0 ? params as Record<string, unknown> : undefined)
-            } else if (_type === `wf_api_error_response`) {
-              reject(new Error(event?.error ?? `Unknown error`))
-            } else {
-              console.log(`Unknown response`, event)
-              reject(new Error(`Unknown response`))
-            }
+            resolve(event)
           }
         }
       }
       // start listening to websocket messages for correlated response
       this.websocket?.on(`message`, responseListener)
     })
+  }
+
+  async _waitForEventAndOverride<U extends keyof WorkflowEventHandlers>(eventName: U): Promise<void> {
+    const eventHandler = this.handlers[eventName]
+    try {
+      delete this.handlers[eventName]
+      await this._waitForEventCondition(event => event._type === `wf_api_${eventName}_event`)
+    } finally {
+      if (eventHandler !== undefined) {
+        this.handlers[eventName] = eventHandler
+      }
+    }
   }
 
   private async _cast(type: string, payload={}, timeout=TIMEOUT): Promise<void> {
@@ -227,8 +248,20 @@ class RelayEventAdapter {
     return id
   }
 
+  async sayAndWait(text: string, lang=Language.ENGLISH): Promise<string> {
+    const id = await this.say(text, lang)
+    await this._waitForEventAndOverride(Event.PROMPT_STOP)
+    return id
+  }
+
   async play(filename: string): Promise<string> {
     const { id } = (await this._call(`play`, { filename })) as Record<`id`, string>
+    return id
+  }
+
+  async playAndWait(filename: string): Promise<string> {
+    const id = await this.play(filename)
+    await this._waitForEventAndOverride(Event.PROMPT_STOP)
     return id
   }
 
@@ -353,6 +386,42 @@ class RelayEventAdapter {
     await this._cast(`set_channel`, { channel_name: name, target, suppress_tts: suppressTTS, disable_home_channel: disableHomeChannel })
   }
 
+  async setHomeChannelState(target: string[], enabled: boolean): Promise<void> {
+    await this._cast(`set_home_channel_state`, { target, enabled })
+  }
+
+  async getGroupMembers(groupName: string): Promise<string[]> {
+    const { device_names } = await this._call(`list_group_members`, { group_name: groupName }) as Record<`device_names`, string[]>
+    return device_names
+  }
+
+  async setDefaultLogParameters(params: Record<string, string|number|boolean>): Promise<void> {
+    this.defaultLogParameters = params
+  }
+
+  async logEvent(event: string, parameters: Record<string, Record<string, string|number|boolean>>): Promise<void> {
+    await this._cast(`log_message`, {
+      name: event,
+      content_type: `application/vnd.relay.event.parameters+json`,
+      message: JSON.stringify({
+        ...this.defaultLogParameters,
+        ...parameters,
+      })
+    })
+  }
+
+  // async logUserEvent(event: string, target: string, parameters: Record<string, Record<string, string|number|boolean>>): Promise<void> {
+  //   await this._cast(`log_message`, {
+  //     name: event,
+  //     content_type: `application/vnd.relay.event.parameters+json`,
+  //     target,
+  //     message: JSON.stringify({
+  //       ...this.defaultLogParameters,
+  //       ...parameters,
+  //     })
+  //   })
+  // }
+
   async setVar(name: string, value: string): Promise<void> {
     await this._cast(`set_var`, { name, value: toString(value) })
   }
@@ -380,25 +449,32 @@ class RelayEventAdapter {
     }
   }
 
-  async getVar(name: string, defaultValue=undefined): Promise<string> {
-    const { value } = (await this._call(`get_var`, { name }) ?? defaultValue) as Record<`value`, string>
-    return value
+  async getVar(name: string, defaultValue=undefined): Promise<string|undefined> {
+    const result = await this._call(`get_var`, { name }) as Record<`value`, string>
+    if (result === undefined) {
+      return defaultValue
+    } else {
+      return result.value
+    }
   }
 
-  async getMappedVar<Type>(name: string, mapper: Mapper<Type>, defaultValue=undefined): Promise<Type> {
+  async getMappedVar<Type>(name: string, mapper: Mapper<Type>, defaultValue=undefined): Promise<Type|undefined> {
     const value = await this.getVar(name, defaultValue)
+    if (value === undefined) {
+      return value
+    }
     return mapper(value)
   }
 
-  async getNumberVar(name: string, defaultValue=undefined): Promise<number> {
+  async getNumberVar(name: string, defaultValue=undefined): Promise<number|undefined> {
     return await this.getMappedVar(name, Number, defaultValue)
   }
 
-  async getArrayVar(name: string, defaultValue=undefined): Promise<string[]> {
+  async getArrayVar(name: string, defaultValue=undefined): Promise<string[]|undefined> {
     return await this.getMappedVar(name, arrayMapper, defaultValue)
   }
 
-  async getNumberArrayVar(name: string, defaultValue=undefined): Promise<number[]> {
+  async getNumberArrayVar(name: string, defaultValue=undefined): Promise<number[]|undefined> {
     return await this.getMappedVar(name, numberArrayMapper, defaultValue)
   }
 
@@ -409,6 +485,9 @@ class RelayEventAdapter {
       }
       return Promise.all(names.map(async(name, index) =>  {
         const value = await this.getVar(name)
+        if (value === undefined) {
+          return value
+        }
         const mapper = mappers?.[index] || String
         return mapper(value)
       }))
@@ -533,7 +612,6 @@ const initializeRelaySdk = (options: Options={}): Relay => {
     })
 
     server.shouldHandle = (request) => {
-      console.info(`WebSocket request =>`, request.url)
       if (request.url) {
         const path = request.url.slice(1)
         if (path) {
@@ -588,7 +666,7 @@ const initializeRelaySdk = (options: Options={}): Relay => {
           return websocket.terminate()
         }
         _websocket.isAlive = false
-        websocket.ping(noop)
+        websocket.ping()
       })
     }, HEARTBEAT)
 

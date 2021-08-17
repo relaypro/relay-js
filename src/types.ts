@@ -5,7 +5,7 @@ import WebSocket from 'ws'
 import { Button, CallDirection, IncidentStatus, NotificationPriority, NotificationSound, Taps } from './enums'
 import { RelayEventAdapter } from './index'
 
-export type AnyPrimitive = symbol | string | boolean | number | [string|boolean|number]
+export type AnyPrimitive = undefined | symbol | string | boolean | number | [string|boolean|number]
 
 export type Mapper<Type> = (value: string) => Type
 
