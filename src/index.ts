@@ -675,7 +675,7 @@ const initializeRelaySdk = (options: Options={}): Relay => {
     }, HEARTBEAT)
 
     return {
-      workflow: (path: string|Workflow, workflow: Workflow) => {
+      workflow: (path: string|Workflow, workflow?: Workflow) => {
         if (workflows) {
           if ((typeof path === `function`)) {
             console.info(`Default workflow set`)
