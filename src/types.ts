@@ -48,7 +48,7 @@ export interface Workflow {
 }
 
 export interface Relay {
-  workflow: (path: string, workflow: Workflow) => void
+  workflow: (path: string|Workflow, workflow: Workflow) => void
 }
 
 export type StopEvent = {
