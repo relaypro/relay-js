@@ -45,9 +45,9 @@ export enum Language {
   ICELANDIC = `is-IS`,
   JAPANESE = `ja-JP`,
   KOREAN = `ko-KR`,
-  POLISH = `ko-KR`,
+  POLISH = `pl-PK`,
   PORTUGUESE = `pt-BR`,
-  NORWEIGN = `nb-NO`,
+  NORWEGIAN = `nb-NO`,
   DUTCH = `nl-NL`,
   CHINESE = `zh`,
 }
