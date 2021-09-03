@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto'
-import { AnyPrimitive, Msg } from './types'
+import { AnyPrimitive, Device, Msg } from './types'
 
 export const safeParse = (msg: string): undefined | Msg => {
   try {
@@ -60,4 +60,60 @@ export const isPlainObject = <Value>(value: unknown): value is Record<string | n
 
   const proto = Object.getPrototypeOf(value)
   return proto === null || proto === Object.prototype
+}
+
+export const mapDevice = (device: Record<string, any>): Device => {
+
+  const info = device?.device_details?.device_info
+  const location = device.device_details?.location
+
+  return {
+    name: device.device_label,
+    last_connect_timestamp: device.last_connect_timestamp,
+    active_channel: device.active_channel,
+    status: device.device_status,
+    mode: device.mode === `undefined` ? null : device.mode,
+    background_audio: device.background_audio,
+    ...(info && {
+      battery_level: info.battery_level,
+      battery_status: info.battery_status,
+      rom_version: info.rom_version,
+      app_version: info.app_version,
+      apk_version: info.app_version,
+      build_id: info.build_id,
+      product_name: info.product_name,
+      model: info.model,
+      wifi_mac: info.wifi_mac,
+      volume_level: info.volume_level,
+      imei: info.imei,
+      iccid: info.iccid,
+      fcc_id: info.fcc_id,
+      ic_id: info.ic_id,
+      connection_type: info.network_status.connection_type,
+      wifi_signal: info.network_status.wifi_bars,
+      cell_signal: info.network_status.cell_bars,
+      bluetooth_status: info.bluetooth_status,
+      bluetooth_address: info.bluetooth_info?.address,
+      bluetooth_name: info.bluetooth_info?.name
+    }),
+    location: location ? {
+      lat: location.lat,
+      long: location.long,
+      accuracy: location.accuracy,
+      address: location.address || null,
+      indoor_position: location.indoor_position,
+      date: new Date(Date.parse(`${location.timestamp}Z`)).toUTCString(),
+      geofence_state: location.geofence_state ?? null,
+      geofence_id: location.geofence_id ?? [],
+      geofence_events: location.geofence_events ?? [],
+    } : null,
+    features: device.features,
+    capabilities: device.capabilities,
+    groups: device.groups,
+    channels: device.channels,
+    emergency_info: device.emergency_info,
+    active_incidents: device.active_incidents,
+  }
+
+  return device as Device
 }

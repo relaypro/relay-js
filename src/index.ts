@@ -26,6 +26,7 @@ import {
   Msg,
 } from './types'
 import Queue from './queue'
+import RelayApi from './api'
 
 const {
   Event,
@@ -674,6 +675,8 @@ const initializeRelaySdk = (options: Options={}): Relay => {
       })
     }, HEARTBEAT)
 
+    const api = new RelayApi(options.subscriberId, options.apiKey)
+
     return {
       workflow: (path: string|Workflow, workflow?: Workflow) => {
         if (workflows) {
@@ -687,7 +690,8 @@ const initializeRelaySdk = (options: Options={}): Relay => {
             throw new Error(`First argument for workflow must either be a string or a function`)
           }
         }
-      }
+      },
+      api,
     }
   }
 }
