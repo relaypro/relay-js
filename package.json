@@ -29,7 +29,7 @@
     "dist"
   ],
   "dependencies": {
-    "node-fetch": "2.6.0",
+    "node-fetch": "2.6.1",
     "tslib": "2.3.0",
     "ws": "7.5.3"
   },
