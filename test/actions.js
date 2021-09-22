@@ -135,7 +135,7 @@ describe(`Events API Tests`, () => {
       { command: `get_device_info`, fn: `getDeviceCoordinates`, assertArgs: { query: `latlong`, refresh: false }, response: { latlong: `hello` }, assertResponseField: `latlong` },
       { command: `get_device_info`, fn: `getDeviceLatLong`, assertArgs: { query: `latlong`, refresh: false }, response: { latlong: `hello` }, assertResponseField: `latlong` },
       { command: `get_device_info`, fn: `getDeviceIndoorLocation`, assertArgs: { query: `indoor_location`, refresh: false }, response: { indoor_location: `hello` }, assertResponseField: `indoor_location` },
-      { command: `listen`, fn: `listen`, args: { phrases: [`hello`] }, response: { text: `hello` }, fullResponse:true },
+      { command: `listen`, fn: `listen`, args: { phrases: [`hello`] }, response: { text: `hello`, lang: `en-EN` }, fullResponse:true },
       { command: `terminate` },
       { command: `call`, fn: `placeCall` },
       { command: `answer`, fn: `answerCall`, args: { call_id: `123`} },
