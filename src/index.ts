@@ -538,9 +538,9 @@ class RelayEventAdapter {
   }
 
   async listen(phrases=[], { transcribe=true, alt_lang=Language.ENGLISH, timeout=60 }={}): Promise<Record<`text`, string> | Record<`audio`, string>> {
-    const response = await this._call(`listen`, { transcribe, phrases, timeout, alt_lang }, timeout * 1000)  as Record<`text`|`audio`, string>
+    const response = await this._call(`listen`, { transcribe, phrases, timeout, alt_lang }, timeout * 1000)  as Record<`text`|`audio`|`lang`, string>
     if (transcribe) {
-      return { text: response.text } as Record<`text`, string>
+      return { text: response.text, lang: response.lang } as Record<`text`|`lang`, string>
     } else {
       return { audio: response.audio } as Record<`audio`, string>
     }
