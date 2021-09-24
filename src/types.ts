@@ -124,6 +124,8 @@ export type Prompt = {
   id: string,
 }
 
+export type TrackEventParameters = Record<string, Record<string, string|number|boolean>>
+
 export type Device = {
   name: string,
   active_channel: string,

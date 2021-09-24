@@ -24,6 +24,7 @@ import {
   Mapper,
   AnyPrimitive,
   Msg,
+  TrackEventParameters,
 } from './types'
 import Queue from './queue'
 import RelayApi from './api'
@@ -68,7 +69,7 @@ class RelayEventAdapter {
   private websocket: LocalWebSocket | null = null
   private workQueue: Queue | null = null
   private handlers: WorkflowEventHandlers = {}
-  private defaultLogParameters: Record<string, string|number|boolean> = {}
+  private defaultAnalyticEventParameters: Record<string, string|number|boolean> = {}
 
   constructor(websocket: LocalWebSocket) {
     console.log(`creating event adapter`)
@@ -387,8 +388,22 @@ class RelayEventAdapter {
     await this._cast(`set_channel`, { channel_name: name, target, suppress_tts: suppressTTS, disable_home_channel: disableHomeChannel })
   }
 
-  async setHomeChannelState(target: string[], enabled: boolean): Promise<void> {
-    await this._cast(`set_home_channel_state`, { target, enabled })
+  async enableHomeChannel(target: string|string[]): Promise<void> {
+    await this._setHomeChannelState(target, true)
+  }
+
+  async disableHomeChannel(target: string|string[]): Promise<void> {
+    await this._setHomeChannelState(target, false)
+  }
+
+  async _setHomeChannelState(target: string|string[], enabled: boolean): Promise<void> {
+    if (Array.isArray(target)) {
+      await this._cast(`set_home_channel_state`, { target, enabled })
+    } else if (typeof target === `string`) {
+      await this._cast(`set_home_channel_state`, { target: [target], enabled })
+    } else {
+      throw new Error(`unknown target value type => ${typeof target}`)
+    }
   }
 
   async getGroupMembers(groupName: string): Promise<string[]> {
@@ -396,32 +411,32 @@ class RelayEventAdapter {
     return device_names
   }
 
-  async setDefaultLogParameters(params: Record<string, string|number|boolean>): Promise<void> {
-    this.defaultLogParameters = params
+  async setDefaultAnalyticEventParameters(params: Record<string, string|number|boolean>): Promise<void> {
+    this.defaultAnalyticEventParameters = params
   }
 
-  async logEvent(event: string, parameters: Record<string, Record<string, string|number|boolean>>): Promise<void> {
-    await this._cast(`log_message`, {
-      name: event,
+  async trackEvent(category: string, parameters?: TrackEventParameters): Promise<void> {
+    await this._cast(`log_analytics_event`, {
+      category,
       content_type: `application/vnd.relay.event.parameters+json`,
-      message: JSON.stringify({
-        ...this.defaultLogParameters,
+      analytics_content: {
+        ...this.defaultAnalyticEventParameters,
         ...parameters,
-      })
+      }
     })
   }
 
-  // async logUserEvent(event: string, target: string, parameters: Record<string, Record<string, string|number|boolean>>): Promise<void> {
-  //   await this._cast(`log_message`, {
-  //     name: event,
-  //     content_type: `application/vnd.relay.event.parameters+json`,
-  //     target,
-  //     message: JSON.stringify({
-  //       ...this.defaultLogParameters,
-  //       ...parameters,
-  //     })
-  //   })
-  // }
+  async trackUserEvent(category: string, target: string, parameters?: TrackEventParameters): Promise<void> {
+    await this._cast(`log_analytics_event`, {
+      target,
+      category,
+      content_type: `application/vnd.relay.event.parameters+json`,
+      analytics_content: {
+        ...this.defaultAnalyticEventParameters,
+        ...parameters,
+      }
+    })
+  }
 
   async setVar(name: string, value: string): Promise<void> {
     await this._cast(`set_var`, { name, value: toString(value) })

@@ -178,6 +178,12 @@ describe(`Events API Tests`, () => {
       { command: `hangup`, fn: `hangupCall`, args: { call_id: `123`} },
       { command: `device_power_off`, fn: `restartDevice`, args: { restart: true} },
       { command: `device_power_off`, fn: `powerDownDevice`, args: { restart: false} },
+      { command: `set_home_channel_state`, fn: `enableHomeChannel`, args: { target: `1`}, assertArgs: { target: [`1`], enabled: true } },
+      { command: `set_home_channel_state`, fn: `enableHomeChannel`, args: { target: [`1`]}, assertArgs: { target: [`1`], enabled: true } },
+      { command: `set_home_channel_state`, fn: `disableHomeChannel`, args: { target: `1`}, assertArgs: { target: [`1`], enabled: false } },
+      { command: `set_home_channel_state`, fn: `disableHomeChannel`, args: { target: [`1`]}, assertArgs: { target: [`1`], enabled: false } },
+      { command: `log_analytics_event`, fn: `trackEvent`, args: { category: `abc` }, assertArgs: { category: `abc`, content_type: `application/vnd.relay.event.parameters+json`, analytics_content: {} } },
+      { command: `log_analytics_event`, fn: `trackEvent`, args: { category: `abc`, parameters: { hello: `world` } }, assertArgs: { category: `abc`, content_type: `application/vnd.relay.event.parameters+json`, analytics_content: { hello: `world` } } },
     ]
 
     basicCommands.forEach(test => {
