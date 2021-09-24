@@ -62,6 +62,7 @@ export const isPlainObject = <Value>(value: unknown): value is Record<string | n
   return proto === null || proto === Object.prototype
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const mapDevice = (device: Record<string, any>): Device => {
 
   const info = device?.device_details?.device_info

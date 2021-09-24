@@ -2,12 +2,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const chai = require(`chai`)
 const chaiAsPromised = require(`chai-as-promised`)
-const { describe } = require("mocha")
+const { describe } = require(`mocha`)
 
 const WebSocket = require(`ws`)
 const { Event } = require(`../dist/enums.js`)
 const { relay } = require(`../dist/index.js`)
-const { noop, safeParse, toString, arrayMapper, numberArrayMapper, booleanMapper } = require(`../dist/utils.js`)
+const { arrayMapper, numberArrayMapper, booleanMapper } = require(`../dist/utils.js`)
 
 chai.use(chaiAsPromised)
 
@@ -135,7 +135,43 @@ describe(`Events API Tests`, () => {
       { command: `get_device_info`, fn: `getDeviceCoordinates`, assertArgs: { query: `latlong`, refresh: false }, response: { latlong: `hello` }, assertResponseField: `latlong` },
       { command: `get_device_info`, fn: `getDeviceLatLong`, assertArgs: { query: `latlong`, refresh: false }, response: { latlong: `hello` }, assertResponseField: `latlong` },
       { command: `get_device_info`, fn: `getDeviceIndoorLocation`, assertArgs: { query: `indoor_location`, refresh: false }, response: { indoor_location: `hello` }, assertResponseField: `indoor_location` },
-      { command: `listen`, fn: `listen`, args: { phrases: [`hello`] }, response: { text: `hello`, lang: `en-EN` }, fullResponse:true },
+      { command: `listen`, fn: `listen`, args: { phrases: [`hello`] }, response: { text: `hello`, lang:`en-EN` }, fullResponse:true },
+      {
+        command: `listen`,
+        fn: `listen`,
+        args: {
+          phrases: [`hello`],
+          options: { transcribe: false }
+        },
+        assertArgs: {
+          transcribe: false,
+          phrases: [ `hello` ],
+          timeout: 60,
+          alt_lang: `en-US`
+        },
+        response: {
+          audio: `some base64 encoded value`
+        },
+        fullResponse:true
+      },
+      {
+        command: `listen`,
+        fn: `listen`,
+        args: {
+          phrases: [`hello`],
+          options: { alt_lang: `fr-Fr` }
+        },
+        assertArgs: {
+          transcribe: true,
+          phrases: [ `hello` ],
+          timeout: 60,
+          alt_lang: `fr-Fr`},
+        response: {
+          text: `some base64 encoded value`,
+          lang: `fr-Fr`
+        },
+        fullResponse:true
+      },
       { command: `terminate` },
       { command: `call`, fn: `placeCall` },
       { command: `answer`, fn: `answerCall`, args: { call_id: `123`} },
