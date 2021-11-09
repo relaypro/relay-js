@@ -62,11 +62,13 @@ export enum DeviceInfoQuery {
   INDOOR_LOCATION = `indoor_location`,
   LOCATION = `location`,
   USERNAME = `username`,
+  LOCATION_ENABLED = `location_enabled`,
 }
 
 export enum DeviceInfoField {
   LABEL = `label`,
   CHANNEL = `channel`,
+  LOCATION_ENABLED = `location_enabled`,
 }
 
 export enum DeviceType {

@@ -25,6 +25,7 @@ import {
   AnyPrimitive,
   Msg,
   TrackEventParameters,
+  UnregisterRequest,
 } from './types'
 import Queue from './queue'
 import RelayApi from './api'
@@ -319,7 +320,7 @@ class RelayEventAdapter {
   }
 
   private async _getDeviceInfo(query: enums.DeviceInfoQuery, refresh=false) {
-    const response = await this._call(`get_device_info`, { query, refresh }, refresh ? REFRESH_TIMEOUT : TIMEOUT)  as Record<string, string|number|number[]>
+    const response = await this._call(`get_device_info`, { query, refresh }, refresh ? REFRESH_TIMEOUT : TIMEOUT)  as Record<string, string|number|number[]|boolean>
     return response[query]
   }
 
@@ -333,6 +334,10 @@ class RelayEventAdapter {
 
   async getDeviceId(): Promise<string> {
     return await this._getDeviceInfo(DeviceInfoQuery.ID) as string
+  }
+
+  async getDeviceLocationEnabled(): Promise<boolean> {
+    return await this._getDeviceInfo(DeviceInfoQuery.LOCATION_ENABLED) as boolean
   }
 
   async getDeviceAddress(refresh: boolean): Promise<string> {
@@ -379,6 +384,14 @@ class RelayEventAdapter {
     await this.setDeviceInfo(DeviceInfoField.CHANNEL, channel)
   }
 
+  async enableLocation(): Promise<void> {
+    await this.setUserProfile(DeviceInfoField.LOCATION_ENABLED, true)
+  }
+
+  async disableLocation(): Promise<void> {
+    await this.setUserProfile(DeviceInfoField.LOCATION_ENABLED, false)
+  }
+
   async setDeviceMode(mode: `panic` | `alarm` | `none`): Promise<void>;
   async setDeviceMode(mode: `panic` | `alarm` | `none`, target?: string[]): Promise<void> {
     await this._cast(`set_device_mode`, { mode, target })
@@ -419,7 +432,7 @@ class RelayEventAdapter {
     await this._cast(`log_analytics_event`, {
       category,
       content_type: `application/vnd.relay.event.parameters+json`,
-      analytics_content: {
+      content: {
         ...this.defaultAnalyticEventParameters,
         ...parameters,
       }
@@ -600,8 +613,12 @@ class RelayEventAdapter {
     await this._cast(`hangup`, this._buildCallIdRequestOrThrow(callRequest))
   }
 
-  async register(request: RegisterRequest): Promise<void> {
+  async registerForCalls(request: RegisterRequest): Promise<void> {
     await this._cast(`register`, request)
+  }
+
+  async unregisterForCalls(request: UnregisterRequest): Promise<void> {
+    await this.registerForCalls({ ...request, expires: 0 })
   }
 
   async getUnreadInboxSize(): Promise<number> {

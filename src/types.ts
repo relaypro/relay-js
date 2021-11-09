@@ -91,19 +91,24 @@ export type RegisterRequest = {
   expires?: number,
 }
 
+export type UnregisterRequest = Omit<RegisterRequest, `expires`>
+
 export type BaseCall = {
   call_id: string
 }
 export type StartedCall = BaseCall & {
   device_id: string,
   device_name: string,
+  uri: string,
 }
 export type PlaceCall = Partial<Omit<StartedCall, `call_id`>>
 export type ReceivedCall = StartedCall & {
   start_time_epoch: number,
   direction: CallDirection,
+  onnet: boolean,
 }
 export type RingingCall = ReceivedCall
+export type ProgressingCall = ReceivedCall
 export type ConnectedCall = ReceivedCall & {
   connect_time_epoch: number,
 }
