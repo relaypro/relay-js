@@ -2,12 +2,18 @@ export enum Event {
   ERROR = `error`,
   START = `start`,
   STOP = `stop`,
+  INTERACTION_LIFECYCLE = `interaction_lifecycle`,
+  INTERACTION_STARTED = `interaction_started`,
+  INTERACTION_RESUMED = `interaction_resumed`,
+  INTERACTION_SUSPENDED = `interaction_suspended`,
+  INTERACTION_ENDED = `interaction_ended`,
+  INTERACTION_FAILED = `interaction_failed`,
   BUTTON = `button`,
   TIMER = `timer`,
   NOTIFICATION = `notification`,
   INCIDENT = `incident`,
-  PROMPT_START = `prompt_start`,
-  PROMPT_STOP = `prompt_stop`,
+  PROMPT = `prompt`,
+  SPEECH = `speech`,
   CALL_RINGING = `call_ringing`,
   CALL_CONNECTED = `call_connected`,
   CALL_DISCONNECTED = `call_disconnected`,
@@ -30,6 +36,7 @@ export enum Taps {
   SINGLE = `single`,
   DOUBLE = `double`,
   TRIPLE = `triple`,
+  LONG = `long`,
 }
 
 export enum Language {
@@ -50,6 +57,10 @@ export enum Language {
   NORWEGIAN = `nb-NO`,
   DUTCH = `nl-NL`,
   CHINESE = `zh`,
+  ARABIC = `ar`,
+  VIETNAMESE = `vi-VN`,
+  INDONESIAN = `id-ID`,
+  FILIPINO = `fil-PH`,
 }
 
 export enum DeviceInfoQuery {

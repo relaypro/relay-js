@@ -1,34 +1,38 @@
-import WebSocket, { OPEN } from 'ws'
+import { OPEN, RawData, Server } from 'ws'
 
 import * as enums from './enums'
 
-import { safeParse, makeId, filterInt, toString, arrayMapper, numberArrayMapper } from './utils'
+import { safeParse, makeId, filterInt, toString, arrayMapper, numberArrayMapper, isMatch } from './utils'
 
-import { PORT, HEARTBEAT, TIMEOUT, REFRESH_TIMEOUT, NOTIFICATION_TIMEOUT, EVENT_TIMEOUT } from './constants'
+import { PORT, HEARTBEAT, TIMEOUT, REFRESH_TIMEOUT, NOTIFICATION_TIMEOUT, EVENT_TIMEOUT, NON_INTERACTIVE_ACTIONS, ERROR_RESPONSE } from './constants'
 import {
-  BaseCall, ButtonEvent, ConnectedCall, DisconnectedCall, FailedCall, ReceivedCall, StartedCall,
-  NotificationEvent,
   NotificationOptions,
-  IncidentEvent,
   LocalWebSocket,
   Options,
   Relay, Workflow,
   LedIndex,
   LedEffect,
   LedInfo,
-  PlaceCall,
-  Prompt,
-  RingingCall,
   RegisterRequest,
-  StopEvent,
   Mapper,
   AnyPrimitive,
-  Msg,
   TrackEventParameters,
   UnregisterRequest,
+  InteractionOptions,
+  Target,
+  TargetUris,
+  SingleTarget,
+  SpeechEvent,
+  BaseCallEvent,
+  RawWorkflowEvent,
+  WorkflowEventHandlers,
+  WorkflowEvent,
+  PlaceCall,
+  ListenResponse,
 } from './types'
 import Queue from './queue'
-import RelayApi from './api'
+import * as Uri from './uri'
+// import RelayApi from './api'
 
 const {
   Event,
@@ -40,31 +44,21 @@ const {
 
 export * from './enums'
 
-type WorkflowEventHandlers = {
-  [Event.ERROR]?: (error: Error) => Promise<void>,
-  [Event.START]?: (event: Record<string, never>) => Promise<void>,
-  [Event.STOP]?: (event: StopEvent) => Promise<void>,
-  [Event.BUTTON]?: (event: ButtonEvent) => Promise<void>,
-  [Event.TIMER]?: (event: Record<`name`, string>) => Promise<void>,
-  [Event.NOTIFICATION]?: (event: NotificationEvent) => Promise<void>,
-  [Event.INCIDENT]?: (event: IncidentEvent) => Promise<void>,
-  [Event.PROMPT_START]?: (event: Prompt) => Promise<void>,
-  [Event.PROMPT_STOP]?: (event: Prompt) => Promise<void>,
-  [Event.CALL_RINGING]?: (event: RingingCall) => Promise<void>,
-  [Event.CALL_CONNECTED]?: (event: ConnectedCall) => Promise<void>,
-  [Event.CALL_DISCONNECTED]?: (event: DisconnectedCall) => Promise<void>,
-  [Event.CALL_FAILED]?: (event: FailedCall) => Promise<void>,
-  [Event.CALL_RECEIVED]?: (event: ReceivedCall) => Promise<void>,
-  [Event.CALL_START_REQUEST]?: (event: StartedCall) => Promise<void>,
-}
+NON_INTERACTIVE_ACTIONS
 
 const createWorkflow = (fn: Workflow): Workflow => fn
 
 const WORKFLOW_EVENT_REGEX = /^wf_api_(\w+)_event$/
 
-type filter = (event: Msg) => boolean
+type Filter = (event: RawWorkflowEvent) => boolean
+// type Matches = {
+//   request_id?: string,
+//   id?: string,
+// }
 
-const all: filter = () => true
+type Matches = Record<string, string|number|boolean>
+
+const all: Filter = () => true
 
 class RelayEventAdapter {
   private websocket: LocalWebSocket | null = null
@@ -81,13 +75,13 @@ class RelayEventAdapter {
     this.websocket.on(`message`, this.onMessage.bind(this))
   }
 
-  on<U extends keyof WorkflowEventHandlers>(event: U, listener: WorkflowEventHandlers[U]): void {
-    this.off(event)
-    this.handlers[event] = listener
+  on<U extends keyof WorkflowEventHandlers>(eventName: U, listener: WorkflowEventHandlers[U]): void {
+    this.off(eventName)
+    this.handlers[eventName] = listener
   }
 
-  off<U extends keyof WorkflowEventHandlers>(event: U): void {
-    const { [event]: handler, ...rest } = this.handlers
+  off<U extends keyof WorkflowEventHandlers>(eventName: U): void {
+    const { [eventName]: handler, ...rest } = this.handlers
     if (handler) {
       this.handlers = rest
     }
@@ -97,11 +91,16 @@ class RelayEventAdapter {
     this.websocket = null
   }
 
-  private onError(error: Error): void {
+  private onError(error: unknown): void {
     this.workQueue?.enqueue(async () => {
       if (this.handlers?.[Event.ERROR]) {
         try {
-          await this.handlers?.[Event.ERROR]?.(error)
+          if (error instanceof Error) {
+            await this.handlers?.[Event.ERROR]?.({ error })
+          } else {
+            console.log(`\`error\` not an instance of Error`)
+            console.error(error)
+          }
         } catch(err) {
           console.log(`\`error\` handler failed`)
           console.error(err)
@@ -112,28 +111,43 @@ class RelayEventAdapter {
     })
   }
 
-  private onMessage(msg: string): void {
-    const message = safeParse(msg)
-    if (this.workQueue && message?._type && !message?._id) { // not interested in response events (marked by correlation id)
-      const eventNameParts = message._type.match(WORKFLOW_EVENT_REGEX)
-      if (eventNameParts?.[1]) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { _type, ...args } = message
-        this.workQueue?.enqueue(async () => {
-          const event = eventNameParts?.[1] as keyof WorkflowEventHandlers
-          try {
-            await this.handlers?.[event]?.(args as never)
-          } catch (err) {
-            this.onError(err)
-          }
-        })
-      } else {
-        console.log(`Unknown message =>`, message)
+  private onMessage(data: RawData, isBinary: boolean): void {
+    if (isBinary) {
+      console.warn(`Unexpected binary data over WebSocket`)
+    } else {
+      const message = safeParse(data.toString())
+      console.log(`onMessage`, message)
+      if (this.workQueue && message?._type && !message?._id) { // not interested in response events (marked by correlation id)
+        const eventNameParts = message._type.match(WORKFLOW_EVENT_REGEX)
+        if (eventNameParts?.[1]) {
+          this.workQueue?.enqueue(async () => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { _type, ...args } = message
+            let event = eventNameParts?.[1] as keyof WorkflowEventHandlers
+
+            // if app doesn't explicity provide the broader `interaction_lifecycle`,
+            // narrow to a specific interaction type handler
+            if (event?.includes(`interaction_lifecycle`) && !this.handlers?.[event]) {
+              event = `interaction_${message.type}` as keyof WorkflowEventHandlers
+            }/* else if (event?.includes(`prompt`)) {
+              event = `prompt_${message.type}` as keyof WorkflowEventHandlers
+            }*/
+
+            try {
+              await this.handlers?.[event]?.(args as never)
+            } catch (err) {
+              this.onError(err)
+            }
+          })
+        } else {
+          console.log(`Unknown message =>`, message)
+        }
       }
     }
+
   }
 
-  private async _send(type: string, payload={}, id?: string): Promise<void|Record<string, unknown>> {
+  private async _send(id: string, type: string, payload={}, target: TargetUris|undefined): Promise<void|Record<string, unknown>> {
     return new Promise((resolve, reject) => {
       if (!(this.websocket?.isAlive && this.websocket?.readyState === OPEN)) {
         console.error({
@@ -145,12 +159,15 @@ class RelayEventAdapter {
       }
 
       const message = {
-        _id: id ?? makeId(),
-        _type: `wf_api_${type}_request`,
+        _id: id,
+        _type: type,
+        _target: target,
         ...payload,
       }
 
       const messageStr = JSON.stringify(message)
+
+      console.info(`_send action =>`, message)
 
       this.websocket.send(messageStr, (err) => {
         if (err) {
@@ -162,32 +179,41 @@ class RelayEventAdapter {
     })
   }
 
-  private async _sendReceive(type: string, payload={}, timeout=TIMEOUT): Promise<void|Record<string, unknown>> {
-    const id = makeId()
+  private async _sendReceive(id: string, type: string, payload={}, timeout=TIMEOUT, targetUris: TargetUris|undefined): Promise<void | WorkflowEvent> {
+    const typeBase = `wf_api_${type}`
+    const typeRequest = `${typeBase}_request`
+    const typeResponse = `${typeBase}_response`
 
-    await this._send(type, payload, id)
+    await this._send(id, typeRequest, payload, targetUris)
 
     const event = await this._waitForEventCondition(
-      (event: Msg) => {
-        return ([`wf_api_${type}_response`, `wf_api_error_response`].includes(event._type)) && id === event._id
-      },
+      (event: RawWorkflowEvent) => (
+        ([typeResponse, ERROR_RESPONSE].includes(event._type)) && id === event._id
+      ),
       timeout
     )
 
     const { _id, _type, error, ...params } = event
     console.log(`processing event ${_id} of type ${_type}`)
+    // console.info(`_sendReceive action response =>`, event)
 
-    if (_type === `wf_api_${type}_response`) {
-      return Object.keys(params).length > 0 ? params as Record<string, unknown> : undefined
-    } else if (_type === `wf_api_error_response`) {
-      throw new Error(error ?? `Unknown error`)
+    if (_type === typeResponse) {
+      return Object.keys(params).length > 0 ? params as WorkflowEvent : undefined
+    } else if (_type === ERROR_RESPONSE) {
+      if (error instanceof Error) {
+        throw error
+      } else if (typeof error === `string`) {
+        throw new Error(error)
+      } else {
+        throw new Error(`Unknown error`)
+      }
     } else {
       console.error(`Unknown response`, event)
       throw new Error(`Unknown response`)
     }
   }
 
-  private async _waitForEventCondition(filter: filter=all, timeout=EVENT_TIMEOUT): Promise<Msg> {
+  private async _waitForEventCondition(filter: Filter=all, timeout=EVENT_TIMEOUT): Promise<RawWorkflowEvent> {
     return new Promise((resolve, reject) => {
       const timeoutHandle = setTimeout(() => {
         this.websocket?.off?.(`message`, responseListener)
@@ -197,8 +223,11 @@ class RelayEventAdapter {
       const responseListener = (msg: string) => {
         clearTimeout(timeoutHandle)
         const event = safeParse(msg)
+        console.info(`_waitForEventCondition#responseListener =>`, event)
         if (event) {
-          if (filter(event)) {
+          if (event._type === `wf_api_progress_event`) {
+            // resolve(this._waitForEventCondition(filter))
+          } else if (filter(event)) {
             // stop listening as soon as we have a correlated response
             this.websocket?.off(`message`, responseListener)
             resolve(event)
@@ -210,11 +239,17 @@ class RelayEventAdapter {
     })
   }
 
-  async _waitForEventAndOverride<U extends keyof WorkflowEventHandlers>(eventName: U): Promise<void> {
+  async _waitForEventMatch<U extends keyof WorkflowEventHandlers>(eventName: U, matches: Matches={}): Promise<RawWorkflowEvent> {
     const eventHandler = this.handlers[eventName]
     try {
       delete this.handlers[eventName]
-      await this._waitForEventCondition(event => event._type === `wf_api_${eventName}_event`)
+      // match event name and matching object
+      return this._waitForEventCondition(event => {
+        const _matches = { _type: `wf_api_${eventName}_event`, ...matches }
+        const doesMatch = isMatch(event, _matches)
+        console.log(`_waitForEventCondition`, { event, eventName, _matches, doesMatch  })
+        return doesMatch
+      })
     } finally {
       if (eventHandler !== undefined) {
         this.handlers[eventName] = eventHandler
@@ -223,12 +258,324 @@ class RelayEventAdapter {
   }
 
   private async _cast(type: string, payload={}, timeout=TIMEOUT): Promise<void> {
-    await this._sendReceive(type, payload, timeout)
+    await this._sendReceive(makeId(), type, payload, timeout, undefined)
   }
 
-  private async _call(type: string, payload={}, timeout=TIMEOUT): Promise<Record<string, unknown>> {
-    return (await this._sendReceive(type, payload, timeout)) as Record<string, unknown>
+  private async _castTargetWithId(id: string, target: Target, type: string, payload={}, timeout=TIMEOUT): Promise<void> {
+    await this._sendReceive(id, type, payload, timeout, Uri.makeTargetUris(target))
   }
+
+  private async _castTarget(target: Target, type: string, payload={}, timeout=TIMEOUT): Promise<void> {
+    /*
+      if (NON_INTERACTIVE_ACTIONS.includes(_type)) {
+        if (target === undefined || target.uris.every(t => ))
+      }
+    */
+    await this._sendReceive(makeId(), type, payload, timeout, Uri.makeTargetUris(target))
+  }
+
+  // private async _castInteractiveTarget(target: Target, type: string, payload={}, timeout=TIMEOUT): Promise<void> {
+  //   if (NON_INTERACTIVE_ACTIONS.includes(type)) {
+  //     throw new Error(`action-type-not-interactive => ${type}`)
+  //   } else if (false) {
+
+  //     // dfd
+  //   } else {
+  //     await this._sendReceive(type, payload, timeout, Uri.makeTargetUris(target))
+  //   }
+  // }
+
+  private async _call(type: string, payload={}, timeout=TIMEOUT): Promise<Record<string, unknown>> {
+    return (await this._sendReceive(makeId(), type, payload, timeout, undefined)) as Record<string, unknown>
+  }
+
+  private async _callTarget(target: Target, type: string, payload={}, timeout=TIMEOUT): Promise<Record<string, unknown>> {
+    return (await this._sendReceive(makeId(), type, payload, timeout, Uri.makeTargetUris(target))) as Record<string, unknown>
+  }
+
+  // START TARGETED ACTIONS
+
+  // START MULTI-TARGET ACTIONS
+  // FOLLOWING ACTIONS __DO__ REQUIRE TARGET
+  // THEY MUST RUN IN THE CONTEXT OF AN INTERACTION
+
+  async startInteraction(target: Target, name: string, options: InteractionOptions): Promise<void> {
+    await this._castTarget(target, `start_interaction`, { name, options })
+  }
+
+  async say(target: Target, text: string, lang=Language.ENGLISH): Promise<string> {
+    const { id } = (await this._callTarget(target, `say`, { text, lang })) as Record<`id`, string>
+    return id
+  }
+
+  async sayAndWait(target: Target, text: string, lang=Language.ENGLISH): Promise<string> {
+    const id = await this.say(target, text, lang)
+    await this._waitForEventMatch(Event.PROMPT, { id, type: `stopped` })
+    return id
+  }
+
+  async play(target: Target, filename: string): Promise<string> {
+    const { id } = (await this._callTarget(target, `play`, { filename })) as Record<`id`, string>
+    return id
+  }
+
+  async playAndWait(target: Target, filename: string): Promise<string> {
+    const id = await this.play(target, filename)
+    await this._waitForEventMatch(Event.PROMPT, { id, type: `stopped` })
+    return id
+  }
+
+  // async stopPlayback(id?: string|string[]): Promise<void> {
+  //   if (Array.isArray(id)) {
+  //     await this._cast(`stop_playback`, { ids: id })
+  //   } else if (typeof id === `string`) {
+  //     await this._cast(`stop_playback`, { ids: [id] })
+  //   } else {
+  //     await this._cast(`stop_playback`, {})
+  //   }
+  // }
+
+  async vibrate(target: Target, pattern: number[]): Promise<void> {
+    await this._castTarget(target, `vibrate`, { pattern })
+  }
+
+  async switchLedOn(target: Target, led: LedIndex, color: string): Promise<void> {
+    await this.ledAction(target, `static`, { colors: { [`${led}`]: color } })
+  }
+
+  async switchAllLedOn(target: Target, color: string): Promise<void> {
+    await this.ledAction(target, `static`, { colors: { ring: color } })
+  }
+
+  async switchAllLedOff(target: Target): Promise<void> {
+    await this.ledAction(target, `off`, {})
+  }
+
+  async rainbow(target: Target, rotations=-1): Promise<void> {
+    await this.ledAction(target, `rainbow`, { rotations })
+  }
+
+  async rotate(target: Target, color=`FFFFFF`): Promise<void> {
+    await this.ledAction(target, `rotate`, { rotations: -1, colors: { [`1`]: color } })
+  }
+
+  async flash(target: Target, color=`0000FF`): Promise<void> {
+    await this.ledAction(target, `flash`, { count: -1, colors: { ring: color } })
+  }
+
+  async breathe(target: Target, color=`0000FF`): Promise<void> {
+    await this.ledAction(target, `breathe`, { count: -1, colors: { ring: color } })
+  }
+
+  async ledAction(target: Target, effect: LedEffect, args: LedInfo): Promise<void> {
+    await this._castTarget(target, `set_led`, { effect, args })
+  }
+
+  async enableHomeChannel(target: Target): Promise<void> {
+    await this._setHomeChannelState(target, true)
+  }
+
+  async disableHomeChannel(target: Target): Promise<void> {
+    await this._setHomeChannelState(target, false)
+  }
+
+  async _setHomeChannelState(target: Target, enabled: boolean): Promise<void> {
+    await this._castTarget(target, `set_home_channel_state`, { enabled })
+  }
+
+  private async _sendNotification(target: Target, type: enums.Notification, text: undefined|string, name?: string, pushOptions?: NotificationOptions): Promise<void> {
+    await this._castTarget(target, `notification`, { type, name, text, push_opts: pushOptions }, NOTIFICATION_TIMEOUT)
+  }
+
+  async broadcast(target: Target, name: string, text: string, pushOptions?: NotificationOptions): Promise<void> {
+    await this._sendNotification(target, Notification.BROADCAST, text, name, pushOptions)
+  }
+
+  async cancelBroadcast(target: Target, name: string): Promise<void> {
+    await this._sendNotification(target, Notification.CANCEL, undefined, name)
+  }
+
+  async notify(target: Target, name: string, text: string, pushOptions?: NotificationOptions): Promise<void> {
+    await this._sendNotification(target, Notification.NOTIFY, text, name, pushOptions)
+  }
+
+  async cancelNotify(target: Target, name: string): Promise<void> {
+    await this._sendNotification(target, Notification.CANCEL, undefined, name)
+  }
+
+  async alert(target: Target, name: string, text: string, pushOptions?: NotificationOptions): Promise<void> {
+    await this._sendNotification(target, Notification.ALERT, text, name, pushOptions)
+  }
+
+  async cancelAlert(target: Target, name: string): Promise<void> {
+    await this._sendNotification(target, Notification.CANCEL, undefined, name)
+  }
+
+  async restartDevice(target: Target): Promise<void> {
+    await this._castTarget(target, `device_power_off`, { restart: true })
+  }
+
+  async powerDownDevice(target: Target): Promise<void> {
+    await this._castTarget(target, `device_power_off`, { restart: false })
+  }
+
+  // END MULTI-TARGET ACTIONS
+
+  // START SINGLE-TARGET ACTIONS
+
+  private async _getDeviceInfo(target: SingleTarget, query: enums.DeviceInfoQuery, refresh=false) {
+    const response = await this._callTarget(target, `get_device_info`, { query, refresh }, refresh ? REFRESH_TIMEOUT : TIMEOUT)  as Record<string, string|number|number[]|boolean>
+    return response[query]
+  }
+
+  // TODO: is this action necessary?
+  async getUserProfile(target: SingleTarget): Promise<string> {
+    return await this._getDeviceInfo(target, DeviceInfoQuery.USERNAME) as string
+  }
+
+  // TODO: is this action necessary?
+  async getDeviceName(target: SingleTarget): Promise<string> {
+    return await this._getDeviceInfo(target, DeviceInfoQuery.NAME) as string
+  }
+
+  // TODO: is this action necessary?
+  async getDeviceId(target: SingleTarget): Promise<string> {
+    return await this._getDeviceInfo(target, DeviceInfoQuery.ID) as string
+  }
+
+  async getDeviceLocation(target: SingleTarget, refresh: boolean): Promise<string> {
+    return await this._getDeviceInfo(target, DeviceInfoQuery.ADDRESS, refresh) as string
+  }
+
+  async getDeviceLocationEnabled(target: SingleTarget): Promise<boolean> {
+    return await this._getDeviceInfo(target, DeviceInfoQuery.LOCATION_ENABLED) as boolean
+  }
+
+  async getDeviceAddress(target: SingleTarget, refresh: boolean): Promise<string> {
+    return await this.getDeviceLocation(target, refresh)
+  }
+
+  async getDeviceCoordinates(target: SingleTarget, refresh: boolean): Promise<number[]> {
+    return await this._getDeviceInfo(target, DeviceInfoQuery.COORDINATES, refresh) as number[]
+  }
+
+  async getDeviceLatLong(target: SingleTarget, refresh: boolean): Promise<number[]> {
+    return await this.getDeviceCoordinates(target, refresh) as number[]
+  }
+
+  async getDeviceIndoorLocation(target: SingleTarget, refresh: boolean): Promise<string> {
+    return await this._getDeviceInfo(target, DeviceInfoQuery.INDOOR_LOCATION, refresh) as string
+  }
+
+  async getDeviceBattery(target: SingleTarget, refresh: boolean): Promise<number> {
+    return await this._getDeviceInfo(target, DeviceInfoQuery.BATTERY, refresh) as number
+  }
+
+  async getDeviceType(target: SingleTarget): Promise<enums.DeviceType> {
+    return await this._getDeviceInfo(target, DeviceInfoQuery.TYPE) as enums.DeviceType
+  }
+
+  private async setDeviceInfo(target: SingleTarget, field: enums.DeviceInfoField, value: string): Promise<void> {
+    await this._castTarget(target, `set_device_info`, { field, value })
+  }
+
+  async setDeviceName(target: SingleTarget, name: string): Promise<void> {
+    await this.setDeviceInfo(target, DeviceInfoField.LABEL, name)
+  }
+
+  // TODO: is channel a URI?
+  async setDeviceChannel(target: SingleTarget, channel: string): Promise<void> {
+    await this.setDeviceInfo(target, DeviceInfoField.CHANNEL, channel)
+  }
+
+  // TODO: wf_api_set_device_info_request's location_enabled string booleans?
+  async enableLocation(target: SingleTarget): Promise<void> {
+    await this.setDeviceInfo(target, DeviceInfoField.LOCATION_ENABLED, `true`)
+  }
+
+  async disableLocation(target: SingleTarget): Promise<void> {
+    await this.setDeviceInfo(target, DeviceInfoField.LOCATION_ENABLED, `false`)
+  }
+
+  async setDeviceMode(target: SingleTarget, mode: `panic` | `alarm` | `none`): Promise<void> {
+    await this._castTarget(target, `set_device_mode`, { mode })
+  }
+
+  async setChannel(target: SingleTarget, name:string, { suppressTTS=false, disableHomeChannel=false }: { suppressTTS?: boolean, disableHomeChannel?: false }={}): Promise<void> {
+    await this._castTarget(target, `set_channel`, { channel_name: name, suppress_tts: suppressTTS, disable_home_channel: disableHomeChannel })
+  }
+
+  async listen(target: SingleTarget, phrases=[], { transcribe=true, alt_lang=Language.ENGLISH, timeout=60 }={}): Promise<ListenResponse> {
+    const request_id = makeId()
+    await this._castTargetWithId(request_id, target, `listen`, {
+      transcribe,
+      phrases,
+      timeout,
+      alt_lang,
+    }, timeout * 1000)
+
+    const response = await this._waitForEventMatch(Event.SPEECH, { request_id }) as SpeechEvent
+
+    console.log(`listen`, response)
+
+    if (transcribe) {
+      return { text: response.text, lang: response.lang }
+    } else {
+      return { audio: response.audio }
+    }
+  }
+
+  private _buildCallIdRequestOrThrow(arg: string | BaseCallEvent): BaseCallEvent {
+    if (typeof arg === `string`) {
+      return { call_id: arg }
+    } else if (typeof arg === `object`) {
+      if (typeof arg.call_id === `string`) {
+        return { call_id: arg.call_id }
+      } else {
+        throw new Error(`missing required parameter`)
+      }
+    } else {
+      throw new Error(`invalid argument type`)
+    }
+  }
+
+  async placeCall(target: SingleTarget, call: PlaceCall): Promise<void> {
+    await this._castTarget(target, `call`, call)
+  }
+
+  async answerCall(target: SingleTarget, callRequest: string | BaseCallEvent): Promise<void> {
+    await this._castTarget(target, `answer`, this._buildCallIdRequestOrThrow(callRequest))
+  }
+
+  async hangupCall(target: SingleTarget, callRequest: string | BaseCallEvent): Promise<void> {
+    await this._castTarget(target, `hangup`, this._buildCallIdRequestOrThrow(callRequest))
+  }
+
+  async registerForCalls(target: SingleTarget, request: RegisterRequest): Promise<void> {
+    await this._castTarget(target, `register`, request)
+  }
+
+  async unregisterForCalls(target: SingleTarget, request: UnregisterRequest): Promise<void> {
+    await this.registerForCalls(target, { ...request, expires: 0 })
+  }
+
+  async getUnreadInboxSize(target: SingleTarget): Promise<number> {
+    const { count } = await this._callTarget(target, `inbox_count`) as Record<`count`, string>
+    return filterInt(count)
+  }
+
+  async playUnreadInboxMessages(target: SingleTarget): Promise<void> {
+    await this._castTarget(target, `play_inbox_messages`)
+  }
+
+  // END SINGLE-TARGET ACTIONS
+
+  // END TARGETED ACTIONS
+
+  // START NON-TARGETED ACTIONS
+  // FOLLOWING ACTIONS __DO NOT__ REQUIRE TARGET
+  // THEY RUN IN THE CONTEXT OF THE WORKFLOW
+  // AND NOT AN INTERACTION / CHANNEL
 
   async setTimer(type: enums.TimerType, name: string, timeout=60, timeout_type: enums.TimeoutType): Promise<void> {
     await this._cast(`set_timer`, { type, name, timeout, timeout_type })
@@ -238,190 +585,21 @@ class RelayEventAdapter {
     await this._cast(`clear_timer`, { name })
   }
 
-  async restartDevice(): Promise<void> {
-    await this._cast(`device_power_off`, { restart: true })
-  }
-
-  async powerDownDevice(): Promise<void> {
-    await this._cast(`device_power_off`, { restart: false })
-  }
-
-  async say(text: string, lang=Language.ENGLISH): Promise<string> {
-    const { id } = (await this._call(`say`, { text, lang })) as Record<`id`, string>
-    return id
-  }
-
-  async sayAndWait(text: string, lang=Language.ENGLISH): Promise<string> {
-    const id = await this.say(text, lang)
-    await this._waitForEventAndOverride(Event.PROMPT_STOP)
-    return id
-  }
-
-  async play(filename: string): Promise<string> {
-    const { id } = (await this._call(`play`, { filename })) as Record<`id`, string>
-    return id
-  }
-
-  async playAndWait(filename: string): Promise<string> {
-    const id = await this.play(filename)
-    await this._waitForEventAndOverride(Event.PROMPT_STOP)
-    return id
-  }
-
-  async stopPlayback(id?: string|string[]): Promise<void> {
-    if (Array.isArray(id)) {
-      await this._cast(`stop_playback`, { ids: id })
-    } else if (typeof id === `string`) {
-      await this._cast(`stop_playback`, { ids: [id] })
-    } else {
-      await this._cast(`stop_playback`, {})
-    }
-  }
-
   async translate(text: string, from=Language.ENGLISH, to=Language.SPANISH): Promise<string> {
     const { text: translatedText } = (await this._call(`translate`, { text, from_lang: from, to_lang: to})) as Record<`text`, string>
     return translatedText
   }
 
-  async vibrate(pattern: number[]): Promise<void> {
-    await this._cast(`vibrate`, { pattern })
-  }
-
-  async switchLedOn(led: LedIndex, color: string): Promise<void> {
-    await this.ledAction(`static`, { colors: { [`${led}`]: color } })
-  }
-
-  async switchAllLedOn(color: string): Promise<void> {
-    await this.ledAction(`static`, { colors: { ring: color } })
-  }
-
-  async switchAllLedOff(): Promise<void> {
-    await this.ledAction(`off`, {})
-  }
-
-  async rainbow(rotations=-1): Promise<void> {
-    await this.ledAction(`rainbow`, { rotations })
-  }
-
-  async rotate(color=`FFFFFF`): Promise<void> {
-    await this.ledAction(`rotate`, { rotations: -1, colors: { [`1`]: color } })
-  }
-
-  async flash(color=`0000FF`): Promise<void> {
-    await this.ledAction(`flash`, { count: -1, colors: { ring: color } })
-  }
-
-  async breathe(color=`0000FF`): Promise<void> {
-    await this.ledAction(`breathe`, { count: -1, colors: { ring: color } })
-  }
-
-  async ledAction(effect: LedEffect, args: LedInfo): Promise<void> {
-    await this._cast(`set_led`, { effect, args })
-  }
-
-  private async _getDeviceInfo(query: enums.DeviceInfoQuery, refresh=false) {
-    const response = await this._call(`get_device_info`, { query, refresh }, refresh ? REFRESH_TIMEOUT : TIMEOUT)  as Record<string, string|number|number[]|boolean>
-    return response[query]
-  }
-
-  async getDeviceName(): Promise<string> {
-    return await this._getDeviceInfo(DeviceInfoQuery.NAME) as string
-  }
-
-  async getDeviceLocation(refresh: boolean): Promise<string> {
-    return await this._getDeviceInfo(DeviceInfoQuery.ADDRESS, refresh) as string
-  }
-
-  async getDeviceId(): Promise<string> {
-    return await this._getDeviceInfo(DeviceInfoQuery.ID) as string
-  }
-
-  async getDeviceLocationEnabled(): Promise<boolean> {
-    return await this._getDeviceInfo(DeviceInfoQuery.LOCATION_ENABLED) as boolean
-  }
-
-  async getDeviceAddress(refresh: boolean): Promise<string> {
-    return await this.getDeviceLocation(refresh)
-  }
-
-  async getDeviceCoordinates(refresh: boolean): Promise<number[]> {
-    return await this._getDeviceInfo(DeviceInfoQuery.COORDINATES, refresh) as number[]
-  }
-
-  async getDeviceLatLong(refresh: boolean): Promise<number[]> {
-    return await this.getDeviceCoordinates(refresh) as number[]
-  }
-
-  async getDeviceIndoorLocation(refresh: boolean): Promise<string> {
-    return await this._getDeviceInfo(DeviceInfoQuery.INDOOR_LOCATION, refresh) as string
-  }
-
-  async getDeviceBattery(refresh: boolean): Promise<number> {
-    return await this._getDeviceInfo(DeviceInfoQuery.BATTERY, refresh) as number
-  }
-
-  async getDeviceType(): Promise<enums.DeviceType> {
-    return await this._getDeviceInfo(DeviceInfoQuery.TYPE) as enums.DeviceType
-  }
-
-  async getUserProfile(): Promise<string> {
-    return await this._getDeviceInfo(DeviceInfoQuery.USERNAME) as string
-  }
-
+  // TODO: is `username` a URI?
   async setUserProfile(username: string, force=false): Promise<void> {
     await this._cast(`set_user_profile`, { username, force })
   }
 
-  private async setDeviceInfo(field: enums.DeviceInfoField, value: string): Promise<void> {
-    await this._cast(`set_device_info`, { field, value })
-  }
-
-  async setDeviceName(name: string): Promise<void> {
-    await this.setDeviceInfo(DeviceInfoField.LABEL, name)
-  }
-
-  async setDeviceChannel(channel: string): Promise<void> {
-    await this.setDeviceInfo(DeviceInfoField.CHANNEL, channel)
-  }
-
-  async enableLocation(): Promise<void> {
-    await this.setUserProfile(DeviceInfoField.LOCATION_ENABLED, true)
-  }
-
-  async disableLocation(): Promise<void> {
-    await this.setUserProfile(DeviceInfoField.LOCATION_ENABLED, false)
-  }
-
-  async setDeviceMode(mode: `panic` | `alarm` | `none`): Promise<void>;
-  async setDeviceMode(mode: `panic` | `alarm` | `none`, target?: string[]): Promise<void> {
-    await this._cast(`set_device_mode`, { mode, target })
-  }
-
-  async setChannel(name:string, target: string[], { suppressTTS=false, disableHomeChannel=false }: { suppressTTS?: boolean, disableHomeChannel?: false }={}): Promise<void> {
-    await this._cast(`set_channel`, { channel_name: name, target, suppress_tts: suppressTTS, disable_home_channel: disableHomeChannel })
-  }
-
-  async enableHomeChannel(target: string|string[]): Promise<void> {
-    await this._setHomeChannelState(target, true)
-  }
-
-  async disableHomeChannel(target: string|string[]): Promise<void> {
-    await this._setHomeChannelState(target, false)
-  }
-
-  async _setHomeChannelState(target: string|string[], enabled: boolean): Promise<void> {
-    if (Array.isArray(target)) {
-      await this._cast(`set_home_channel_state`, { target, enabled })
-    } else if (typeof target === `string`) {
-      await this._cast(`set_home_channel_state`, { target: [target], enabled })
-    } else {
-      throw new Error(`unknown target value type => ${typeof target}`)
-    }
-  }
-
+  // TODO: is group_name a URI?
+  // TODO: should device_uris be pre-parsed out for simple values instead of URNs?
   async getGroupMembers(groupName: string): Promise<string[]> {
-    const { device_names } = await this._call(`list_group_members`, { group_name: groupName }) as Record<`device_names`, string[]>
-    return device_names
+    const { device_uris } = await this._call(`list_group_members`, { group_name: groupName }) as Record<`device_uris`, string[]>
+    return device_uris
   }
 
   async setDefaultAnalyticEventParameters(params: Record<string, string|number|boolean>): Promise<void> {
@@ -439,9 +617,9 @@ class RelayEventAdapter {
     })
   }
 
-  async trackUserEvent(category: string, target: string, parameters?: TrackEventParameters): Promise<void> {
+  async trackUserEvent(category: string, target: SingleTarget, parameters?: TrackEventParameters): Promise<void> {
     await this._cast(`log_analytics_event`, {
-      target,
+      device_uri: target,
       category,
       content_type: `application/vnd.relay.event.parameters+json`,
       analytics_content: {
@@ -537,45 +715,8 @@ class RelayEventAdapter {
     await this._cast(`stop_timer`)
   }
 
-  private async _sendNotification(type: enums.Notification, text: undefined|string, target: string[], name?: string, pushOptions?: NotificationOptions): Promise<void> {
-    await this._cast(`notification`, { type, name, text, target, push_opts: pushOptions }, NOTIFICATION_TIMEOUT)
-  }
-
-  async broadcast(name: string, text: string, target: string[], pushOptions?: NotificationOptions): Promise<void> {
-    await this._sendNotification(Notification.BROADCAST, text, target, name, pushOptions)
-  }
-
-  async cancelBroadcast(name: string, target: string[]): Promise<void> {
-    await this._sendNotification(Notification.CANCEL, undefined, target, name)
-  }
-
-  async notify(name: string, text: string, target: string[], pushOptions?: NotificationOptions): Promise<void> {
-    await this._sendNotification(Notification.NOTIFY, text, target, name, pushOptions)
-  }
-
-  async cancelNotify(name: string, target: string[]): Promise<void> {
-    await this._sendNotification(Notification.CANCEL, undefined, target, name)
-  }
-
-  async alert(name: string, text: string, target: string[], pushOptions?: NotificationOptions): Promise<void> {
-    await this._sendNotification(Notification.ALERT, text, target, name, pushOptions)
-  }
-
-  async cancelAlert(name: string, target: string[]): Promise<void> {
-    await this._sendNotification(Notification.CANCEL, undefined, target, name)
-  }
-
-  async listen(phrases=[], { transcribe=true, alt_lang=Language.ENGLISH, timeout=60 }={}): Promise<Record<`text`, string> | Record<`audio`, string>> {
-    const response = await this._call(`listen`, { transcribe, phrases, timeout, alt_lang }, timeout * 1000)  as Record<`text`|`audio`|`lang`, string>
-    if (transcribe) {
-      return { text: response.text, lang: response.lang } as Record<`text`|`lang`, string>
-    } else {
-      return { audio: response.audio } as Record<`audio`, string>
-    }
-  }
-
-  async createIncident(type: string): Promise<string> {
-    const { incident_id } = await this._call(`create_incident`, { type })  as Record<`incident_id`, string>
+  async createIncident(originatorUri: SingleTarget, type: string): Promise<string> {
+    const { incident_id } = await this._call(`create_incident`, { type, originator_uri: originatorUri })  as Record<`incident_id`, string>
     return incident_id
   }
 
@@ -587,54 +728,14 @@ class RelayEventAdapter {
     await this._cast(`terminate`)
   }
 
-  private _buildCallIdRequestOrThrow(arg: string|BaseCall): BaseCall {
-    if (typeof arg === `string`) {
-      return { call_id: arg }
-    } else if (typeof arg === `object`) {
-      if (typeof arg.call_id === `string`) {
-        return { call_id: arg.call_id }
-      } else {
-        throw new Error(`missing required parameter`)
-      }
-    } else {
-      throw new Error(`invalid argument type`)
-    }
-  }
+  // END NON-TARGETED ACTIONS
 
-  async placeCall(call: PlaceCall): Promise<void> {
-    await this._cast(`call`, call)
-  }
-
-  async answerCall(callRequest: string|BaseCall): Promise<void> {
-    await this._cast(`answer`, this._buildCallIdRequestOrThrow(callRequest))
-  }
-
-  async hangupCall(callRequest: string|BaseCall): Promise<void> {
-    await this._cast(`hangup`, this._buildCallIdRequestOrThrow(callRequest))
-  }
-
-  async registerForCalls(request: RegisterRequest): Promise<void> {
-    await this._cast(`register`, request)
-  }
-
-  async unregisterForCalls(request: UnregisterRequest): Promise<void> {
-    await this.registerForCalls({ ...request, expires: 0 })
-  }
-
-  async getUnreadInboxSize(): Promise<number> {
-    const { count } = await this._call(`inbox_count`) as Record<`count`, string>
-    return filterInt(count)
-  }
-
-  async playUnreadInboxMessages(): Promise<void> {
-    await this._cast(`play_inbox_messages`)
-  }
 }
 
 const DEFAULT_WORKFLOW = `__default_relay_workflow__`
 let workflows: Map<string, Workflow> | null = null
 let instances: Map<string, RelayEventAdapter> | null = null
-let server: WebSocket.Server | null = null
+let server: Server | null = null
 
 const initializeRelaySdk = (options: Options={}): Relay => {
   if (workflows) {
@@ -644,7 +745,7 @@ const initializeRelaySdk = (options: Options={}): Relay => {
     instances = new Map()
 
     const serverOptions = options.server ? { server: options.server } : { port: PORT }
-    server = new WebSocket.Server(serverOptions, () => {
+    server = new Server(serverOptions, () => {
       console.log(`Relay SDK WebSocket Server listening => ${PORT}`)
     })
 
@@ -692,7 +793,7 @@ const initializeRelaySdk = (options: Options={}): Relay => {
       }
     })
 
-    server.on(`error`, err => {
+    server.on(`error`, (err: Error) => {
       console.error(err)
     })
 
@@ -707,7 +808,7 @@ const initializeRelaySdk = (options: Options={}): Relay => {
       })
     }, HEARTBEAT)
 
-    const api = new RelayApi(options.subscriberId, options.apiKey)
+    // const api = new RelayApi(options.subscriberId, options.apiKey)
 
     return {
       workflow: (path: string|Workflow, workflow?: Workflow) => {
@@ -723,7 +824,7 @@ const initializeRelaySdk = (options: Options={}): Relay => {
           }
         }
       },
-      api,
+      // api,
     }
   }
 }
@@ -731,6 +832,7 @@ const initializeRelaySdk = (options: Options={}): Relay => {
 export {
   initializeRelaySdk as relay,
   createWorkflow,
+  Uri,
 }
 
 export type { RelayEventAdapter, Event, Workflow, Relay, Language, Options }

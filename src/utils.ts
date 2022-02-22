@@ -1,12 +1,23 @@
 import { randomBytes } from 'crypto'
-import { AnyPrimitive, Device, Msg } from './types'
+import { AnyPrimitive, Device, RawWorkflowEvent } from './types'
 
-export const safeParse = (msg: string): undefined | Msg => {
+const decoder = new TextDecoder()
+const ensureString = (possibleString: unknown) => {
+  if (Array.isArray(possibleString) && possibleString.every(e => Number.isInteger(e) && e >= 0 && e <= 127)) {
+    return decoder.decode(Uint8Array.from(possibleString))
+  } else {
+    return possibleString
+  }
+}
+
+export const safeParse = (msg: string): undefined | RawWorkflowEvent => {
   try {
-    return JSON.parse(msg)
+    return JSON.parse(msg, (_, value) => {
+      return value && ensureString(value)
+    })
   } catch(err) {
     console.log(`failed to parse message =>`, msg)
-    return
+    return undefined
   }
 }
 
@@ -60,6 +71,22 @@ export const isPlainObject = <Value>(value: unknown): value is Record<string | n
 
   const proto = Object.getPrototypeOf(value)
   return proto === null || proto === Object.prototype
+}
+
+/*
+ * Only matches against primitives, not nested array or objects
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isMatch = (object: any, source: any) => {
+  if (object === source) {
+    return true
+  }
+
+  if (!isPlainObject(source)) {
+    return false
+  }
+
+  return Object.keys(source).every(key => source[key] === object[key])
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
