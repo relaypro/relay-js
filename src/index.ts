@@ -656,10 +656,6 @@ class RelayEventAdapter {
     }
   }
 
-  async getQueryText(): Promise<string|undefined> {
-    return this.getVar(`spillover`)
-  }
-
   async getVar(name: string, defaultValue=undefined): Promise<string|undefined> {
     const result = await this._call(`get_var`, { name }) as Record<`value`, string>
     if (result === undefined) {
