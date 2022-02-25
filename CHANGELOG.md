@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2022-02-24
+
+### BREAKING CHANGES
+
+Relay infrastructure has undergone some major refactoring of how workflows are processed.
+As a result, breaking changes in the SDK are required in order to support these changes.
+
+For more details, please read the migration guide, which explains the rationale for the
+major change.
+
+### Changed
+- Nearly every function signature has changed.
+
 ## [1.1.0] - 2021-06-04
 
 ### Added

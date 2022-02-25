@@ -1,5 +1,3 @@
-@relaypro/sdk / [Exports](modules.md)
-
 # relay-js
 
 relay-js SDK is a node.js library for interacting with Relay. For full documentation visit [api-docs.relaypro.com](https://api-docs.relaypro.com)
@@ -15,18 +13,27 @@ npm install @relaypro/sdk
 The following code snippet demonstrates a very simple "Hello World" workflow. However, it does show some of the power that is available through the Relay SDK.
 
 ```javascript
-import { relay, Event } from '@relaypro/sdk'
+import pkg from '@relaypro/sdk'
+const { relay, Event, createWorkflow, Uri } = pkg
 
 const app = relay()
 
-app.workflow(`helloworld`, workflow => {
-  workflow.on(Event.START, async () => {
-    const greeting = await relay.get(`greeting`)
-    const name = await relay.getDeviceName()
-    await relay.say(`What is your name ?`)
-    const user = await relay.listen()
-    await relay.say(`Hello ${user}! ${greeting} ${name}`)
-    await relay.terminate()
+app.workflow(`helloworld`, helloworld)
+
+const helloworld = createWorkflow(wf => {
+  wf.on(Event.START, async (event) => {
+    const { trigger: { args: { source_uri } } } = event
+    wf.startInteraction([source_uri], `hello world`)
+  })
+
+  wf.on(Event.INTERACTION_STARTED, async ({ source_uri }) => {
+    const deviceName = Uri.parseDeviceName(source_uri)
+    console.log(`interaction start ${source_uri}`)
+    await wf.sayAndWait(source_uri, `What is your name ?`)
+    const { text: userProvidedName } = await wf.listen(source_uri)
+    const greeting = await wf.getVar(`greeting`)
+    await wf.sayAndWait(source_uri, `${greeting} ${userProvidedName}! You are currently using ${deviceName}`)
+    await wf.terminate()
   })
 })
 ```
@@ -35,14 +42,22 @@ Features demonstrated here:
 
 * When the workflow is triggered, the `start` event is emitted and the registered start callback
   function is called.
-* A configuration variable `greeting` is retrieved as is the triggering device's name.
-* The workflow then uses text-to-speech to prompt the user for their name.
-* The workflow awaits for a response from the device user.
+* An __interaction__ is started. This creates a temporary channel on the Relay device, which provides a sort of "context" in which
+  some device-specific commands are sent.
+* Inside the __interaction started__ handler, the workflow prompts with the `sayAndWait` action. The device user will hear text-to-speech.
+* The workflow awaits for a response from the device user with the `listen` action.
+* A workflow configuration variable `greeting` is retrieved as is the triggering device's name.
 * The workflow then again uses text-to-speech to reply with a dynamic message.
 * Finally, the workflow is terminated and the device is returned to its original state.
 
-In this sample, a workflow callback function is registered with the name `helloworld`. This value
-of `helloworld` is used to map a WebSocket connection at the path `ws://yourhost:port/helloworld`
+Using the Relay CLI, the workflow can be registered with the following command:
+
+```bash
+relay workflow:create:phrase --name my-test-workflow --uri wss://yourhost:port/helloworld --trigger test -i 99000XXXXXXXXXX
+```
+
+In the above sample sample, a workflow callback function is registered with the name `helloworld`. This value
+of `helloworld` is used to map a WebSocket connection at the path `wss://yourhost:port/helloworld`
 to the registered workflow callback function.
 
 It is also possible to register a "default" workflow at path `/` by providing the workflow callback
@@ -65,10 +80,8 @@ in workflow event callbacks:
 
 ## Workflow Registration
 
-  More thorough documentation on how toregister your workflow on a Relay device
-  can be found at https://api-docs.relaypro.com/docs/register-workflows
-
-In order to configure
+More thorough documentation on how to register your workflow on a Relay device
+can be found at https://api-docs.relaypro.com/docs/register-workflows
 
 ## Development
 

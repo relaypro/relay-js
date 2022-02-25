@@ -12,7 +12,7 @@ import {
   Event as EventEnum,
 } from './enums'
 
-import { RelayEventAdapter } from './index'
+import { Workflow } from './index'
 
 export type ValueOf<T> = T[keyof T]
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,12 +29,12 @@ export type LocalWebSocket = WebSocket & {
   isAlive: boolean,
 }
 
-export interface Workflow {
-  (relay: RelayEventAdapter): void
+export interface WorkflowEventHandler {
+  (workflow: Workflow): void
 }
 
 export interface Relay {
-  workflow: (path: string|Workflow, workflow?: Workflow) => void,
+  workflow: (path: string|WorkflowEventHandler, workflow?: WorkflowEventHandler) => void,
   // api: RelayApi,
 }
 
@@ -63,6 +63,9 @@ type WorkflowEventMappings = {
   [EventEnum.CALL_START_REQUEST]: StartedCallEvent,
 }
 
+/**
+ * @internal
+ */
 export type WorkflowEvent = ValueOf<WorkflowEventMappings>
 export type RawWorkflowEvent = UnionToIntersection<WorkflowEvent> & {
   _type: string,
@@ -136,7 +139,7 @@ export type InteractionLifecycle = `started`|`resumed`|`suspended`|`ended`|`fail
 
 // START EVENTS
 
-type Event = {
+export type Event = {
   source_uri: string,
 }
 

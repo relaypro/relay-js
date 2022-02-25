@@ -13,6 +13,10 @@ const config = {
   }
 }
 
+/**
+ * Utility class to resolve environment variables
+ * @internal
+ */
 export class Vars {
   get env(): `qa`|`pro` {
     if (process.env.RELAY_ENV) {

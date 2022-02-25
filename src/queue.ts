@@ -4,6 +4,10 @@ interface Params {
 
 type work = { (): PromiseLike<void> }
 
+/**
+ * Internal work queue
+ * @internal
+ */
 export default class Queue {
 
   private max: number

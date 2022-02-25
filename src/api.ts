@@ -31,12 +31,17 @@ const checkStatus = (response: Response): Response => {
   }
 }
 
-class RelayApi {
+export default class RelayApi {
 
   private subscriberId?: string
   private apiKey?: string
   private accessToken?: string
 
+  /**
+   * @param subscriberId
+   * @param apiKey
+   * @internal
+   */
   constructor(subscriberId?: string, apiKey?: string) {
     this.subscriberId = subscriberId
     this.apiKey = apiKey
@@ -110,5 +115,3 @@ class RelayApi {
     return mapDevice(device)
   }
 }
-
-export default RelayApi

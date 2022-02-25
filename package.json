@@ -22,7 +22,8 @@
     "build:test": "npm run build && npm run test",
     "build:check": "tsc --noEmit",
     "prepare": "npm run build",
-    "concat-doc": "mkdir -p concat-docs && npx concat-md --toc --decrease-title-levels --dir-name-as-title docs > concat-docs/relay-js.md",
+    "docs": "rimraf docs  && typedoc --plugin typedoc-plugin-markdown --out docs --entryPointStrategy expand ./src --excludePrivate && concat-md --toc --decrease-title-levels --dir-name-as-title docs > API.md",
+    "concat-doc": "mkdir -p docs && npx concat-md --toc --decrease-title-levels --dir-name-as-title docs > API.md",
     "doc-sync": "node ./scripts/doc-sync.mjs"
   },
   "files": [
@@ -43,6 +44,7 @@
     "@typescript-eslint/parser": "5.12.1",
     "chai": "4.3.6",
     "chai-as-promised": "7.1.1",
+    "concat-md": "0.3.8",
     "del-cli": "4.0.1",
     "eslint": "8.9.0",
     "eslint-config-standard": "16.0.3",

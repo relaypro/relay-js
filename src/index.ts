@@ -9,7 +9,7 @@ import {
   NotificationOptions,
   LocalWebSocket,
   Options,
-  Relay, Workflow,
+  Relay, WorkflowEventHandler,
   LedIndex,
   LedEffect,
   LedInfo,
@@ -60,12 +60,15 @@ type Matches = Record<string, string|number|boolean>
 
 const all: Filter = () => true
 
-class RelayEventAdapter {
+class Workflow {
   private websocket: LocalWebSocket | null = null
   private workQueue: Queue | null = null
   private handlers: WorkflowEventHandlers = {}
   private defaultAnalyticEventParameters: Record<string, string|number|boolean> = {}
 
+  /**
+   * @internal
+   */
   constructor(websocket: LocalWebSocket) {
     console.log(`creating event adapter`)
     this.workQueue = new Queue()
@@ -239,7 +242,7 @@ class RelayEventAdapter {
     })
   }
 
-  async _waitForEventMatch<U extends keyof WorkflowEventHandlers>(eventName: U, matches: Matches={}): Promise<RawWorkflowEvent> {
+  private async _waitForEventMatch<U extends keyof WorkflowEventHandlers>(eventName: U, matches: Matches={}): Promise<RawWorkflowEvent> {
     const eventHandler = this.handlers[eventName]
     try {
       delete this.handlers[eventName]
@@ -379,36 +382,36 @@ class RelayEventAdapter {
     await this._setHomeChannelState(target, false)
   }
 
-  async _setHomeChannelState(target: Target, enabled: boolean): Promise<void> {
+  private async _setHomeChannelState(target: Target, enabled: boolean): Promise<void> {
     await this._castTarget(target, `set_home_channel_state`, { enabled })
   }
 
-  private async _sendNotification(target: Target, type: enums.Notification, text: undefined|string, name?: string, pushOptions?: NotificationOptions): Promise<void> {
-    await this._castTarget(target, `notification`, { type, name, text, push_opts: pushOptions }, NOTIFICATION_TIMEOUT)
+  private async _sendNotification(target: Target, originator: SingleTarget|undefined, type: enums.Notification, text: undefined|string, name?: string, pushOptions?: NotificationOptions): Promise<void> {
+    await this._castTarget(target, `notification`, { originator, type, name, text, push_opts: pushOptions }, NOTIFICATION_TIMEOUT)
   }
 
-  async broadcast(target: Target, name: string, text: string, pushOptions?: NotificationOptions): Promise<void> {
-    await this._sendNotification(target, Notification.BROADCAST, text, name, pushOptions)
+  async broadcast(target: Target, originator: SingleTarget, name: string, text: string, pushOptions?: NotificationOptions): Promise<void> {
+    await this._sendNotification(target, originator, Notification.BROADCAST, text, name, pushOptions)
   }
 
   async cancelBroadcast(target: Target, name: string): Promise<void> {
-    await this._sendNotification(target, Notification.CANCEL, undefined, name)
+    await this._sendNotification(target, undefined, Notification.CANCEL, undefined, name)
   }
 
-  async notify(target: Target, name: string, text: string, pushOptions?: NotificationOptions): Promise<void> {
-    await this._sendNotification(target, Notification.NOTIFY, text, name, pushOptions)
+  async notify(target: Target, originator: SingleTarget, name: string, text: string, pushOptions?: NotificationOptions): Promise<void> {
+    await this._sendNotification(target, originator, Notification.NOTIFY, text, name, pushOptions)
   }
 
-  async cancelNotify(target: Target, name: string): Promise<void> {
-    await this._sendNotification(target, Notification.CANCEL, undefined, name)
+  async cancelNotify(target: Target,name: string): Promise<void> {
+    await this._sendNotification(target, undefined, Notification.CANCEL, undefined, name)
   }
 
-  async alert(target: Target, name: string, text: string, pushOptions?: NotificationOptions): Promise<void> {
-    await this._sendNotification(target, Notification.ALERT, text, name, pushOptions)
+  async alert(target: Target, originator: SingleTarget, name: string, text: string, pushOptions?: NotificationOptions): Promise<void> {
+    await this._sendNotification(target, originator, Notification.ALERT, text, name, pushOptions)
   }
 
   async cancelAlert(target: Target, name: string): Promise<void> {
-    await this._sendNotification(target, Notification.CANCEL, undefined, name)
+    await this._sendNotification(target, undefined, Notification.CANCEL, undefined, name)
   }
 
   async restartDevice(target: Target): Promise<void> {
@@ -729,8 +732,8 @@ class RelayEventAdapter {
 }
 
 const DEFAULT_WORKFLOW = `__default_relay_workflow__`
-let workflows: Map<string, Workflow> | null = null
-let instances: Map<string, RelayEventAdapter> | null = null
+let workflows: Map<string, WorkflowEventHandler> | null = null
+let instances: Map<string, Workflow> | null = null
 let server: Server | null = null
 
 const initializeRelaySdk = (options: Options={}): Relay => {
@@ -778,9 +781,9 @@ const initializeRelaySdk = (options: Options={}): Relay => {
             instances?.delete(websocket.connectionId)
           })
 
-          const adapter = new RelayEventAdapter(websocket)
-          workflow(adapter)
-          instances?.set(websocket.connectionId, adapter)
+          const _workflow = new Workflow(websocket)
+          workflow(_workflow)
+          instances?.set(websocket.connectionId, _workflow)
           console.info(`Workflow connection =>`, websocket.connectionId)
         } else {
           console.info(`Workflow not found; terminating websocket =>`, websocket.connectionId)
@@ -807,7 +810,7 @@ const initializeRelaySdk = (options: Options={}): Relay => {
     // const api = new RelayApi(options.subscriberId, options.apiKey)
 
     return {
-      workflow: (path: string|Workflow, workflow?: Workflow) => {
+      workflow: (path: string|WorkflowEventHandler, workflow?: WorkflowEventHandler) => {
         if (workflows) {
           if ((typeof path === `function`)) {
             console.info(`Default workflow set`)
@@ -831,4 +834,4 @@ export {
   Uri,
 }
 
-export type { RelayEventAdapter, Event, Workflow, Relay, Language, Options }
+export type { WorkflowEventHandler, Event, Workflow, Relay, Language, Options }

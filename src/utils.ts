@@ -10,6 +10,9 @@ const ensureString = (possibleString: unknown) => {
   }
 }
 
+/**
+ * @internal
+ */
 export const safeParse = (msg: string): undefined | RawWorkflowEvent => {
   try {
     return JSON.parse(msg, (_, value) => {
