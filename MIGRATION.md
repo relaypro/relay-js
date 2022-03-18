@@ -134,7 +134,7 @@ lifecycle events are emitted:
    the interaction is first started. Further, if configured, interaction channels can be navigated away from.
    Thus, when navigating back to the channel, the `INTERACTION_RESUMED` event is sent.
 3. `INTERACTION_SUSPENDED` is sent when the user navigates away from the interaction channel.
-4. `INTERAcTION_ENEDED` is sent when the interaction is ended.
+4. `INTERACTION_ENDED` is sent when the interaction is ended.
 
 When starting an interaction, the client will always get a started and resumed lifecycle event. Note that an
 ended lifecycle event is not guaranteed if the workflow is being ended at the same time as a result of a
