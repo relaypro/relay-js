@@ -32,7 +32,7 @@ import {
 } from './types'
 import Queue from './queue'
 import * as Uri from './uri'
-// import RelayApi from './api'
+import RelayApi from './api'
 
 const {
   Event,
@@ -807,7 +807,7 @@ const initializeRelaySdk = (options: Options={}): Relay => {
       })
     }, HEARTBEAT)
 
-    // const api = new RelayApi(options.subscriberId, options.apiKey)
+    const api = new RelayApi(options.subscriberId, options.apiKey)
 
     return {
       workflow: (path: string|WorkflowEventHandler, workflow?: WorkflowEventHandler) => {
@@ -823,7 +823,7 @@ const initializeRelaySdk = (options: Options={}): Relay => {
           }
         }
       },
-      // api,
+      api,
     }
   }
 }

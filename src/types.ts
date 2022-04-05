@@ -1,6 +1,7 @@
 import http from 'http'
 import https from 'https'
 import { WebSocket } from 'ws'
+import RelayApi from './api'
 
 import {
   Button,
@@ -35,7 +36,7 @@ export interface WorkflowEventHandler {
 
 export interface Relay {
   workflow: (path: string|WorkflowEventHandler, workflow?: WorkflowEventHandler) => void,
-  // api: RelayApi,
+  api: RelayApi,
 }
 
 

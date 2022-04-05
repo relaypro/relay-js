@@ -2,7 +2,7 @@ import fetch, { Response } from 'node-fetch'
 import os from 'os'
 import { URLSearchParams } from 'url'
 
-import { Device } from './types'
+import { Device, Target } from './types'
 import { mapDevice } from './utils'
 import { vars } from './vars'
 
@@ -11,7 +11,8 @@ const pkg = require(`../package.json`)
 
 type FetchOptions = {
   method?: string,
-  body?: Record<string, never>,
+  body?: Record<string, unknown>,
+  query?: Record<string, never>,
 }
 
 class HTTPResponseError extends Error {
@@ -34,6 +35,7 @@ const checkStatus = (response: Response): Response => {
 export default class RelayApi {
 
   private subscriberId?: string
+  private userId?: string
   private apiKey?: string
   private accessToken?: string
 
@@ -45,6 +47,45 @@ export default class RelayApi {
   constructor(subscriberId?: string, apiKey?: string) {
     this.subscriberId = subscriberId
     this.apiKey = apiKey
+  }
+
+  private get defaultQuery() {
+    const res: Record<string, string> = {}
+    if (this.subscriberId) {
+      res.subscriber_id = this.subscriberId
+    }
+    if (this.userId) {
+      res.user_id = this.userId
+    }
+    return res
+  }
+
+  private makeQuery(params?: Record<string, never>): string {
+    const query = {
+      ...this.defaultQuery,
+      ...params
+    }
+
+    const value = new URLSearchParams(query).toString()
+
+    if (value) {
+      return `?${value}`
+    } else {
+      return ``
+    }
+  }
+
+  private async ensureAuthUserId(): Promise<void> {
+    if (!this.userId) {
+      const response = await fetch(`${vars.authUrl}/oauth2/validate`, {
+        headers: {
+          [`Authorization`]: `Bearer ${this.accessToken}`,
+        }
+      })
+      checkStatus(response)
+      const body = await response.json() as Record<`userid`, string>
+      this.userId = body.userid
+    }
   }
 
   private async refreshToken(): Promise<void> {
@@ -74,12 +115,15 @@ export default class RelayApi {
     if (!this.accessToken) {
       throw new Error(`failed-to-validate-token`)
     }
+
+    await this.ensureAuthUserId()
   }
 
   private async fetch<T>(path:string, options: FetchOptions = {}, retries = 3): Promise<T> {
     retries--
     if (this.accessToken) {
-      const response = await fetch(`${vars.apiUrl}/relaypro/api/v1${path}?subscriber_id=${this.subscriberId}`, {
+      await this.ensureAuthUserId()
+      const response = await fetch(`${vars.apiUrl}${path}${this.makeQuery(options.query)}`, {
         method: options.method ?? `get`,
         body: options.body ? JSON.stringify(options.body) : undefined,
         headers: {
@@ -109,9 +153,32 @@ export default class RelayApi {
 
   }
 
-  async fetchDevice(id: string): Promise<Device> {
+  private async fetchApi<T>(path: string, options: FetchOptions = {}): Promise<T> {
+    return this.fetch(`/relaypro/api/v1${path}`, options)
+  }
+
+  private async fetchLegacy<T>(path: string, options: FetchOptions = {}): Promise<T> {
+    return this.fetch(`/ibot${path}`, options)
+  }
+
+  private apiWarn() {
     console.warn(`Relay SDK API is currently alpha and may change frequently or be removed`)
-    const device = await this.fetch<Record<string, unknown>>(`/device/${id}`)
+  }
+
+  async fetchDevice(id: string): Promise<Device> {
+    this.apiWarn()
+    const device = await this.fetchApi<Record<string, unknown>>(`/device/${id}`)
     return mapDevice(device)
+  }
+
+  async triggerWorkflow(id: string, targets: Target, args?: Record<string, string>): Promise<void> {
+    this.apiWarn()
+    await this.fetchLegacy(`/workflow/${id}`, {
+      body: {
+        action: `invoke`,
+        action_args: args,
+        target_device_ids: targets,
+      }
+    })
   }
 }
