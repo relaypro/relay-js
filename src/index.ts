@@ -609,6 +609,23 @@ class Workflow {
     this.defaultAnalyticEventParameters = params
   }
 
+  async logMessage(message: string, category=`default`): Promise<void> {
+    await this._cast(`log_analytics_event`, {
+      category,
+      content_type: `text/plain`,
+      content: message,
+    })
+  }
+
+  async logUserMessage(message: string, target: SingleTarget, category=`default`): Promise<void> {
+    await this._cast(`log_analytics_event`, {
+      device_uri: target,
+      category,
+      content_type: `text/plain`,
+      content: message,
+    })
+  }
+
   async trackEvent(category: string, parameters?: TrackEventParameters): Promise<void> {
     await this._cast(`log_analytics_event`, {
       category,
