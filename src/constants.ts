@@ -7,6 +7,7 @@ export const REFRESH_TIMEOUT = 45000
 export const NOTIFICATION_TIMEOUT = 60000
 
 export const ERROR_RESPONSE = `wf_api_error_response`
+export const PROGRESS_EVENT = `wf_api_progress_event`
 
 // workflow actions that require an interaction target
 export const NON_INTERACTIVE_ACTIONS = [

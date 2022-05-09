@@ -4,7 +4,7 @@ import * as enums from './enums'
 
 import { safeParse, makeId, filterInt, toString, arrayMapper, numberArrayMapper, isMatch } from './utils'
 
-import { PORT, HEARTBEAT, TIMEOUT, REFRESH_TIMEOUT, NOTIFICATION_TIMEOUT, EVENT_TIMEOUT, NON_INTERACTIVE_ACTIONS, ERROR_RESPONSE } from './constants'
+import { PORT, HEARTBEAT, TIMEOUT, REFRESH_TIMEOUT, NOTIFICATION_TIMEOUT, EVENT_TIMEOUT, NON_INTERACTIVE_ACTIONS, ERROR_RESPONSE, PROGRESS_EVENT } from './constants'
 import {
   NotificationOptions,
   LocalWebSocket,
@@ -29,6 +29,7 @@ import {
   WorkflowEvent,
   PlaceCall,
   ListenResponse,
+  Maybe,
 } from './types'
 import Queue from './queue'
 import * as Uri from './uri'
@@ -187,14 +188,15 @@ class Workflow {
     const typeRequest = `${typeBase}_request`
     const typeResponse = `${typeBase}_response`
 
+    const filter = (event: RawWorkflowEvent) => ([typeResponse, ERROR_RESPONSE, PROGRESS_EVENT].includes(event._type)) && id === event._id
+
     await this._send(id, typeRequest, payload, targetUris)
 
-    const event = await this._waitForEventCondition(
-      (event: RawWorkflowEvent) => (
-        ([typeResponse, ERROR_RESPONSE].includes(event._type)) && id === event._id
-      ),
-      timeout
-    )
+    let event: Maybe<RawWorkflowEvent>
+    // keep awaiting for event condition to match that ISN'T a progress event (actual response or error response)
+    while (!event || event?._type === PROGRESS_EVENT) {
+      event = await this._waitForEventCondition(filter, timeout)
+    }
 
     const { _id, _type, error, ...params } = event
     console.log(`processing event ${_id} of type ${_type}`)
@@ -224,24 +226,23 @@ class Workflow {
       }, timeout)
 
       const responseListener = (msg: string) => {
-        clearTimeout(timeoutHandle)
         const event = safeParse(msg)
         console.info(`_waitForEventCondition#responseListener =>`, event)
         if (event) {
-          if (event._type === `wf_api_progress_event`) {
-            // resolve(this._waitForEventCondition(filter))
-          } else if (filter(event)) {
+          if (filter(event)) {
             // stop listening as soon as we have a correlated response
-            this.websocket?.off(`message`, responseListener)
+            clearTimeout(timeoutHandle)
+            this.websocket?.off?.(`message`, responseListener)
             resolve(event)
           }
         }
       }
       // start listening to websocket messages for correlated response
-      this.websocket?.on(`message`, responseListener)
+      this.websocket?.on?.(`message`, responseListener)
     })
   }
 
+  // TODO: should I save off eventHandler?
   private async _waitForEventMatch<U extends keyof WorkflowEventHandlers>(eventName: U, matches: Matches={}): Promise<RawWorkflowEvent> {
     const eventHandler = this.handlers[eventName]
     try {

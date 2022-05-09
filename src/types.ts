@@ -15,6 +15,8 @@ import {
 
 import { Workflow } from './index'
 
+export type Maybe<T> = T | null | undefined
+
 export type ValueOf<T> = T[keyof T]
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer R) => any ? R : never
