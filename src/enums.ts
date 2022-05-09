@@ -61,6 +61,20 @@ export enum Language {
   VIETNAMESE = `vi-VN`,
   INDONESIAN = `id-ID`,
   FILIPINO = `fil-PH`,
+  DANISH = `da-DK`,
+  CZECH = `cs-CZ`,
+  GUJURATI = `gu-IN`,
+  HUNGARIAN = `hu-HU`,
+  TAMIL = `ta-IN`,
+  UKRANIAN = `uk-UA`,
+  SLOVAK = `sk-SK`,
+  ROMANIAN = `ro-RO`,
+  PUNJABI = `pa-IN`,
+  MALAY = `ms-MY`,
+  BENGALI = `bn-IN`,
+  GREEK = `el-GR`,
+  KANNADA = `kn-IN`,
+  FINNISH = `fi-FI`,
 }
 
 export enum DeviceInfoQuery {
