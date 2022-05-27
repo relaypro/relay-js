@@ -62,6 +62,7 @@
 - [Interfaces](#interfaces)
   - [Interface: Relay](#interface-relay)
     - [Table of contents](#table-of-contents-16)
+    - [Properties](#properties)
     - [Methods](#methods-2)
   - [Interface: WorkflowEventHandler](#interface-workfloweventhandler)
     - [Callable](#callable)
@@ -216,6 +217,7 @@ npm run test
 #### Methods
 
 - [fetchDevice](#fetchdevice)
+- [triggerWorkflow](#triggerworkflow)
 
 ### Methods
 
@@ -235,7 +237,29 @@ npm run test
 
 ##### Defined in
 
-[api.ts:112](https://github.com/relaypro/relay-js/blob/5688424e5146/src/api.ts#L112)
+[api.ts:168](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/api.ts#L168)
+
+___
+
+#### triggerWorkflow
+
+▸ **triggerWorkflow**(`id`, `targets`, `args?`): `Promise`<`void`\>
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `id` | `string` |
+| `targets` | [`Target`](#target) |
+| `args?` | `Record`<`string`, `string`\> |
+
+##### Returns
+
+`Promise`<`void`\>
+
+##### Defined in
+
+[api.ts:174](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/api.ts#L174)
 
 
 <a name="classesindexworkflowmd"></a>
@@ -286,6 +310,8 @@ npm run test
 - [hangupCall](#hangupcall)
 - [ledAction](#ledaction)
 - [listen](#listen)
+- [logMessage](#logmessage)
+- [logUserMessage](#logusermessage)
 - [notify](#notify)
 - [off](#off)
 - [on](#on)
@@ -347,7 +373,7 @@ npm run test
 
 ##### Defined in
 
-[index.ts:409](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L409)
+[index.ts:410](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L410)
 
 ___
 
@@ -368,7 +394,7 @@ ___
 
 ##### Defined in
 
-[index.ts:549](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L549)
+[index.ts:555](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L555)
 
 ___
 
@@ -389,7 +415,7 @@ ___
 
 ##### Defined in
 
-[index.ts:369](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L369)
+[index.ts:370](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L370)
 
 ___
 
@@ -413,7 +439,7 @@ ___
 
 ##### Defined in
 
-[index.ts:393](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L393)
+[index.ts:394](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L394)
 
 ___
 
@@ -434,7 +460,7 @@ ___
 
 ##### Defined in
 
-[index.ts:413](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L413)
+[index.ts:414](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L414)
 
 ___
 
@@ -455,7 +481,7 @@ ___
 
 ##### Defined in
 
-[index.ts:397](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L397)
+[index.ts:398](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L398)
 
 ___
 
@@ -476,7 +502,7 @@ ___
 
 ##### Defined in
 
-[index.ts:405](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L405)
+[index.ts:406](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L406)
 
 ___
 
@@ -496,7 +522,7 @@ ___
 
 ##### Defined in
 
-[index.ts:587](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L587)
+[index.ts:593](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L593)
 
 ___
 
@@ -517,7 +543,7 @@ ___
 
 ##### Defined in
 
-[index.ts:717](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L717)
+[index.ts:735](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L735)
 
 ___
 
@@ -537,7 +563,7 @@ ___
 
 ##### Defined in
 
-[index.ts:381](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L381)
+[index.ts:382](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L382)
 
 ___
 
@@ -557,7 +583,7 @@ ___
 
 ##### Defined in
 
-[index.ts:499](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L499)
+[index.ts:505](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L505)
 
 ___
 
@@ -577,7 +603,7 @@ ___
 
 ##### Defined in
 
-[index.ts:377](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L377)
+[index.ts:378](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L378)
 
 ___
 
@@ -597,7 +623,7 @@ ___
 
 ##### Defined in
 
-[index.ts:495](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L495)
+[index.ts:501](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L501)
 
 ___
 
@@ -618,7 +644,7 @@ ___
 
 ##### Defined in
 
-[index.ts:365](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L365)
+[index.ts:366](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L366)
 
 ___
 
@@ -639,7 +665,7 @@ ___
 
 ##### Defined in
 
-[index.ts:691](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L691)
+[index.ts:709](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L709)
 
 ___
 
@@ -660,7 +686,7 @@ ___
 
 ##### Defined in
 
-[index.ts:683](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L683)
+[index.ts:701](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L701)
 
 ___
 
@@ -681,7 +707,7 @@ ___
 
 ##### Defined in
 
-[index.ts:457](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L457)
+[index.ts:463](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L463)
 
 ___
 
@@ -702,7 +728,7 @@ ___
 
 ##### Defined in
 
-[index.ts:473](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L473)
+[index.ts:479](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L479)
 
 ___
 
@@ -723,7 +749,7 @@ ___
 
 ##### Defined in
 
-[index.ts:461](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L461)
+[index.ts:467](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L467)
 
 ___
 
@@ -743,7 +769,7 @@ ___
 
 ##### Defined in
 
-[index.ts:445](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L445)
+[index.ts:451](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L451)
 
 ___
 
@@ -764,7 +790,7 @@ ___
 
 ##### Defined in
 
-[index.ts:469](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L469)
+[index.ts:475](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L475)
 
 ___
 
@@ -785,7 +811,7 @@ ___
 
 ##### Defined in
 
-[index.ts:465](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L465)
+[index.ts:471](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L471)
 
 ___
 
@@ -806,7 +832,7 @@ ___
 
 ##### Defined in
 
-[index.ts:449](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L449)
+[index.ts:455](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L455)
 
 ___
 
@@ -826,7 +852,7 @@ ___
 
 ##### Defined in
 
-[index.ts:453](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L453)
+[index.ts:459](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L459)
 
 ___
 
@@ -846,7 +872,7 @@ ___
 
 ##### Defined in
 
-[index.ts:440](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L440)
+[index.ts:446](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L446)
 
 ___
 
@@ -866,7 +892,7 @@ ___
 
 ##### Defined in
 
-[index.ts:477](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L477)
+[index.ts:483](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L483)
 
 ___
 
@@ -886,7 +912,7 @@ ___
 
 ##### Defined in
 
-[index.ts:603](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L603)
+[index.ts:604](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L604)
 
 ___
 
@@ -914,7 +940,7 @@ ___
 
 ##### Defined in
 
-[index.ts:671](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L671)
+[index.ts:689](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L689)
 
 ___
 
@@ -935,7 +961,7 @@ ___
 
 ##### Defined in
 
-[index.ts:687](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L687)
+[index.ts:705](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L705)
 
 ___
 
@@ -956,7 +982,7 @@ ___
 
 ##### Defined in
 
-[index.ts:679](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L679)
+[index.ts:697](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L697)
 
 ___
 
@@ -976,7 +1002,7 @@ ___
 
 ##### Defined in
 
-[index.ts:565](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L565)
+[index.ts:571](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L571)
 
 ___
 
@@ -996,7 +1022,7 @@ ___
 
 ##### Defined in
 
-[index.ts:435](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L435)
+[index.ts:436](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L436)
 
 ___
 
@@ -1017,7 +1043,7 @@ ___
 
 ##### Defined in
 
-[index.ts:662](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L662)
+[index.ts:680](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L680)
 
 ___
 
@@ -1038,7 +1064,7 @@ ___
 
 ##### Defined in
 
-[index.ts:553](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L553)
+[index.ts:559](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L559)
 
 ___
 
@@ -1060,7 +1086,7 @@ ___
 
 ##### Defined in
 
-[index.ts:373](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L373)
+[index.ts:374](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L374)
 
 ___
 
@@ -1085,7 +1111,50 @@ ___
 
 ##### Defined in
 
-[index.ts:511](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L511)
+[index.ts:517](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L517)
+
+___
+
+#### logMessage
+
+▸ **logMessage**(`message`, `category?`): `Promise`<`void`\>
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `message` | `string` |
+| `category` | `string` |
+
+##### Returns
+
+`Promise`<`void`\>
+
+##### Defined in
+
+[index.ts:613](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L613)
+
+___
+
+#### logUserMessage
+
+▸ **logUserMessage**(`message`, `target`, `category?`): `Promise`<`void`\>
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `message` | `string` |
+| `target` | `string` |
+| `category` | `string` |
+
+##### Returns
+
+`Promise`<`void`\>
+
+##### Defined in
+
+[index.ts:621](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L621)
 
 ___
 
@@ -1109,7 +1178,7 @@ ___
 
 ##### Defined in
 
-[index.ts:401](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L401)
+[index.ts:402](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L402)
 
 ___
 
@@ -1135,7 +1204,7 @@ ___
 
 ##### Defined in
 
-[index.ts:86](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L86)
+[index.ts:87](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L87)
 
 ___
 
@@ -1162,7 +1231,7 @@ ___
 
 ##### Defined in
 
-[index.ts:81](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L81)
+[index.ts:82](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L82)
 
 ___
 
@@ -1183,7 +1252,7 @@ ___
 
 ##### Defined in
 
-[index.ts:545](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L545)
+[index.ts:551](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L551)
 
 ___
 
@@ -1204,7 +1273,7 @@ ___
 
 ##### Defined in
 
-[index.ts:320](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L320)
+[index.ts:321](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L321)
 
 ___
 
@@ -1225,7 +1294,7 @@ ___
 
 ##### Defined in
 
-[index.ts:325](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L325)
+[index.ts:326](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L326)
 
 ___
 
@@ -1245,7 +1314,7 @@ ___
 
 ##### Defined in
 
-[index.ts:570](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L570)
+[index.ts:576](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L576)
 
 ___
 
@@ -1265,7 +1334,7 @@ ___
 
 ##### Defined in
 
-[index.ts:421](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L421)
+[index.ts:422](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L422)
 
 ___
 
@@ -1286,7 +1355,7 @@ ___
 
 ##### Defined in
 
-[index.ts:357](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L357)
+[index.ts:358](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L358)
 
 ___
 
@@ -1307,7 +1376,7 @@ ___
 
 ##### Defined in
 
-[index.ts:557](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L557)
+[index.ts:563](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L563)
 
 ___
 
@@ -1328,7 +1397,7 @@ ___
 
 ##### Defined in
 
-[index.ts:722](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L722)
+[index.ts:740](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L740)
 
 ___
 
@@ -1348,7 +1417,7 @@ ___
 
 ##### Defined in
 
-[index.ts:417](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L417)
+[index.ts:418](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L418)
 
 ___
 
@@ -1369,7 +1438,7 @@ ___
 
 ##### Defined in
 
-[index.ts:361](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L361)
+[index.ts:362](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L362)
 
 ___
 
@@ -1391,7 +1460,7 @@ ___
 
 ##### Defined in
 
-[index.ts:309](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L309)
+[index.ts:310](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L310)
 
 ___
 
@@ -1413,7 +1482,7 @@ ___
 
 ##### Defined in
 
-[index.ts:314](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L314)
+[index.ts:315](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L315)
 
 ___
 
@@ -1434,7 +1503,7 @@ ___
 
 ##### Defined in
 
-[index.ts:639](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L639)
+[index.ts:657](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L657)
 
 ___
 
@@ -1458,7 +1527,7 @@ ___
 
 ##### Defined in
 
-[index.ts:507](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L507)
+[index.ts:513](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L513)
 
 ___
 
@@ -1478,7 +1547,7 @@ ___
 
 ##### Defined in
 
-[index.ts:608](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L608)
+[index.ts:609](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L609)
 
 ___
 
@@ -1499,7 +1568,7 @@ ___
 
 ##### Defined in
 
-[index.ts:490](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L490)
+[index.ts:496](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L496)
 
 ___
 
@@ -1520,7 +1589,7 @@ ___
 
 ##### Defined in
 
-[index.ts:503](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L503)
+[index.ts:509](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L509)
 
 ___
 
@@ -1541,7 +1610,7 @@ ___
 
 ##### Defined in
 
-[index.ts:485](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L485)
+[index.ts:491](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L491)
 
 ___
 
@@ -1564,18 +1633,19 @@ ___
 
 ##### Defined in
 
-[index.ts:583](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L583)
+[index.ts:589](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L589)
 
 ___
 
 #### setUserProfile
 
-▸ **setUserProfile**(`username`, `force?`): `Promise`<`void`\>
+▸ **setUserProfile**(`target`, `username`, `force?`): `Promise`<`void`\>
 
 ##### Parameters
 
 | Name | Type | Default value |
 | :------ | :------ | :------ |
+| `target` | `string` | `undefined` |
 | `username` | `string` | `undefined` |
 | `force` | `boolean` | `false` |
 
@@ -1585,7 +1655,7 @@ ___
 
 ##### Defined in
 
-[index.ts:597](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L597)
+[index.ts:441](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L441)
 
 ___
 
@@ -1606,7 +1676,7 @@ ___
 
 ##### Defined in
 
-[index.ts:635](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L635)
+[index.ts:653](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L653)
 
 ___
 
@@ -1628,7 +1698,7 @@ ___
 
 ##### Defined in
 
-[index.ts:305](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L305)
+[index.ts:306](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L306)
 
 ___
 
@@ -1648,7 +1718,7 @@ ___
 
 ##### Defined in
 
-[index.ts:709](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L709)
+[index.ts:727](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L727)
 
 ___
 
@@ -1662,7 +1732,7 @@ ___
 
 ##### Defined in
 
-[index.ts:713](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L713)
+[index.ts:731](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L731)
 
 ___
 
@@ -1682,7 +1752,7 @@ ___
 
 ##### Defined in
 
-[index.ts:353](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L353)
+[index.ts:354](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L354)
 
 ___
 
@@ -1703,7 +1773,7 @@ ___
 
 ##### Defined in
 
-[index.ts:349](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L349)
+[index.ts:350](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L350)
 
 ___
 
@@ -1725,7 +1795,7 @@ ___
 
 ##### Defined in
 
-[index.ts:345](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L345)
+[index.ts:346](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L346)
 
 ___
 
@@ -1739,7 +1809,7 @@ ___
 
 ##### Defined in
 
-[index.ts:726](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L726)
+[index.ts:744](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L744)
 
 ___
 
@@ -1760,7 +1830,7 @@ ___
 
 ##### Defined in
 
-[index.ts:612](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L612)
+[index.ts:630](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L630)
 
 ___
 
@@ -1782,7 +1852,7 @@ ___
 
 ##### Defined in
 
-[index.ts:623](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L623)
+[index.ts:641](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L641)
 
 ___
 
@@ -1804,7 +1874,7 @@ ___
 
 ##### Defined in
 
-[index.ts:591](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L591)
+[index.ts:597](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L597)
 
 ___
 
@@ -1825,7 +1895,7 @@ ___
 
 ##### Defined in
 
-[index.ts:561](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L561)
+[index.ts:567](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L567)
 
 ___
 
@@ -1845,7 +1915,7 @@ ___
 
 ##### Defined in
 
-[index.ts:654](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L654)
+[index.ts:672](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L672)
 
 ___
 
@@ -1865,7 +1935,7 @@ ___
 
 ##### Defined in
 
-[index.ts:650](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L650)
+[index.ts:668](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L668)
 
 ___
 
@@ -1886,7 +1956,7 @@ ___
 
 ##### Defined in
 
-[index.ts:341](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L341)
+[index.ts:342](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L342)
 
 # Enums
 
@@ -1914,7 +1984,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:31](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L31)
+[enums.ts:31](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L31)
 
 ___
 
@@ -1924,7 +1994,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:32](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L32)
+[enums.ts:32](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L32)
 
 
 <a name="enumsenumscalldirectionmd"></a>
@@ -1950,7 +2020,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:26](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L26)
+[enums.ts:26](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L26)
 
 ___
 
@@ -1960,7 +2030,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:27](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L27)
+[enums.ts:27](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L27)
 
 
 <a name="enumsenumsdeviceinfofieldmd"></a>
@@ -1987,7 +2057,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:81](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L81)
+[enums.ts:95](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L95)
 
 ___
 
@@ -1997,7 +2067,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:80](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L80)
+[enums.ts:94](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L94)
 
 ___
 
@@ -2007,7 +2077,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:82](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L82)
+[enums.ts:96](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L96)
 
 
 <a name="enumsenumsdeviceinfoquerymd"></a>
@@ -2041,7 +2111,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:70](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L70)
+[enums.ts:84](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L84)
 
 ___
 
@@ -2051,7 +2121,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:72](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L72)
+[enums.ts:86](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L86)
 
 ___
 
@@ -2061,7 +2131,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:71](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L71)
+[enums.ts:85](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L85)
 
 ___
 
@@ -2071,7 +2141,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:68](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L68)
+[enums.ts:82](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L82)
 
 ___
 
@@ -2081,7 +2151,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:73](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L73)
+[enums.ts:87](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L87)
 
 ___
 
@@ -2091,7 +2161,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:74](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L74)
+[enums.ts:88](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L88)
 
 ___
 
@@ -2101,7 +2171,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:76](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L76)
+[enums.ts:90](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L90)
 
 ___
 
@@ -2111,7 +2181,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:67](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L67)
+[enums.ts:81](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L81)
 
 ___
 
@@ -2121,7 +2191,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:69](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L69)
+[enums.ts:83](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L83)
 
 ___
 
@@ -2131,7 +2201,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:75](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L75)
+[enums.ts:89](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L89)
 
 
 <a name="enumsenumsdevicetypemd"></a>
@@ -2160,7 +2230,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:90](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L90)
+[enums.ts:104](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L104)
 
 ___
 
@@ -2170,7 +2240,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:86](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L86)
+[enums.ts:100](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L100)
 
 ___
 
@@ -2180,7 +2250,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:87](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L87)
+[enums.ts:101](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L101)
 
 ___
 
@@ -2190,7 +2260,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:88](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L88)
+[enums.ts:102](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L102)
 
 ___
 
@@ -2200,7 +2270,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:89](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L89)
+[enums.ts:103](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L103)
 
 
 <a name="enumsenumseventmd"></a>
@@ -2245,7 +2315,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:11](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L11)
+[enums.ts:11](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L11)
 
 ___
 
@@ -2255,7 +2325,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:18](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L18)
+[enums.ts:18](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L18)
 
 ___
 
@@ -2265,7 +2335,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:19](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L19)
+[enums.ts:19](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L19)
 
 ___
 
@@ -2275,7 +2345,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:20](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L20)
+[enums.ts:20](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L20)
 
 ___
 
@@ -2285,7 +2355,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:21](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L21)
+[enums.ts:21](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L21)
 
 ___
 
@@ -2295,7 +2365,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:17](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L17)
+[enums.ts:17](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L17)
 
 ___
 
@@ -2305,7 +2375,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:22](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L22)
+[enums.ts:22](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L22)
 
 ___
 
@@ -2315,7 +2385,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:2](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L2)
+[enums.ts:2](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L2)
 
 ___
 
@@ -2325,7 +2395,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:14](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L14)
+[enums.ts:14](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L14)
 
 ___
 
@@ -2335,7 +2405,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:9](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L9)
+[enums.ts:9](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L9)
 
 ___
 
@@ -2345,7 +2415,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:10](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L10)
+[enums.ts:10](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L10)
 
 ___
 
@@ -2355,7 +2425,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:5](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L5)
+[enums.ts:5](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L5)
 
 ___
 
@@ -2365,7 +2435,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:7](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L7)
+[enums.ts:7](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L7)
 
 ___
 
@@ -2375,7 +2445,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:6](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L6)
+[enums.ts:6](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L6)
 
 ___
 
@@ -2385,7 +2455,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:8](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L8)
+[enums.ts:8](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L8)
 
 ___
 
@@ -2395,7 +2465,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:13](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L13)
+[enums.ts:13](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L13)
 
 ___
 
@@ -2405,7 +2475,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:15](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L15)
+[enums.ts:15](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L15)
 
 ___
 
@@ -2415,7 +2485,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:16](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L16)
+[enums.ts:16](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L16)
 
 ___
 
@@ -2425,7 +2495,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:3](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L3)
+[enums.ts:3](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L3)
 
 ___
 
@@ -2435,7 +2505,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:4](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L4)
+[enums.ts:4](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L4)
 
 ___
 
@@ -2445,7 +2515,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:12](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L12)
+[enums.ts:12](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L12)
 
 
 <a name="enumsenumsincidentstatusmd"></a>
@@ -2471,7 +2541,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:102](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L102)
+[enums.ts:116](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L116)
 
 ___
 
@@ -2481,7 +2551,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:101](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L101)
+[enums.ts:115](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L115)
 
 
 <a name="enumsenumslanguagemd"></a>
@@ -2497,25 +2567,39 @@ ___
 #### Enumeration members
 
 - [ARABIC](#arabic)
+- [BENGALI](#bengali)
 - [CHINESE](#chinese)
+- [CZECH](#czech)
+- [DANISH](#danish)
 - [DUTCH](#dutch)
 - [ENGLISH](#english)
 - [FILIPINO](#filipino)
+- [FINNISH](#finnish)
 - [FRENCH](#french)
 - [GERMAN](#german)
+- [GREEK](#greek)
+- [GUJURATI](#gujurati)
 - [HINDI](#hindi)
+- [HUNGARIAN](#hungarian)
 - [ICELANDIC](#icelandic)
 - [INDONESIAN](#indonesian)
 - [ITALIAN](#italian)
 - [JAPANESE](#japanese)
+- [KANNADA](#kannada)
 - [KOREAN](#korean)
+- [MALAY](#malay)
 - [NORWEGIAN](#norwegian)
 - [POLISH](#polish)
 - [PORTUGUESE](#portuguese)
+- [PUNJABI](#punjabi)
+- [ROMANIAN](#romanian)
 - [RUSSIAN](#russian)
+- [SLOVAK](#slovak)
 - [SPANISH](#spanish)
 - [SWEDISH](#swedish)
+- [TAMIL](#tamil)
 - [TURKISH](#turkish)
+- [UKRANIAN](#ukranian)
 - [VIETNAMESE](#vietnamese)
 
 ### Enumeration members
@@ -2526,7 +2610,17 @@ ___
 
 ##### Defined in
 
-[enums.ts:60](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L60)
+[enums.ts:60](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L60)
+
+___
+
+#### BENGALI
+
+• **BENGALI** = `"bn-IN"`
+
+##### Defined in
+
+[enums.ts:74](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L74)
 
 ___
 
@@ -2536,7 +2630,27 @@ ___
 
 ##### Defined in
 
-[enums.ts:59](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L59)
+[enums.ts:59](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L59)
+
+___
+
+#### CZECH
+
+• **CZECH** = `"cs-CZ"`
+
+##### Defined in
+
+[enums.ts:65](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L65)
+
+___
+
+#### DANISH
+
+• **DANISH** = `"da-DK"`
+
+##### Defined in
+
+[enums.ts:64](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L64)
 
 ___
 
@@ -2546,7 +2660,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:58](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L58)
+[enums.ts:58](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L58)
 
 ___
 
@@ -2556,7 +2670,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:43](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L43)
+[enums.ts:43](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L43)
 
 ___
 
@@ -2566,7 +2680,17 @@ ___
 
 ##### Defined in
 
-[enums.ts:63](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L63)
+[enums.ts:63](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L63)
+
+___
+
+#### FINNISH
+
+• **FINNISH** = `"fi-FI"`
+
+##### Defined in
+
+[enums.ts:77](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L77)
 
 ___
 
@@ -2576,7 +2700,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:46](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L46)
+[enums.ts:46](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L46)
 
 ___
 
@@ -2586,7 +2710,27 @@ ___
 
 ##### Defined in
 
-[enums.ts:44](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L44)
+[enums.ts:44](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L44)
+
+___
+
+#### GREEK
+
+• **GREEK** = `"el-GR"`
+
+##### Defined in
+
+[enums.ts:75](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L75)
+
+___
+
+#### GUJURATI
+
+• **GUJURATI** = `"gu-IN"`
+
+##### Defined in
+
+[enums.ts:66](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L66)
 
 ___
 
@@ -2596,7 +2740,17 @@ ___
 
 ##### Defined in
 
-[enums.ts:51](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L51)
+[enums.ts:51](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L51)
+
+___
+
+#### HUNGARIAN
+
+• **HUNGARIAN** = `"hu-HU"`
+
+##### Defined in
+
+[enums.ts:67](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L67)
 
 ___
 
@@ -2606,7 +2760,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:52](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L52)
+[enums.ts:52](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L52)
 
 ___
 
@@ -2616,7 +2770,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:62](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L62)
+[enums.ts:62](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L62)
 
 ___
 
@@ -2626,7 +2780,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:47](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L47)
+[enums.ts:47](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L47)
 
 ___
 
@@ -2636,7 +2790,17 @@ ___
 
 ##### Defined in
 
-[enums.ts:53](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L53)
+[enums.ts:53](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L53)
+
+___
+
+#### KANNADA
+
+• **KANNADA** = `"kn-IN"`
+
+##### Defined in
+
+[enums.ts:76](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L76)
 
 ___
 
@@ -2646,7 +2810,17 @@ ___
 
 ##### Defined in
 
-[enums.ts:54](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L54)
+[enums.ts:54](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L54)
+
+___
+
+#### MALAY
+
+• **MALAY** = `"ms-MY"`
+
+##### Defined in
+
+[enums.ts:73](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L73)
 
 ___
 
@@ -2656,7 +2830,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:57](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L57)
+[enums.ts:57](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L57)
 
 ___
 
@@ -2666,7 +2840,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:55](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L55)
+[enums.ts:55](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L55)
 
 ___
 
@@ -2676,7 +2850,27 @@ ___
 
 ##### Defined in
 
-[enums.ts:56](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L56)
+[enums.ts:56](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L56)
+
+___
+
+#### PUNJABI
+
+• **PUNJABI** = `"pa-IN"`
+
+##### Defined in
+
+[enums.ts:72](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L72)
+
+___
+
+#### ROMANIAN
+
+• **ROMANIAN** = `"ro-RO"`
+
+##### Defined in
+
+[enums.ts:71](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L71)
 
 ___
 
@@ -2686,7 +2880,17 @@ ___
 
 ##### Defined in
 
-[enums.ts:48](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L48)
+[enums.ts:48](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L48)
+
+___
+
+#### SLOVAK
+
+• **SLOVAK** = `"sk-SK"`
+
+##### Defined in
+
+[enums.ts:70](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L70)
 
 ___
 
@@ -2696,7 +2900,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:45](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L45)
+[enums.ts:45](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L45)
 
 ___
 
@@ -2706,7 +2910,17 @@ ___
 
 ##### Defined in
 
-[enums.ts:49](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L49)
+[enums.ts:49](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L49)
+
+___
+
+#### TAMIL
+
+• **TAMIL** = `"ta-IN"`
+
+##### Defined in
+
+[enums.ts:68](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L68)
 
 ___
 
@@ -2716,7 +2930,17 @@ ___
 
 ##### Defined in
 
-[enums.ts:50](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L50)
+[enums.ts:50](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L50)
+
+___
+
+#### UKRANIAN
+
+• **UKRANIAN** = `"uk-UA"`
+
+##### Defined in
+
+[enums.ts:69](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L69)
 
 ___
 
@@ -2726,7 +2950,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:61](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L61)
+[enums.ts:61](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L61)
 
 
 <a name="enumsenumsnotificationmd"></a>
@@ -2754,7 +2978,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:95](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L95)
+[enums.ts:109](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L109)
 
 ___
 
@@ -2764,7 +2988,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:94](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L94)
+[enums.ts:108](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L108)
 
 ___
 
@@ -2774,7 +2998,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:97](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L97)
+[enums.ts:111](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L111)
 
 ___
 
@@ -2784,7 +3008,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:96](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L96)
+[enums.ts:110](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L110)
 
 
 <a name="enumsenumsnotificationprioritymd"></a>
@@ -2811,7 +3035,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:108](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L108)
+[enums.ts:122](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L122)
 
 ___
 
@@ -2821,7 +3045,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:107](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L107)
+[enums.ts:121](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L121)
 
 ___
 
@@ -2831,7 +3055,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:106](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L106)
+[enums.ts:120](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L120)
 
 
 <a name="enumsenumsnotificationsoundmd"></a>
@@ -2857,7 +3081,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:112](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L112)
+[enums.ts:126](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L126)
 
 ___
 
@@ -2867,7 +3091,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:113](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L113)
+[enums.ts:127](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L127)
 
 
 <a name="enumsenumstapsmd"></a>
@@ -2895,7 +3119,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:37](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L37)
+[enums.ts:37](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L37)
 
 ___
 
@@ -2905,7 +3129,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:39](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L39)
+[enums.ts:39](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L39)
 
 ___
 
@@ -2915,7 +3139,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:36](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L36)
+[enums.ts:36](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L36)
 
 ___
 
@@ -2925,7 +3149,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:38](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L38)
+[enums.ts:38](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L38)
 
 
 <a name="enumsenumstimeouttypemd"></a>
@@ -2953,7 +3177,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:125](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L125)
+[enums.ts:139](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L139)
 
 ___
 
@@ -2963,7 +3187,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:122](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L122)
+[enums.ts:136](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L136)
 
 ___
 
@@ -2973,7 +3197,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:124](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L124)
+[enums.ts:138](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L138)
 
 ___
 
@@ -2983,7 +3207,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:123](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L123)
+[enums.ts:137](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L137)
 
 
 <a name="enumsenumstimertypemd"></a>
@@ -3009,7 +3233,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:118](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L118)
+[enums.ts:132](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L132)
 
 ___
 
@@ -3019,7 +3243,7 @@ ___
 
 ##### Defined in
 
-[enums.ts:117](https://github.com/relaypro/relay-js/blob/5688424e5146/src/enums.ts#L117)
+[enums.ts:131](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/enums.ts#L131)
 
 # Interfaces
 
@@ -3034,9 +3258,23 @@ ___
 
 ### Table of contents
 
+#### Properties
+
+- [api](#api)
+
 #### Methods
 
 - [workflow](#workflow)
+
+### Properties
+
+#### api
+
+• **api**: [`default`](#classesapidefaultmd)
+
+##### Defined in
+
+[types.ts:41](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L41)
 
 ### Methods
 
@@ -3057,7 +3295,7 @@ ___
 
 ##### Defined in
 
-[types.ts:37](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L37)
+[types.ts:40](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L40)
 
 
 <a name="interfacestypesworkfloweventhandlermd"></a>
@@ -3086,7 +3324,7 @@ ___
 
 ##### Defined in
 
-[types.ts:33](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L33)
+[types.ts:36](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L36)
 
 
 <a name="modulesmd"></a>
@@ -3141,6 +3379,7 @@ ___
 - [NON\_INTERACTIVE\_ACTIONS](#non_interactive_actions)
 - [NOTIFICATION\_TIMEOUT](#notification_timeout)
 - [PORT](#port)
+- [PROGRESS\_EVENT](#progress_event)
 - [REFRESH\_TIMEOUT](#refresh_timeout)
 - [TIMEOUT](#timeout)
 
@@ -3152,7 +3391,7 @@ ___
 
 ##### Defined in
 
-[constants.ts:9](https://github.com/relaypro/relay-js/blob/5688424e5146/src/constants.ts#L9)
+[constants.ts:9](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/constants.ts#L9)
 
 ___
 
@@ -3162,7 +3401,7 @@ ___
 
 ##### Defined in
 
-[constants.ts:5](https://github.com/relaypro/relay-js/blob/5688424e5146/src/constants.ts#L5)
+[constants.ts:5](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/constants.ts#L5)
 
 ___
 
@@ -3172,7 +3411,7 @@ ___
 
 ##### Defined in
 
-[constants.ts:2](https://github.com/relaypro/relay-js/blob/5688424e5146/src/constants.ts#L2)
+[constants.ts:2](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/constants.ts#L2)
 
 ___
 
@@ -3182,7 +3421,7 @@ ___
 
 ##### Defined in
 
-[constants.ts:12](https://github.com/relaypro/relay-js/blob/5688424e5146/src/constants.ts#L12)
+[constants.ts:13](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/constants.ts#L13)
 
 ___
 
@@ -3192,7 +3431,7 @@ ___
 
 ##### Defined in
 
-[constants.ts:7](https://github.com/relaypro/relay-js/blob/5688424e5146/src/constants.ts#L7)
+[constants.ts:7](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/constants.ts#L7)
 
 ___
 
@@ -3202,7 +3441,17 @@ ___
 
 ##### Defined in
 
-[constants.ts:1](https://github.com/relaypro/relay-js/blob/5688424e5146/src/constants.ts#L1)
+[constants.ts:1](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/constants.ts#L1)
+
+___
+
+#### PROGRESS\_EVENT
+
+• `Const` **PROGRESS\_EVENT**: ``"wf_api_progress_event"``
+
+##### Defined in
+
+[constants.ts:10](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/constants.ts#L10)
 
 ___
 
@@ -3212,7 +3461,7 @@ ___
 
 ##### Defined in
 
-[constants.ts:6](https://github.com/relaypro/relay-js/blob/5688424e5146/src/constants.ts#L6)
+[constants.ts:6](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/constants.ts#L6)
 
 ___
 
@@ -3222,7 +3471,7 @@ ___
 
 ##### Defined in
 
-[constants.ts:4](https://github.com/relaypro/relay-js/blob/5688424e5146/src/constants.ts#L4)
+[constants.ts:4](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/constants.ts#L4)
 
 
 <a name="modulesenumsmd"></a>
@@ -3418,7 +3667,7 @@ ___
 
 ##### Defined in
 
-[index.ts:49](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L49)
+[index.ts:50](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L50)
 
 ___
 
@@ -3438,7 +3687,7 @@ ___
 
 ##### Defined in
 
-[index.ts:739](https://github.com/relaypro/relay-js/blob/5688424e5146/src/index.ts#L739)
+[index.ts:757](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/index.ts#L757)
 
 
 <a name="modulesqueuemd"></a>
@@ -3489,6 +3738,7 @@ ___
 - [ListenResponse](#listenresponse)
 - [LocalWebSocket](#localwebsocket)
 - [Mapper](#mapper)
+- [Maybe](#maybe)
 - [NfcTrigger](#nfctrigger)
 - [NotificationEvent](#notificationevent)
 - [NotificationOptions](#notificationoptions)
@@ -3527,7 +3777,7 @@ ___
 
 ##### Defined in
 
-[types.ts:191](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L191)
+[types.ts:194](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L194)
 
 ___
 
@@ -3537,7 +3787,7 @@ ___
 
 ##### Defined in
 
-[types.ts:227](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L227)
+[types.ts:230](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L230)
 
 ___
 
@@ -3547,7 +3797,7 @@ ___
 
 ##### Defined in
 
-[types.ts:223](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L223)
+[types.ts:226](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L226)
 
 ___
 
@@ -3563,7 +3813,7 @@ ___
 
 ##### Defined in
 
-[types.ts:276](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L276)
+[types.ts:279](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L279)
 
 ___
 
@@ -3573,7 +3823,7 @@ ___
 
 ##### Defined in
 
-[types.ts:162](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L162)
+[types.ts:165](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L165)
 
 ___
 
@@ -3590,7 +3840,7 @@ ___
 
 ##### Defined in
 
-[types.ts:95](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L95)
+[types.ts:98](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L98)
 
 ___
 
@@ -3600,7 +3850,7 @@ ___
 
 ##### Defined in
 
-[types.ts:298](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L298)
+[types.ts:301](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L301)
 
 ___
 
@@ -3610,7 +3860,7 @@ ___
 
 ##### Defined in
 
-[types.ts:290](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L290)
+[types.ts:293](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L293)
 
 ___
 
@@ -3715,7 +3965,7 @@ ___
 
 ##### Defined in
 
-[types.ts:304](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L304)
+[types.ts:307](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L307)
 
 ___
 
@@ -3725,7 +3975,7 @@ ___
 
 ##### Defined in
 
-[types.ts:293](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L293)
+[types.ts:296](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L296)
 
 ___
 
@@ -3744,7 +3994,7 @@ the SDK when an exception goes unhandled by user code.
 
 ##### Defined in
 
-[types.ts:150](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L150)
+[types.ts:153](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L153)
 
 ___
 
@@ -3760,7 +4010,7 @@ ___
 
 ##### Defined in
 
-[types.ts:142](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L142)
+[types.ts:145](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L145)
 
 ___
 
@@ -3770,7 +4020,7 @@ ___
 
 ##### Defined in
 
-[types.ts:297](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L297)
+[types.ts:300](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L300)
 
 ___
 
@@ -3780,7 +4030,7 @@ ___
 
 ##### Defined in
 
-[types.ts:214](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L214)
+[types.ts:217](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L217)
 
 ___
 
@@ -3797,7 +4047,7 @@ ___
 
 ##### Defined in
 
-[types.ts:102](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L102)
+[types.ts:105](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L105)
 
 ___
 
@@ -3815,7 +4065,7 @@ ___
 
 ##### Defined in
 
-[types.ts:193](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L193)
+[types.ts:196](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L196)
 
 ___
 
@@ -3825,7 +4075,7 @@ ___
 
 ##### Defined in
 
-[types.ts:207](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L207)
+[types.ts:210](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L210)
 
 ___
 
@@ -3835,7 +4085,7 @@ ___
 
 ##### Defined in
 
-[types.ts:136](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L136)
+[types.ts:139](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L139)
 
 ___
 
@@ -3845,7 +4095,7 @@ ___
 
 ##### Defined in
 
-[types.ts:129](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L129)
+[types.ts:132](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L132)
 
 ___
 
@@ -3863,7 +4113,7 @@ ___
 
 ##### Defined in
 
-[types.ts:216](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L216)
+[types.ts:219](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L219)
 
 ___
 
@@ -3873,7 +4123,7 @@ ___
 
 ##### Defined in
 
-[types.ts:234](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L234)
+[types.ts:237](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L237)
 
 ___
 
@@ -3883,7 +4133,7 @@ ___
 
 ##### Defined in
 
-[types.ts:233](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L233)
+[types.ts:236](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L236)
 
 ___
 
@@ -3904,7 +4154,7 @@ ___
 
 ##### Defined in
 
-[types.ts:235](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L235)
+[types.ts:238](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L238)
 
 ___
 
@@ -3914,7 +4164,7 @@ ___
 
 ##### Defined in
 
-[types.ts:225](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L225)
+[types.ts:228](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L228)
 
 ___
 
@@ -3924,7 +4174,7 @@ ___
 
 ##### Defined in
 
-[types.ts:27](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L27)
+[types.ts:30](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L30)
 
 ___
 
@@ -3954,7 +4204,23 @@ ___
 
 ##### Defined in
 
-[types.ts:229](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L229)
+[types.ts:232](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L232)
+
+___
+
+#### Maybe
+
+Ƭ **Maybe**<`T`\>: `T` \| ``null`` \| `undefined`
+
+##### Type parameters
+
+| Name |
+| :------ |
+| `T` |
+
+##### Defined in
+
+[types.ts:18](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L18)
 
 ___
 
@@ -3971,7 +4237,7 @@ ___
 
 ##### Defined in
 
-[types.ts:109](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L109)
+[types.ts:112](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L112)
 
 ___
 
@@ -3981,7 +4247,7 @@ ___
 
 ##### Defined in
 
-[types.ts:169](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L169)
+[types.ts:172](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L172)
 
 ___
 
@@ -4000,7 +4266,7 @@ ___
 
 ##### Defined in
 
-[types.ts:250](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L250)
+[types.ts:253](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L253)
 
 ___
 
@@ -4019,7 +4285,7 @@ ___
 
 ##### Defined in
 
-[types.ts:257](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L257)
+[types.ts:260](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L260)
 
 ___
 
@@ -4037,7 +4303,7 @@ ___
 
 ##### Defined in
 
-[types.ts:21](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L21)
+[types.ts:24](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L24)
 
 ___
 
@@ -4054,7 +4320,7 @@ ___
 
 ##### Defined in
 
-[types.ts:118](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L118)
+[types.ts:121](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L121)
 
 ___
 
@@ -4071,7 +4337,7 @@ ___
 
 ##### Defined in
 
-[types.ts:87](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L87)
+[types.ts:90](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L90)
 
 ___
 
@@ -4081,7 +4347,7 @@ ___
 
 ##### Defined in
 
-[types.ts:282](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L282)
+[types.ts:285](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L285)
 
 ___
 
@@ -4091,7 +4357,7 @@ ___
 
 ##### Defined in
 
-[types.ts:289](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L289)
+[types.ts:292](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L292)
 
 ___
 
@@ -4101,7 +4367,7 @@ ___
 
 ##### Defined in
 
-[types.ts:184](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L184)
+[types.ts:187](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L187)
 
 ___
 
@@ -4111,7 +4377,7 @@ ___
 
 ##### Defined in
 
-[types.ts:70](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L70)
+[types.ts:73](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L73)
 
 ___
 
@@ -4121,7 +4387,7 @@ ___
 
 ##### Defined in
 
-[types.ts:283](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L283)
+[types.ts:286](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L286)
 
 ___
 
@@ -4139,7 +4405,7 @@ ___
 
 ##### Defined in
 
-[types.ts:268](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L268)
+[types.ts:271](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L271)
 
 ___
 
@@ -4149,7 +4415,7 @@ ___
 
 ##### Defined in
 
-[types.ts:288](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L288)
+[types.ts:291](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L291)
 
 ___
 
@@ -4159,7 +4425,7 @@ ___
 
 ##### Defined in
 
-[types.ts:202](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L202)
+[types.ts:205](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L205)
 
 ___
 
@@ -4169,7 +4435,7 @@ ___
 
 ##### Defined in
 
-[types.ts:175](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L175)
+[types.ts:178](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L178)
 
 ___
 
@@ -4185,7 +4451,7 @@ ___
 
 ##### Defined in
 
-[types.ts:154](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L154)
+[types.ts:157](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L157)
 
 ___
 
@@ -4195,7 +4461,7 @@ ___
 
 ##### Defined in
 
-[types.ts:279](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L279)
+[types.ts:282](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L282)
 
 ___
 
@@ -4211,7 +4477,7 @@ ___
 
 ##### Defined in
 
-[types.ts:158](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L158)
+[types.ts:161](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L161)
 
 ___
 
@@ -4221,7 +4487,7 @@ ___
 
 ##### Defined in
 
-[types.ts:203](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L203)
+[types.ts:206](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L206)
 
 ___
 
@@ -4237,7 +4503,7 @@ ___
 
 ##### Defined in
 
-[types.ts:204](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L204)
+[types.ts:207](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L207)
 
 ___
 
@@ -4247,7 +4513,7 @@ ___
 
 ##### Defined in
 
-[types.ts:167](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L167)
+[types.ts:170](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L170)
 
 ___
 
@@ -4257,7 +4523,7 @@ ___
 
 ##### Defined in
 
-[types.ts:302](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L302)
+[types.ts:305](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L305)
 
 ___
 
@@ -4267,7 +4533,7 @@ ___
 
 ##### Defined in
 
-[types.ts:222](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L222)
+[types.ts:225](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L225)
 
 ___
 
@@ -4283,7 +4549,7 @@ ___
 
 ##### Defined in
 
-[types.ts:83](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L83)
+[types.ts:86](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L86)
 
 ___
 
@@ -4299,7 +4565,7 @@ ___
 
 ##### Defined in
 
-[types.ts:19](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L19)
+[types.ts:22](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L22)
 
 ___
 
@@ -4309,7 +4575,7 @@ ___
 
 ##### Defined in
 
-[types.ts:274](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L274)
+[types.ts:277](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L277)
 
 ___
 
@@ -4325,7 +4591,7 @@ ___
 
 ##### Defined in
 
-[types.ts:17](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L17)
+[types.ts:20](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L20)
 
 ___
 
@@ -4335,7 +4601,7 @@ ___
 
 ##### Defined in
 
-[types.ts:75](https://github.com/relaypro/relay-js/blob/5688424e5146/src/types.ts#L75)
+[types.ts:78](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/types.ts#L78)
 
 
 <a name="modulesurimd"></a>
@@ -4375,7 +4641,7 @@ ___
 
 ##### Defined in
 
-[uri.ts:98](https://github.com/relaypro/relay-js/blob/5688424e5146/src/uri.ts#L98)
+[uri.ts:98](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/uri.ts#L98)
 
 ___
 
@@ -4396,7 +4662,7 @@ ___
 
 ##### Defined in
 
-[uri.ts:91](https://github.com/relaypro/relay-js/blob/5688424e5146/src/uri.ts#L91)
+[uri.ts:91](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/uri.ts#L91)
 
 ___
 
@@ -4416,7 +4682,7 @@ ___
 
 ##### Defined in
 
-[uri.ts:102](https://github.com/relaypro/relay-js/blob/5688424e5146/src/uri.ts#L102)
+[uri.ts:102](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/uri.ts#L102)
 
 ___
 
@@ -4436,7 +4702,7 @@ ___
 
 ##### Defined in
 
-[uri.ts:88](https://github.com/relaypro/relay-js/blob/5688424e5146/src/uri.ts#L88)
+[uri.ts:88](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/uri.ts#L88)
 
 ___
 
@@ -4456,7 +4722,7 @@ ___
 
 ##### Defined in
 
-[uri.ts:89](https://github.com/relaypro/relay-js/blob/5688424e5146/src/uri.ts#L89)
+[uri.ts:89](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/uri.ts#L89)
 
 ___
 
@@ -4470,7 +4736,7 @@ ___
 
 ##### Defined in
 
-[uri.ts:100](https://github.com/relaypro/relay-js/blob/5688424e5146/src/uri.ts#L100)
+[uri.ts:100](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/uri.ts#L100)
 
 ___
 
@@ -4490,7 +4756,7 @@ ___
 
 ##### Defined in
 
-[uri.ts:84](https://github.com/relaypro/relay-js/blob/5688424e5146/src/uri.ts#L84)
+[uri.ts:84](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/uri.ts#L84)
 
 ___
 
@@ -4511,7 +4777,7 @@ ___
 
 ##### Defined in
 
-[uri.ts:86](https://github.com/relaypro/relay-js/blob/5688424e5146/src/uri.ts#L86)
+[uri.ts:86](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/uri.ts#L86)
 
 ___
 
@@ -4531,7 +4797,7 @@ ___
 
 ##### Defined in
 
-[uri.ts:85](https://github.com/relaypro/relay-js/blob/5688424e5146/src/uri.ts#L85)
+[uri.ts:85](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/uri.ts#L85)
 
 ___
 
@@ -4551,7 +4817,7 @@ ___
 
 ##### Defined in
 
-[uri.ts:121](https://github.com/relaypro/relay-js/blob/5688424e5146/src/uri.ts#L121)
+[uri.ts:121](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/uri.ts#L121)
 
 ___
 
@@ -4571,7 +4837,7 @@ ___
 
 ##### Defined in
 
-[uri.ts:125](https://github.com/relaypro/relay-js/blob/5688424e5146/src/uri.ts#L125)
+[uri.ts:125](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/uri.ts#L125)
 
 ___
 
@@ -4591,7 +4857,7 @@ ___
 
 ##### Defined in
 
-[uri.ts:111](https://github.com/relaypro/relay-js/blob/5688424e5146/src/uri.ts#L111)
+[uri.ts:111](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/uri.ts#L111)
 
 ___
 
@@ -4611,7 +4877,7 @@ ___
 
 ##### Defined in
 
-[uri.ts:59](https://github.com/relaypro/relay-js/blob/5688424e5146/src/uri.ts#L59)
+[uri.ts:59](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/uri.ts#L59)
 
 ___
 
@@ -4631,7 +4897,7 @@ ___
 
 ##### Defined in
 
-[uri.ts:75](https://github.com/relaypro/relay-js/blob/5688424e5146/src/uri.ts#L75)
+[uri.ts:75](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/uri.ts#L75)
 
 
 <a name="modulesutilsmd"></a>
@@ -4673,7 +4939,7 @@ ___
 
 ##### Defined in
 
-[utils.ts:41](https://github.com/relaypro/relay-js/blob/5688424e5146/src/utils.ts#L41)
+[utils.ts:42](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/utils.ts#L42)
 
 ___
 
@@ -4693,7 +4959,7 @@ ___
 
 ##### Defined in
 
-[utils.ts:43](https://github.com/relaypro/relay-js/blob/5688424e5146/src/utils.ts#L43)
+[utils.ts:44](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/utils.ts#L44)
 
 ___
 
@@ -4713,7 +4979,7 @@ ___
 
 ##### Defined in
 
-[utils.ts:33](https://github.com/relaypro/relay-js/blob/5688424e5146/src/utils.ts#L33)
+[utils.ts:34](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/utils.ts#L34)
 
 ___
 
@@ -4734,7 +5000,7 @@ ___
 
 ##### Defined in
 
-[utils.ts:83](https://github.com/relaypro/relay-js/blob/5688424e5146/src/utils.ts#L83)
+[utils.ts:84](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/utils.ts#L84)
 
 ___
 
@@ -4760,7 +5026,7 @@ value is Record<string \| number \| symbol, Value\>
 
 ##### Defined in
 
-[utils.ts:69](https://github.com/relaypro/relay-js/blob/5688424e5146/src/utils.ts#L69)
+[utils.ts:70](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/utils.ts#L70)
 
 ___
 
@@ -4774,7 +5040,7 @@ ___
 
 ##### Defined in
 
-[utils.ts:29](https://github.com/relaypro/relay-js/blob/5688424e5146/src/utils.ts#L29)
+[utils.ts:30](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/utils.ts#L30)
 
 ___
 
@@ -4794,7 +5060,7 @@ ___
 
 ##### Defined in
 
-[utils.ts:96](https://github.com/relaypro/relay-js/blob/5688424e5146/src/utils.ts#L96)
+[utils.ts:97](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/utils.ts#L97)
 
 ___
 
@@ -4808,7 +5074,7 @@ ___
 
 ##### Defined in
 
-[utils.ts:27](https://github.com/relaypro/relay-js/blob/5688424e5146/src/utils.ts#L27)
+[utils.ts:28](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/utils.ts#L28)
 
 ___
 
@@ -4828,7 +5094,7 @@ ___
 
 ##### Defined in
 
-[utils.ts:42](https://github.com/relaypro/relay-js/blob/5688424e5146/src/utils.ts#L42)
+[utils.ts:43](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/utils.ts#L43)
 
 ___
 
@@ -4848,7 +5114,7 @@ ___
 
 ##### Defined in
 
-[utils.ts:45](https://github.com/relaypro/relay-js/blob/5688424e5146/src/utils.ts#L45)
+[utils.ts:46](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/utils.ts#L46)
 
 
 <a name="modulesvarsmd"></a>
@@ -4871,4 +5137,4 @@ ___
 
 ##### Defined in
 
-[vars.ts:71](https://github.com/relaypro/relay-js/blob/5688424e5146/src/vars.ts#L71)
+[vars.ts:71](https://github.com/relaypro/relay-js/blob/8a1dfc1106e0/src/vars.ts#L71)
