@@ -437,6 +437,11 @@ class Workflow {
     return await this._getDeviceInfo(target, DeviceInfoQuery.USERNAME) as string
   }
 
+  // TODO: is `username` a URI?
+  async setUserProfile(target: SingleTarget, username: string, force=false): Promise<void> {
+    await this._castTarget(target, `set_user_profile`, { username, force })
+  }
+
   // TODO: is this action necessary?
   async getDeviceName(target: SingleTarget): Promise<string> {
     return await this._getDeviceInfo(target, DeviceInfoQuery.NAME) as string
@@ -592,11 +597,6 @@ class Workflow {
   async translate(text: string, from=Language.ENGLISH, to=Language.SPANISH): Promise<string> {
     const { text: translatedText } = (await this._call(`translate`, { text, from_lang: from, to_lang: to})) as Record<`text`, string>
     return translatedText
-  }
-
-  // TODO: is `username` a URI?
-  async setUserProfile(username: string, force=false): Promise<void> {
-    await this._cast(`set_user_profile`, { username, force })
   }
 
   // TODO: is group_name a URI?
