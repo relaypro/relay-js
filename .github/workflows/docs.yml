@@ -29,7 +29,7 @@ jobs:
           cd src
           npm install rimraf
           npm run docs
-          npm run concat-docs
+          npm run concat-doc
 
       - uses: actions/checkout@v3
         with:
