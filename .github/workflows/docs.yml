@@ -27,8 +27,8 @@ jobs:
       - name: Build test and lint
         run: |
           cd src
-          npm docs
-          npm concat-docs
+          npm run docs
+          npm run concat-docs
 
       - uses: actions/checkout@v3
         with:
