@@ -20,13 +20,14 @@ jobs:
         with:
           path: './src/'
 
-      - uses: actions/setup-node@v2.1.5
+      - uses: actions/setup-node@v3
         with:
           node-version: '14.15.4'
 
       - name: generate markdown and concatenate
         run: |
           cd src
+          npm install rimraf
           npm run docs
           npm run concat-docs
 
