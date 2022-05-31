@@ -3,8 +3,6 @@ name: docs
 on:
   push:
     branches: [ main, feature/interactions ]
-  pull_request:
-    branches: [ main, feature/interactions ]
 
   workflow_dispatch:
 
