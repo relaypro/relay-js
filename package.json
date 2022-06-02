@@ -1,6 +1,6 @@
 {
   "name": "@relaypro/sdk",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Workflow SDK Relay on Node.js",
   "license": "MIT",
   "repository": "github:relaypro/relay-js",
