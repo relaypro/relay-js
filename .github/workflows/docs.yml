@@ -2,7 +2,8 @@ name: docs
 
 on:
   push:
-    branches: [ main, feature/interactions ]
+    tags:
+      - v*
 
   workflow_dispatch:
 
