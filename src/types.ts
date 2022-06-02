@@ -202,6 +202,7 @@ export type IncidentEvent = {
 // END EVENTS
 
 // START TARGET
+export type GroupTarget = string
 export type SingleTarget = string
 export type Target = SingleTarget | string[]
 export type TargetUris = { uris: string[] }

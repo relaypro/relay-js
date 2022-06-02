@@ -56,26 +56,66 @@ const parse = (uri: string): [string, string, string|undefined, Filter] => {
   }
 }
 
-const parseDeviceName = (uri: string): string|undefined => {
-  const [resourceType, , idOrName, filter] = parse(uri)
-  if (resourceType === `device`) {
+const parseDeviceName = (uri: string): string => {
+  const { idType, idOrName } = parseDevice(uri)
+  if (idType === NAME) {
     return idOrName
+  } else {
+    throw new Error(`invalid_relay_uri: name not provided`)
+  }
+}
+
+const parseDeviceId = (uri: string): string => {
+  const { idType, idOrName } = parseDevice(uri)
+  if (idType === ID) {
+    return idOrName
+  } else {
+    throw new Error(`invalid_relay_uri: id not provided`)
+  }
+}
+
+const parseDevice = (uri: string): Record<`idType`|`idOrName`, string> => {
+  const [resourceType, idType, idOrName, filter] = parse(uri)
+  if (!idOrName) {
+    throw new Error(`invalid_relay_uri: id or name not provided`)
+  } else if (resourceType === `device`) {
+    return { idType, idOrName }
   } else if (resourceType === `interaction`) {
     const device = filter[`device`]
     if (!device) {
       throw new Error(`invalid_relay_uri`)
     } else {
-      return parseDeviceName(device)
+      return parseDevice(device)
     }
   } else {
     throw new Error(`invalid_relay_uri`)
   }
 }
 
-const parseGroupName = (uri: string): string|undefined => {
-  const [resourceType, , idOrName] = parse(uri)
-  if (resourceType === `group`) {
+const parseGroupName = (uri: string): string => {
+  const { idType, idOrName } = parseGroup(uri)
+  if (idType === NAME) {
     return idOrName
+  } else {
+    throw new Error(`invalid_relay_uri: name not provided`)
+  }
+}
+
+const parseGroupId = (uri: string): string => {
+  const { idType, idOrName } = parseGroup(uri)
+  if (idType === ID) {
+    return idOrName
+  } else {
+    throw new Error(`invalid_relay_uri: id not provided`)
+  }
+}
+
+const parseGroup = (uri: string): Record<`idType`|`idOrName`, string> => {
+  const [resourceType, idType, idOrName] = parse(uri)
+  if (!idOrName) {
+    throw new Error(`invalid_relay_uri: id or name not provided`)
+  } else if (resourceType === `group`) {
+    return { idType, idOrName }
   } else {
     throw new Error(`invalid_relay_uri`)
   }
@@ -132,7 +172,9 @@ export {
   assertTargets,
   makeTargetUris,
   parseDeviceName,
+  parseDeviceId,
   parseGroupName,
+  parseGroupId,
   groupId,
   groupName,
   groupMember,

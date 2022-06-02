@@ -30,6 +30,7 @@ import {
   PlaceCall,
   ListenResponse,
   Maybe,
+  GroupTarget,
 } from './types'
 import Queue from './queue'
 import * as Uri from './uri'
@@ -599,11 +600,18 @@ class Workflow {
     return translatedText
   }
 
-  // TODO: is group_name a URI?
-  // TODO: should device_uris be pre-parsed out for simple values instead of URNs?
-  async getGroupMembers(groupName: string): Promise<string[]> {
-    const { device_uris } = await this._call(`list_group_members`, { group_name: groupName }) as Record<`device_uris`, string[]>
-    return device_uris
+  async getGroupMembers(groupUri: GroupTarget): Promise<string[]> {
+    const { member_uris } = await this._call(`group_query`, { group_uri: groupUri, query: `list_members` }) as Record<`member_uris`, string[]>
+    return member_uris
+  }
+
+  async isGroupMember(groupNameUri: GroupTarget, potentialMemberNameUri: SingleTarget): Promise<boolean> {
+    const groupName = Uri.parseGroupName(groupNameUri)
+    const deviceName = Uri.parseDeviceName(potentialMemberNameUri)
+    const groupUri = Uri.groupMember(groupName, deviceName)
+
+    const { is_member } = await this._call(`group_query`, { group_uri: groupUri, query: `is_member` }) as Record<`is_member`, boolean>
+    return is_member
   }
 
   async setDefaultAnalyticEventParameters(params: Record<string, string|number|boolean>): Promise<void> {
