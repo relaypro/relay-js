@@ -307,6 +307,10 @@ class Workflow {
   async startInteraction(target: Target, name: string, options: InteractionOptions): Promise<void> {
     await this._castTarget(target, `start_interaction`, { name, options })
   }
+  
+  async endInteraction(target: Target, name: string): Promise<void> {
+    await this._castTarget(target, `end_interaction`, { name })
+  }
 
   async say(target: Target, text: string, lang=Language.ENGLISH): Promise<string> {
     const { id } = (await this._callTarget(target, `say`, { text, lang })) as Record<`id`, string>
