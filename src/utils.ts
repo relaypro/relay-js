@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto'
-import { TextDecoder } from 'node:util'
+import { TextDecoder } from 'util'
 import { AnyPrimitive, Device, RawWorkflowEvent } from './types'
 
 const decoder = new TextDecoder()
