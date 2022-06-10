@@ -1,6 +1,6 @@
 # relay-js
 
-relay-js SDK is a node.js library for interacting with Relay. For full documentation visit [api-docs.relaypro.com](https://api-docs.relaypro.com)
+relay-js SDK is a node.js library for interacting with Relay. For full documentation visit [developer.relaypro.com](https://developer.relaypro.com)
 
 ## Installation
 
@@ -81,7 +81,7 @@ in workflow event callbacks:
 ## Workflow Registration
 
 More thorough documentation on how to register your workflow on a Relay device
-can be found at https://api-docs.relaypro.com/docs/register-workflows
+can be found at [https://developer.relaypro.com/docs/register-workflows](https://developer.relaypro.com/docs/register-workflows)
 
 ## Development
 
