@@ -307,7 +307,7 @@ class Workflow {
   async startInteraction(target: Target, name: string, options: InteractionOptions): Promise<void> {
     await this._castTarget(target, `start_interaction`, { name, options })
   }
-  
+
   async endInteraction(target: Target, name: string): Promise<void> {
     await this._castTarget(target, `end_interaction`, { name })
   }
@@ -754,7 +754,8 @@ class Workflow {
   }
 
   async terminate(): Promise<void> {
-    await this._cast(`terminate`)
+    await this._send(makeId(), `wf_api_terminate_request`, {}, undefined)
+    await this._waitForEventMatch(Event.STOP)
   }
 
   // END NON-TARGETED ACTIONS
