@@ -48,3 +48,24 @@ jobs:
           author_name: 'Relay Pro builder'
           author_email: 'info@relaypro.com'
           push: true
+          
+      - uses: actions/checkout@v3
+        with:
+          repository: relaypro/apiref
+          ref: 'gh-pages'
+          path: './apiref/'
+          submodules: true
+          
+      - name: consolidate
+        run: |
+          cd apiref
+          git submodule update --recursive
+          
+      - uses: EndBug/add-and-commit@v9
+        with:
+          message: 'publish consolidated docs'
+          cwd: './web/'
+          add: '*'
+          author_name: 'Relay Pro builder'
+          author_email: 'info@relaypro.com'
+          push: true
