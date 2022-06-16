@@ -59,8 +59,11 @@ jobs:
       - name: consolidate
         run: |
           cd apiref
+          git log --pretty=format:'%H' -n 1
           git submodule update --recursive
-          cd relay-js ; git log --pretty=format:'%H' -n 1
+          cd relay-js
+          git remote -v
+          git log --pretty=format:'%H' -n 1
           
       - uses: EndBug/add-and-commit@v9
         with:
