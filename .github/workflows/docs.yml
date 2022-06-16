@@ -60,7 +60,7 @@ jobs:
         run: |
           cd apiref
           git log --pretty=format:'%H' -n 1
-          git submodule update --recursive
+          git submodule update --recursive --remote
           cd relay-js
           git remote -v
           git log --pretty=format:'%H' -n 1
