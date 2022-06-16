@@ -42,8 +42,8 @@ Features demonstrated here:
 
 * When the workflow is triggered, the `start` event is emitted and the registered start callback
   function is called.
-* An __interaction__ is started. This creates a temporary channel on the Relay device, which provides a sort of "context" in which
-  some device-specific commands are sent.
+* An __interaction__ is started. This creates a temporary channel on the Relay device, which provides
+  a sort of "context" in which some device-specific commands are sent.
 * Inside the __interaction started__ handler, the workflow prompts with the `sayAndWait` action. The device user will hear text-to-speech.
 * The workflow awaits for a response from the device user with the `listen` action.
 * A workflow configuration variable `greeting` is retrieved as is the triggering device's name.
