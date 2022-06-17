@@ -59,10 +59,10 @@ jobs:
       - name: consolidate
         run: |
           cd apiref
-          git log --pretty=format:'%H' -n 1
+          cd relay-js ; git log --pretty=format:'%H' -n 1; cd ..
           git config --list
           git submodule init
-          git submodule update
+          git submodule update --remote
           git submodule status
           cd relay-js
           git remote -v
