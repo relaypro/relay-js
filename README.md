@@ -76,7 +76,9 @@ app.workflow(wf => {
 The Relay JS SDK covers a broad set of use cases. Explore the various actions that can be performed
 in workflow event callbacks:
 
-* [Relay](classes/relayeventadapter.md)
+* [Workflow](https://relaypro.github.io/relay-js/#class-workflow)
+
+The full API reference is available at https://relaypro.github.io/relay-js .
 
 ## Workflow Registration
 
