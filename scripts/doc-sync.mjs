@@ -1,3 +1,5 @@
+// Copyright © 2022 Relay Inc.
+
 import { statSync, readdirSync, readFileSync } from 'fs'
 import { join, dirname } from 'path'
 import got from 'got'

@@ -1,3 +1,5 @@
+// Copyright © 2022 Relay Inc.
+
 import { OPEN, RawData, Server } from 'ws'
 
 import * as enums from './enums'

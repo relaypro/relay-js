@@ -1,3 +1,5 @@
+// Copyright © 2022 Relay Inc.
+
 import fetch, { Response } from 'node-fetch'
 import os from 'os'
 import { URLSearchParams } from 'url'

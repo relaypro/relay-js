@@ -1,3 +1,5 @@
+// Copyright © 2022 Relay Inc.
+
 import { URL, URLSearchParams } from 'url'
 
 import { InteractionLifecycle, Target, TargetUris } from './types'

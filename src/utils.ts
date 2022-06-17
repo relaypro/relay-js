@@ -1,3 +1,5 @@
+// Copyright © 2022 Relay Inc.
+
 import { randomBytes } from 'crypto'
 import { TextDecoder } from 'util'
 import { AnyPrimitive, Device, RawWorkflowEvent } from './types'

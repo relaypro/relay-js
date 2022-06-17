@@ -1,3 +1,5 @@
+// Copyright © 2022 Relay Inc.
+
 import http from 'http'
 import https from 'https'
 import { WebSocket } from 'ws'

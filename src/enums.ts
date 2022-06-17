@@ -1,3 +1,5 @@
+// Copyright © 2022 Relay Inc.
+
 export enum Event {
   ERROR = `error`,
   START = `start`,
