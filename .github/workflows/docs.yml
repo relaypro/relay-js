@@ -35,10 +35,10 @@ jobs:
           ref: 'gh-pages'
           path: './web/'
 
-      - name: promote
+      - name: save in same repo
         run: |
           cd web
-          cp ../src/API.md ./index.md
+          cp -rp ../src/API.md ./index.md
 
       - uses: EndBug/add-and-commit@v9
         with:
@@ -56,24 +56,15 @@ jobs:
           path: './apiref/'
           submodules: true
           
-      - name: consolidate
+      - name: save in unified repo
         run: |
           cd apiref
-          cd relay-js ; git log --pretty=format:'%H' -n 1; cd ..
-          git config --list
-          git submodule init
-          git submodule update
-          git submodule status
-          cd relay-js
-          git status
-          git checkout gh-pages
-          git status
-          git remote -v
-          git log --pretty=format:'%H' -n 1
+          test -d js || mkdir js
+          cp -rp ../web/index.md js/
           
       - uses: EndBug/add-and-commit@v9
         with:
-          message: 'update submodules'
+          message: 'update js content'
           cwd: './apiref/'
           add: '*'
           author_name: 'Relay Pro builder'
