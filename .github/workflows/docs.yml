@@ -65,7 +65,9 @@ jobs:
           git submodule update
           git submodule status
           cd relay-js
+          git status
           git checkout gh-pages
+          git status
           git remote -v
           git log --pretty=format:'%H' -n 1
           
