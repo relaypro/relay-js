@@ -61,9 +61,11 @@ jobs:
           cd apiref
           cd relay-js ; git log --pretty=format:'%H' -n 1; cd ..
           git config --list
-          git pull --recurse-submodules
+          git submodule init
+          git submodule update
           git submodule status
           cd relay-js
+          git checkout gh-pages
           git remote -v
           git log --pretty=format:'%H' -n 1
           
