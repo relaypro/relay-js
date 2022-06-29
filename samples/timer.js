@@ -11,6 +11,8 @@ export default createWorkflow( relay => {
     await relay.say(source_uri, 'Starting timer')
     await relay.setVar('tick_num', 1)
     await relay.setVar('interaction', source_uri)
+
+    // Start a timer with 60 second intervals
     await relay.startTimer(await relay.getVar('interval', 60))
   })
 
@@ -18,6 +20,7 @@ export default createWorkflow( relay => {
     let num = await relay.getVar('tick_num')
     await relay.setVar('count', 5)
 
+    // The timer will broadcast a message to the group after 5 minutes
     if ( num >= await relay.getVar('count', 5) ) {
       const target = Uri.groupName('Stations')
       await relay.broadcast(target, await relay.getVar('interaction'), 'Next Station', 'Hi team, it is time to rotate', {})
