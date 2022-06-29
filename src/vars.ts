@@ -28,7 +28,7 @@ export class Vars {
         return process.env.RELAY_ENV
       }
     } else {
-      return `qa`
+      return `pro`
     }
   }
 

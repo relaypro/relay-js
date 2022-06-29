@@ -9,7 +9,7 @@
     "Relay",
     "Voice"
   ],
-  "homepage": "https://api-docs.relaypro.com",
+  "homepage": "https://developer.relaypro.com",
   "bugs": "https://github.com/relaypro/relay-js/issues",
   "main": "dist/index.js",
   "engines": {
