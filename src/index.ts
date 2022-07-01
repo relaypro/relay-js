@@ -64,6 +64,12 @@ type Matches = Record<string, string|number|boolean>
 
 const all: Filter = () => true
 
+/**
+ * The Workflow class is responsible for defining the main functionalities that are used within workflows,
+ * such as functions for communicating with the device, sending out
+ * notifications to groups, handling workflow events, and performing physical actions
+ * on the device such as manipulating LEDs and creating vibrations.
+ */
 class Workflow {
   private websocket: LocalWebSocket | null = null
   private workQueue: Queue | null = null
@@ -443,7 +449,7 @@ class Workflow {
    * Switches all of the LEDs on a device to a certain color and rotates them a specified number
    * of times.
    * @param target the interaction URN.
-   * @param color the hex color code you would like to turn the LEDs to. Defaults to '0000ff'.
+   * @param color the hex color code you would like to turn the LEDs to. Defaults to 'FFFFFF'.
    */
   async rotate(target: Target, color=`FFFFFF`): Promise<void> {
     await this.ledAction(target, `rotate`, { rotations: -1, colors: { [`1`]: color } })
@@ -454,7 +460,7 @@ class Workflow {
    * Switches all of the LEDs on a device to a certain color and flashes them
    * a specified number of times.
    * @param target the interaction URN.
-   * @param color the hex color code you would like to turn the LEDs to. Defaults to '0000ff'.
+   * @param color the hex color code you would like to turn the LEDs to. Defaults to '0000FF'.
    */
   async flash(target: Target, color=`0000FF`): Promise<void> {
     await this.ledAction(target, `flash`, { count: -1, colors: { ring: color } })
@@ -464,17 +470,17 @@ class Workflow {
    * Switches all of the LEDs on a device to a certain color and creates a 'breathing' effect, 
    * where the LEDs will slowly light up a specified number of times.
    * @param target the interaction URN.
-   * @param color the hex color code you would like to turn the LEDs to. Defaults to '0000ff'.
+   * @param color the hex color code you would like to turn the LEDs to. Defaults to '0000FF'.
    */
   async breathe(target: Target, color=`0000FF`): Promise<void> {
     await this.ledAction(target, `breathe`, { count: -1, colors: { ring: color } })
   }
 
   /**
-   * Private method used for performing actions on the LEDs, such as creating 
+   * Used for performing actions on the LEDs, such as creating 
    * a rainbow, flashing, rotating, etc.
    * @param target the interaction URN.
-   * @param effect effect to perform on LEDs, can be 'rainbow', 'rotate', 'flash', 'breath', 'static', or 'off'. Defaults to 'flash'.
+   * @param effect effect to perform on LEDs, can be 'rainbow', 'rotate', 'flash', 'breath', 'static', or 'off'.
    * @param args optional arguments for LED actions.  Defauls to None.
    */
   async ledAction(target: Target, effect: LedEffect, args: LedInfo): Promise<void> {
@@ -620,7 +626,7 @@ class Workflow {
 
   // TODO: is this action necessary?
   /**
-   * Returns the name of a targeeted device.
+   * Returns the name of a targeted device.
    * @param target the device or interaction URN.
    * @returns the name of the device.
    */
@@ -644,7 +650,7 @@ class Workflow {
    * @param refresh whether you would like to refresh before retrieving the location.  Defaults to false.
    * @returns the location of the device.
    */
-  async getDeviceLocation(target: SingleTarget, refresh: boolean=false): Promise<string> {
+  async getDeviceLocation(target: SingleTarget, refresh: boolean): Promise<string> {
     return await this._getDeviceInfo(target, DeviceInfoQuery.ADDRESS, refresh) as string
   }
 
@@ -683,7 +689,7 @@ class Workflow {
    * @param refresh whether you would like to refresh before retrieving the coordinates. Defaults to false.
    * @returns an array containing the latitude and longitude of the device.
    */
-  async getDeviceLatLong(target: SingleTarget, refresh: boolean): Promise<number[]> {
+  async getDeviceLatLong(target: SingleTarget, refresh: boolean=false): Promise<number[]> {
     return await this.getDeviceCoordinates(target, refresh) as number[]
   }
 
@@ -754,7 +760,7 @@ class Workflow {
   /**
    * Enables location services on a device.  Location services will remain
    * enabled until they are disabled on the Relay Dash or through a workflow.
-   * @param target the device or interaciton URN.
+   * @param target the device or interaction URN.
    */
   async enableLocation(target: SingleTarget): Promise<void> {
     await this.setDeviceInfo(target, DeviceInfoField.LOCATION_ENABLED, `true`)
@@ -1050,6 +1056,13 @@ class Workflow {
     }
   }
 
+  /**
+   * Retrieves a mapped variable.
+   * @param name the name of the variable to retrieve.
+   * @param mapper the mapper.
+   * @param defaultValue the default value for the variable if it does not exist.
+   * @returns the value of the mapper variable.
+   */
   async getMappedVar<Type>(name: string, mapper: Mapper<Type>, defaultValue=undefined): Promise<Type|undefined> {
     const value = await this.getVar(name, defaultValue)
     if (value === undefined) {
@@ -1058,18 +1071,42 @@ class Workflow {
     return mapper(value)
   }
 
+  /**
+   * Retrieves a variable that has a numerical value.
+   * @param name the name of the variable to retrieve.
+   * @param defaultValue the default value for the variable if it does not exist.
+   * @returns the numerical variable.
+   */
   async getNumberVar(name: string, defaultValue=undefined): Promise<number|undefined> {
     return await this.getMappedVar(name, Number, defaultValue)
   }
 
+  /**
+   * Retrieves a variable that is an array.
+   * @param name the name of the variable to retrieve.
+   * @param defaultValue the default value for the variable if it does not exist.
+   * @returns the array variable.
+   */
   async getArrayVar(name: string, defaultValue=undefined): Promise<string[]|undefined> {
     return await this.getMappedVar(name, arrayMapper, defaultValue)
   }
 
+  /**
+   * Retrieves a variable that is an array of numbers.
+   * @param name the name of the variable to retrieve.
+   * @param defaultValue the default value for the variable if it does not exist.
+   * @returns the array variable.
+   */
   async getNumberArrayVar(name: string, defaultValue=undefined): Promise<number[]|undefined> {
     return await this.getMappedVar(name, numberArrayMapper, defaultValue)
   }
 
+  /**
+   * Helper method for retrieving variables.
+   * @param names the name or names of the desired variables.
+   * @param mappers mapper for the variable.
+   * @returns the variable/variables.
+   */
   async get(names: string|string[], mappers: [Mapper<AnyPrimitive>]): Promise<AnyPrimitive | AnyPrimitive[]> {
     if (Array.isArray(names)) {
       if (Array.isArray(mappers) && names.length !== mappers.length) {
