@@ -487,18 +487,41 @@ class Workflow {
     await this._castTarget(target, `set_led`, { effect, args })
   }
 
+  /**
+   * Sets the home channel state on the device to true.
+   * @param target the device URN whose home channel you would like to set.
+   */
   async enableHomeChannel(target: Target): Promise<void> {
     await this._setHomeChannelState(target, true)
   }
 
+  /**
+   * Sets the home channel state on the device to false.
+   * @param target the device URN whose home channel you would like to set.
+   */
   async disableHomeChannel(target: Target): Promise<void> {
     await this._setHomeChannelState(target, false)
   }
 
+  /**
+   * Used by enable/disable home channel methods to set the home
+   * channel state on the device to either true of false.
+   * @param target the device URN.
+   * @param enabled whether or not you would like to enable the home channel state.
+   */
   private async _setHomeChannelState(target: Target, enabled: boolean): Promise<void> {
     await this._castTarget(target, `set_home_channel_state`, { enabled })
   }
 
+  /**
+   * Used by notification methods to send out a notification to a group of devices.
+   * @param target the group URN that you are sending your message to.
+   * @param originator the device or interacion URN that sent out the message.
+   * @param type the type of notification.  Can be either 'broadcast', 'notification', or 'alert'.
+   * @param text the content of your notification.
+   * @param name the name of your notification.
+   * @param pushOptions push options for if the notification is sent to the Relay App on a virtual device.
+   */
   private async _sendNotification(target: Target, originator: SingleTarget|undefined, type: enums.Notification, text: undefined|string, name?: string, pushOptions?: NotificationOptions): Promise<void> {
     await this._castTarget(target, `notification`, { originator, type, name, text, push_opts: pushOptions }, NOTIFICATION_TIMEOUT)
   }
@@ -825,6 +848,11 @@ class Workflow {
     }
   }
 
+  /**
+   * Used for creatinga a call ID request.
+   * @param arg can be a unique string or a BaseCallEvent.
+   * @returns the call ID.
+   */
   private _buildCallIdRequestOrThrow(arg: string | BaseCallEvent): BaseCallEvent {
     if (typeof arg === `string`) {
       return { call_id: arg }
@@ -943,6 +971,10 @@ class Workflow {
     return is_member
   }
 
+  /**
+   * Sets default analytical event parameters.
+   * @param params any default parameters for an analytical event that you would like to set.
+   */
   async setDefaultAnalyticEventParameters(params: Record<string, string|number|boolean>): Promise<void> {
     this.defaultAnalyticEventParameters = params
   }
@@ -979,6 +1011,11 @@ class Workflow {
     })
   }
 
+  /**
+   * Tracks an analytical event that doesn't specify the user.
+   * @param category the category of the analytical event.
+   * @param parameters any TrackEventParameters you would like to include.
+   */
   async trackEvent(category: string, parameters?: TrackEventParameters): Promise<void> {
     await this._cast(`log_analytics_event`, {
       category,
@@ -990,6 +1027,12 @@ class Workflow {
     })
   }
 
+  /**
+   * Tracks an analytical event that specifies the user.
+   * @param category the category of the analytical event.
+   * @param target the user associated with the event.
+   * @param parameters any TrackEventParameters you would like to include.
+   */
   async trackUserEvent(category: string, target: SingleTarget, parameters?: TrackEventParameters): Promise<void> {
     await this._cast(`log_analytics_event`, {
       device_uri: target,
@@ -1012,6 +1055,11 @@ class Workflow {
     await this._cast(`set_var`, { name, value: toString(value) })
   }
 
+  /**
+   * Used to set an object with with a specified value.
+   * @param obj a Record object that you would like to set.
+   * @param value the value that you want your object to have.
+   */
   async set(obj: Record<string, string>, value?: string): Promise<void> {
     if (typeof obj === `object`) {
       await Promise.all(
@@ -1031,6 +1079,10 @@ class Workflow {
     await this._cast(`unset_var`, { name })
   }
 
+  /**
+   * Unsets the value of one or many variables.
+   * @param names the name or names of the variable you would like to unset.
+   */
   async unset(names: string|string[]): Promise<void> {
     if (Array.isArray(names)) {
       Promise.all(names.map(name => this.unsetVar(name)))
