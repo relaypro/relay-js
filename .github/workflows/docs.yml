@@ -2,8 +2,9 @@ name: docs
 
 on:
   push:
-    branches: [adding-manual-docs]
-
+    tags:
+      - v*
+      
   workflow_dispatch:
 
 jobs:
