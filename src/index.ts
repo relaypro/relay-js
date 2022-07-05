@@ -1095,7 +1095,7 @@ class Workflow {
    * Retrieves a variable that was set either during workflow registration
    * or through the set_var() function.  The variable can be retrieved anywhere
    * within the workflow, but is erased after the workflow terminates.
-   * @param name the name of the bariable to be retrieved.
+   * @param name the name of the variable to be retrieved.
    * @param defaultValue default value of the variable if it does not exist.  Defaults to undefined.
    * @returns the variable requested.
    */
