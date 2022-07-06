@@ -26,7 +26,7 @@ type Filter = Record<string, string>
  * id/name.  Used by methods that need to create a URN when given a
  * name or ID of a device or group.
  * @param resourceType indicates whether the URN is for a device, group, or interaction.
- * @param idType indicates whether the URN has an ID type of 'name' or 'ID'.
+ * @param idType indicates whether the URN has an ID type of 'name' or 'id'.
  * @param idOrName the id or name of the device or group.
  * @param filter optional filter.
  * @returns the newly constructed URN.
