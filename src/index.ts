@@ -317,7 +317,7 @@ class Workflow {
    * and allows the user to interact with the device via functions that require an 
    * interaction URN.
    * @param target the device that you would like to start an interaction with.
-   * @param name a name for you r interaction.
+   * @param name a name for your interaction.
    * @param options can be color, home channel, or input types.
    */
   async startInteraction(target: Target, name: string, options: InteractionOptions): Promise<void> {
@@ -335,7 +335,7 @@ class Workflow {
   }
 
   /**
-   * Utilizes text to speech capabilities to make the device 'speak' to the user
+   * Utilizes text to speech capabilities to make the device 'speak' to the user.
    * @param target the interaction URN.
    * @param text what you would like the device to say.
    * @param lang the language of the text that is being spoken.  Defaults to 'en-US'.
@@ -436,7 +436,7 @@ class Workflow {
   /**
    * Switches all of the LEDs on to a configured rainbow pattern and rotates the rainbow
    * a specified number of times.
-   * @param target the interaction URN
+   * @param target the interaction URN.
    * @param rotations the number of times you would like the rainbow to rotate. Defaults to -1, meaning the 
    * rainbow will rotate indefinitely.
    */
@@ -574,7 +574,7 @@ class Workflow {
    * @param target the group URN that you would like to send an alert to.
    * @param originator the URN of the device that triggered the alert.
    * @param name a name for your alert.
-   * @param text the text that you would like to be spokento the group as your alert.
+   * @param text the text that you would like to be spoken to the group as your alert.
    * @param pushOptions push options for if the alert is sent to the Relay app on a virtual device. Defaults to {}.
    */
   async alert(target: Target, originator: SingleTarget, name: string, text: string, pushOptions?: NotificationOptions): Promise<void> {
@@ -617,7 +617,7 @@ class Workflow {
    * Used privately by device information functions to retrieve varying information
    * on the device, such as the ID, location, battery, name and type.
    * @param target the device or interaction URN.
-   * @param query which category of information you are receiving.
+   * @param query which category of information you are retrieving.
    * @param refresh whether to refresh before retrieving information on the device.
    * @returns information on the device based on the query.
    */
@@ -629,7 +629,7 @@ class Workflow {
   // TODO: is this action necessary?
   /**
    * Returns the user profile of a targeted device
-   * @param target the device or interacton URN.
+   * @param target the device or interaction URN.
    * @returns the user profile registered to the device.
    */
   async getUserProfile(target: SingleTarget): Promise<string> {
@@ -710,7 +710,7 @@ class Workflow {
    * Returns the latitude and longitude coordinates of a targeted device.
    * @param target the device or interaction URN.
    * @param refresh whether you would like to refresh before retrieving the coordinates. Defaults to false.
-   * @returns an array containing the latitude and longitude of the device.
+   * @returns an array containing the latitude and longitude of the device's location.
    */
   async getDeviceLatLong(target: SingleTarget, refresh: boolean=false): Promise<number[]> {
     return await this.getDeviceCoordinates(target, refresh) as number[]
@@ -730,7 +730,7 @@ class Workflow {
    * Returns the battery of a targeted device.
    * @param target the device or interaction URN.
    * @param refresh whether you would like to refresh before retrieving the battery.  Defaults to false.
-   * @returns the battery of the device.
+   * @returns the battery level on the device.
    */
   async getDeviceBattery(target: SingleTarget, refresh: boolean): Promise<number> {
     return await this._getDeviceInfo(target, DeviceInfoQuery.BATTERY, refresh) as number
@@ -824,8 +824,6 @@ class Workflow {
    * with the user.
    * @param target the interaction URN.
    * @param phrases optional phrases that you would like to limit the user's response to.  Defualts to none.
-   * @param transcribe  whether you would like to transcribe the user's reponse. Defaults to True.
-   * @param alt_lang if you would like the device to listen for a response in a specific language. Defaults to None.
    * @returns text representation of what the user had spoken into the device.
    */
   async listen(target: SingleTarget, phrases=[], { transcribe=true, alt_lang=Language.ENGLISH, timeout=60 }={}): Promise<ListenResponse> {
