@@ -1,5 +1,5 @@
 import pkg from '@relaypro/sdk'
-const { Event, createWorkflow } = pkg
+const { Event, createWorkflow, Uri } = pkg
 
 export default createWorkflow(relay => {
   
