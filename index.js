@@ -10,6 +10,9 @@ import led from './samples/led.js'
 import translate from './samples/translate.js'
 import variables from './samples/variables.js'
 import analytics from './samples/analytics.js'
+import audio from './samples/audio.js'
+import notify from './samples/notify.js'
+import timer from './timer/timer.js'
 
 const app = relay({
     subscriberId: `6aa4cf8f-cb49-483b-aca8-80b01a4c1e25`,
@@ -33,5 +36,8 @@ app.workflow('translate', translate)
 app.workflow('variables', variables)
 app.workflow('analytics', analytics)
 app.workflow('incident', incident)
+app.workflow('audio', audio)
+app.workflow('notify', notify)
+app.workflow('timer', timer)
 
 
