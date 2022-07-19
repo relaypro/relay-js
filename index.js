@@ -12,7 +12,7 @@ import variables from './samples/variables.js'
 import analytics from './samples/analytics.js'
 import audio from './samples/audio.js'
 import notify from './samples/notify.js'
-import timer from './timer/timer.js'
+import timer from './samples/timer.js'
 
 const app = relay({
     subscriberId: `6aa4cf8f-cb49-483b-aca8-80b01a4c1e25`,
