@@ -95,5 +95,15 @@ npm run build
 npm run test
 ```
 
+## Run a Registered Workflow
+ 
+ ```bash
+ git clone git@github.com:relaypro/relay-js.git
+ cd relay-js
+ npm install
+ npm run build
+ node index.js
+ ```
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
