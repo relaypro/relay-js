@@ -1,0 +1,16 @@
+{
+  "name": "relay-samples",
+  "version": "1.0.0",
+  "description": "@relaypro/sdk samples",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@relaypro/sdk": "../"
+  },
+  "author": "Ashley Nicole Godwin <agodwin@relaypro.com>",
+  "license": "MIT",
+  "type": "module"
+
+}

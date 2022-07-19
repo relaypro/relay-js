@@ -30,7 +30,6 @@
     "dist"
   ],
   "dependencies": {
-    "@relaypro/sdk": "^2.4.0",
     "node-fetch": "2.6.7",
     "tslib": "2.4.0",
     "ws": "8.8.0"
@@ -70,6 +69,5 @@
   },
   "sdk": {
     "commitHash": "0204cdaa2c2c5c6c5a1f677cf4f0fb26aa556922"
-  },
-  "type": "module"
+  }
 }
