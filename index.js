@@ -19,10 +19,6 @@ const app = relay({
     apiKey: `447e27bc111b4787eb7f48a239eda352`,
 })
 
-// const device = await app.api.fetchDevice(`990007560004928`)
-
-// console.log(`device`, device)
-
 // "named" workflows must match the WS path
 // e.g. ws://host:port/helloworld
 app.workflow(`helloworld`, helloworld)
