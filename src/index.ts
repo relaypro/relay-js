@@ -591,23 +591,25 @@ class Workflow {
     await this._sendNotification(target, undefined, Notification.CANCEL, undefined, name)
   }
 
-  /**
-   * Restarts a device during a workflow, without having
-   * to physically restart the device via hodling down the '-' button.
-   * @param target the URN of the device you would like to restart.
-   */
-  async restartDevice(target: Target): Promise<void> {
-    await this._castTarget(target, `device_power_off`, { restart: true })
-  }
+  // RESTARTING/POWERING DOWN THE DEVICE CURRENTLY DO NOT WORK
 
-  /**
-   * Powers down a device during a workflow, without having to physically power down
-   * the device via holding down the '+' button.
-   * @param target the URN of the device that you would like to power down.
-   */
-  async powerDownDevice(target: Target): Promise<void> {
-    await this._castTarget(target, `device_power_off`, { restart: false })
-  }
+  // /**
+  //  * Restarts a device during a workflow, without having
+  //  * to physically restart the device via hodling down the '-' button.
+  //  * @param target the URN of the device you would like to restart.
+  //  */
+  // async restartDevice(target: Target): Promise<void> {
+  //   await this._castTarget(target, `device_power_off`, { restart: true })
+  // }
+
+  // /**
+  //  * Powers down a device during a workflow, without having to physically power down
+  //  * the device via holding down the '+' button.
+  //  * @param target the URN of the device that you would like to power down.
+  //  */
+  // async powerDownDevice(target: Target): Promise<void> {
+  //   await this._castTarget(target, `device_power_off`, { restart: false })
+  // }
 
   // END MULTI-TARGET ACTIONS
 
@@ -767,17 +769,18 @@ class Workflow {
     await this.setDeviceInfo(target, DeviceInfoField.LABEL, name)
   }
 
-  // TODO: is channel a URI?
-  /**
-   * Sets the channel of a targeted device and updates it on the Relay Dash.
-   * The new channel remains until it is set again via a workflow or updated on the
-   * Relay Dash.
-   * @param target the device or interaction URN.
-   * @param channel the channel that you would like to update your device to.
-   */
-  async setDeviceChannel(target: SingleTarget, channel: string): Promise<void> {
-    await this.setDeviceInfo(target, DeviceInfoField.CHANNEL, channel)
-  }
+  // SETDEVICECHANNEL CURRENTLY DOES NOT WORK
+
+  // /**
+  //  * Sets the channel of a targeted device and updates it on the Relay Dash.
+  //  * The new channel remains until it is set again via a workflow or updated on the
+  //  * Relay Dash.
+  //  * @param target the device or interaction URN.
+  //  * @param channel the channel that you would like to update your device to.
+  //  */
+  // async setDeviceChannel(target: SingleTarget, channel: string): Promise<void> {
+  //   await this.setDeviceInfo(target, DeviceInfoField.CHANNEL, channel)
+  // }
 
   // TODO: wf_api_set_device_info_request's location_enabled string booleans?
   /**
@@ -798,14 +801,16 @@ class Workflow {
     await this.setDeviceInfo(target, DeviceInfoField.LOCATION_ENABLED, `false`)
   }
 
-  /**
-   * Sets the mode of the device.
-   * @param target the device or interaction URN.
-   * @param mode the updated mode of the device, which can be 'panic', 'alarm', or 'none'. Defaults to 'none'.
-   */
-  async setDeviceMode(target: SingleTarget, mode: `panic` | `alarm` | `none`): Promise<void> {
-    await this._castTarget(target, `set_device_mode`, { mode })
-  }
+  // SETDEVICEMODE CURRENTLY DOES NOT WORK
+
+  // /**
+  //  * Sets the mode of the device.
+  //  * @param target the device or interaction URN.
+  //  * @param mode the updated mode of the device, which can be 'panic', 'alarm', or 'none'. Defaults to 'none'.
+  //  */
+  // async setDeviceMode(target: SingleTarget, mode: `panic` | `alarm` | `none`): Promise<void> {
+  //   await this._castTarget(target, `set_device_mode`, { mode })
+  // }
 
   /**
    * Sets the channel that a device is on.  This can be used to change the channel of a device during a workflow,
