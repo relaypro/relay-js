@@ -523,7 +523,7 @@ class Workflow {
    * @param pushOptions push options for if the notification is sent to the Relay App on a virtual device.
    */
   private async _sendNotification(target: Target, originator: SingleTarget|undefined, type: enums.Notification, text: undefined|string, name?: string, pushOptions?: NotificationOptions): Promise<void> {
-    await this._castTarget(target, `notification`, { originator, type, name, text, push_opts: pushOptions }, NOTIFICATION_TIMEOUT)
+    await this._castTarget(target, `notification`, { originator, type, name, text, push_opts: pushOptions ?? {} }, NOTIFICATION_TIMEOUT)
   }
 
   /**
