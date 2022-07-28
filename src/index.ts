@@ -917,7 +917,7 @@ class Workflow {
    * the unit of time.
    * @param type can be 'timeout' or 'interval'.  Defaults to 'timeout'.
    * @param name a name for your timer
-   * @param timeout an integer representing when you would like your timer to stop.
+   * @param timeout an integer representing when you would like your timer to fire.
    * @param timeout_type can be 'ms', 'secs', 'mins' or 'hrs'. Defaults to 'secs'.
    */
   async setTimer(type: enums.TimerType, name: string, timeout=60, timeout_type: enums.TimeoutType): Promise<void> {
@@ -1177,8 +1177,8 @@ class Workflow {
 
   /**
    * Starts an unnamed timer, meaning this will be the only timer on your device.
-   * The timer will stop when it reaches the limit of the 'timeout' parameter.
-   * @param timeout the number of seconds you would like to wait until the timer stops.
+   * The timer will fire when it reaches the limit of the 'timeout' parameter.
+   * @param timeout the number of seconds you would like to wait until the timer fires.
    */
   async startTimer(timeout=60): Promise<void> {
     await this._cast(`start_timer`, { timeout })

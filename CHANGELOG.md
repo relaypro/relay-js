@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.1] - 2022-07-28
+
+Updated documentation for the timer actions.
+
+## [2.4.0] - TBD
+
 ## [2.0.0] - 2022-02-24
 
 ### BREAKING CHANGES
