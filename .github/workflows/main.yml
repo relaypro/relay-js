@@ -28,8 +28,4 @@ jobs:
       - name: Build test and lint
         run: |
           npm ci
-          npm test
           npx eslint .
-#          npx typedoc
-#          npx concat-md --toc --decrease-title-levels --dir-name-as-title docs > concat-docs/relay-js.md
-#          npm run doc-sync -- "$README_TOKEN" "$README_CATEGORY"

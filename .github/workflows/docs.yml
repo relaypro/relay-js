@@ -4,11 +4,11 @@ on:
   push:
     tags:
       - v*
-      
+
   workflow_dispatch:
 
 jobs:
-  build:
+  docs:
     env:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -48,20 +48,20 @@ jobs:
           author_name: 'Relay Pro builder'
           author_email: 'info@relaypro.com'
           push: true
-          
+
       - uses: actions/checkout@v3
         with:
           repository: relaypro/relay-apiref
           ref: 'gh-pages'
           path: './apiref/'
           submodules: true
-          
+
       - name: save in unified repo
         run: |
           cd apiref
           test -d js || mkdir js
           cp -rp ../web/index.md js/
-          
+
       - uses: EndBug/add-and-commit@v9
         with:
           message: 'update js content'
