@@ -1,11 +1,11 @@
-import pkg, { relay } from '@relaypro/sdk'
+import pkg from '@relaypro/sdk'
 const { Event, createWorkflow } = pkg
 
 export default createWorkflow(relay => {
   relay.on(Event.START, async(event) => {
     const { trigger: { args: { source_uri } } } = event
 
-    await relay.startInteraction(source_uri, 'location')
+    await relay.startInteraction(source_uri, `location`)
   })
 
   relay.on(Event.INTERACTION_STARTED, async({ source_uri: interaction_uri }) => {
@@ -32,7 +32,7 @@ export default createWorkflow(relay => {
     const indoorLocation = await relay.getDeviceIndoorLocation(interaction_uri, false)
     await relay.say(interaction_uri, `The device's indoor location is ${indoorLocation}`)
 
-    await relay.endInteraction(interaction_uri, 'location')
+    await relay.endInteraction(interaction_uri, `location`)
   })
 
   relay.on(Event.INTERACTION_ENDED, async() => {

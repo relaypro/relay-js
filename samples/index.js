@@ -15,8 +15,8 @@ import notify from './notify.js'
 import timer from './timer.js'
 
 const app = relay({
-    subscriberId: `6aa4cf8f-cb49-483b-aca8-80b01a4c1e25`,
-    apiKey: `447e27bc111b4787eb7f48a239eda352`,
+  subscriberId: `<REPLACE WITH SUBSCRIBER ID>`,
+  apiKey: `<REPLACE WITH API KEY OBTAINED FROM RELAY CLI>`,
 })
 
 // "named" workflows must match the WS path
@@ -26,14 +26,12 @@ app.workflow(`deviceinfo`, deviceinfo)
 app.workflow(`location`, location)
 app.workflow(`broadcast`, broadcast)
 app.workflow(`vibrate`, vibrate)
-app.workflow('led', led)
-app.workflow('alert', alert)
-app.workflow('translate', translate)
-app.workflow('variables', variables)
-app.workflow('analytics', analytics)
-app.workflow('incident', incident)
-app.workflow('audio', audio)
-app.workflow('notify', notify)
-app.workflow('timer', timer)
-
-
+app.workflow(`led`, led)
+app.workflow(`alert`, alert)
+app.workflow(`translate`, translate)
+app.workflow(`variables`, variables)
+app.workflow(`analytics`, analytics)
+app.workflow(`incident`, incident)
+app.workflow(`audio`, audio)
+app.workflow(`notify`, notify)
+app.workflow(`timer`, timer)

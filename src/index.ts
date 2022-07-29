@@ -314,7 +314,7 @@ class Workflow {
 
   /**
    * Starts an interaction with the user.  Triggers an INTERACTION_STARTED event
-   * and allows the user to interact with the device via functions that require an 
+   * and allows the user to interact with the device via functions that require an
    * interaction URN.
    * @param target the device that you would like to start an interaction with.
    * @param name a name for your interaction.
@@ -437,7 +437,7 @@ class Workflow {
    * Switches all of the LEDs on to a configured rainbow pattern and rotates the rainbow
    * a specified number of times.
    * @param target the interaction URN.
-   * @param rotations the number of times you would like the rainbow to rotate. Defaults to -1, meaning the 
+   * @param rotations the number of times you would like the rainbow to rotate. Defaults to -1, meaning the
    * rainbow will rotate indefinitely.
    */
   async rainbow(target: Target, rotations=-1): Promise<void> {
@@ -467,7 +467,7 @@ class Workflow {
   }
 
   /**
-   * Switches all of the LEDs on a device to a certain color and creates a 'breathing' effect, 
+   * Switches all of the LEDs on a device to a certain color and creates a 'breathing' effect,
    * where the LEDs will slowly light up a specified number of times.
    * @param target the interaction URN.
    * @param color the hex color code you would like to turn the LEDs to. Defaults to '0000FF'.
@@ -477,7 +477,7 @@ class Workflow {
   }
 
   /**
-   * Used for performing actions on the LEDs, such as creating 
+   * Used for performing actions on the LEDs, such as creating
    * a rainbow, flashing, rotating, etc.
    * @param target the interaction URN.
    * @param effect effect to perform on LEDs, can be 'rainbow', 'rotate', 'flash', 'breath', 'static', or 'off'.
@@ -527,7 +527,7 @@ class Workflow {
   }
 
   /**
-   * Sends out a broadcasted message to a group of devices.  The message is played out on 
+   * Sends out a broadcasted message to a group of devices.  The message is played out on
    * all devices, as well as sent to the Relay Dash.
    * @param target the group URN that you would like to broadcast your message to.
    * @param originator the device URN that triggered the broadcast.
@@ -584,7 +584,7 @@ class Workflow {
   /**
    * Cancels an alert that was sent to a group of devices.  Particularly useful if you would like to cancel the alert
    * on all devices after one device has acknowledged the alert.
-   * @param target the device URN that has acknowledged the alert. 
+   * @param target the device URN that has acknowledged the alert.
    * @param name the name of the alert.
    */
   async cancelAlert(target: Target, name: string): Promise<void> {
@@ -714,7 +714,7 @@ class Workflow {
    * @param refresh whether you would like to refresh before retrieving the coordinates. Defaults to false.
    * @returns an array containing the latitude and longitude of the device's location.
    */
-  async getDeviceLatLong(target: SingleTarget, refresh: boolean=false): Promise<number[]> {
+  async getDeviceLatLong(target: SingleTarget, refresh=false): Promise<number[]> {
     return await this.getDeviceCoordinates(target, refresh) as number[]
   }
 
@@ -818,7 +818,7 @@ class Workflow {
    * @param target the device or interaction URN.
    * @param name the name of the channel you would like to set your device to.
    * @param suppressTTS whether you would like to surpress the text to speech.  Defaults to false.
-   * @param disableHomeChannel whether you would like to disable the home channel.  Defaults to false. 
+   * @param disableHomeChannel whether you would like to disable the home channel.  Defaults to false.
    */
   async setChannel(target: SingleTarget, name:string, { suppressTTS=false, disableHomeChannel=false }: { suppressTTS?: boolean, disableHomeChannel?: false }={}): Promise<void> {
     await this._castTarget(target, `set_channel`, { channel_name: name, suppress_tts: suppressTTS, disable_home_channel: disableHomeChannel })
@@ -1218,7 +1218,7 @@ class Workflow {
 
   /**
    * Terminates a workflow.  This method is usually called
-   * after your workflow has completed and you would like to end the 
+   * after your workflow has completed and you would like to end the
    * workflow by calling end_interaction(), where you can then terminate
    * the workflow.
    */

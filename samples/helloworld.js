@@ -2,10 +2,10 @@ import pkg from '@relaypro/sdk'
 const { Event, createWorkflow, Uri } = pkg
 
 export default createWorkflow(relay => {
-  
+
   relay.on(Event.START, async (event) => {
     const { trigger: { args: { source_uri } } } = event
-    
+
     await relay.startInteraction([source_uri], `hello world`)
   })
 

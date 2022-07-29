@@ -5,7 +5,7 @@
  * an error, interaction lifecycle events, button presses, timers
  * or notificaions, incidents, speech, and calls.
  */
- export enum Event {
+export enum Event {
   ERROR = `error`,
   START = `start`,
   STOP = `stop`,
@@ -39,7 +39,7 @@ export enum CallDirection {
 }
 
 /**
- * Whether the button press was on the action button, or 
+ * Whether the button press was on the action button, or
  * the channel button.
  */
 export enum Button {
@@ -48,7 +48,7 @@ export enum Button {
 }
 
 /**
- * The number of times a user consequtively taps a button, or the 
+ * The number of times a user consequtively taps a button, or the
  * user holds down a button.
  */
 export enum Taps {
@@ -59,7 +59,7 @@ export enum Taps {
 }
 
 /**
- * The supported languages that can be used for speech, listening, 
+ * The supported languages that can be used for speech, listening,
  * or translation on the device.
  */
 export enum Language {
