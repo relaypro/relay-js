@@ -4,7 +4,6 @@ const { Event, createWorkflow } = pkg
 export default createWorkflow(relay => {
   relay.on(Event.START, async (event) => {
     const { trigger: { args: { source_uri: originator } } } = event
-    
     await relay.startInteraction([originator], `vibrate`)
   })
 
@@ -14,7 +13,7 @@ export default createWorkflow(relay => {
     // The device will vibrate 3 times
     await relay.vibrate(interaction_uri, [500, 800, 800, 800, 800, 800])
 
-    await relay.endInteraction(interaction_uri, 'vibrate')
+    await relay.endInteraction(interaction_uri, `vibrate`)
   })
 
   relay.on(Event.INTERACTION_ENDED, async() => {
