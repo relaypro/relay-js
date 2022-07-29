@@ -17,6 +17,7 @@
   INTERACTION_FAILED = `interaction_failed`,
   BUTTON = `button`,
   TIMER = `timer`,
+  TIMER_FIRED = `timer_fired`,
   NOTIFICATION = `notification`,
   INCIDENT = `incident`,
   PROMPT = `prompt`,
