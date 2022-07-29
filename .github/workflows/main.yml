@@ -14,9 +14,12 @@ jobs:
     name: Build and analyze
     env:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      README_CATEGORY: ${{ secrets.README_CATEGORY }}
-      README_TOKEN: ${{ secrets.README_TOKEN }}
+      # README_CATEGORY: ${{ secrets.README_CATEGORY }}
+      # README_TOKEN: ${{ secrets.README_TOKEN }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
 
     strategy:
       fail-fast: false
