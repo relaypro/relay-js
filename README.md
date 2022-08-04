@@ -107,5 +107,9 @@ npm install
 node index.js
 ```
 
+## API Reference Documentation
+
+The generated typedoc documentation is available at https://relaypro.github.io/relay-js/
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
