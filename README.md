@@ -71,15 +71,6 @@ app.workflow(wf => {
 })
 ```
 
-## API
-
-The Relay JS SDK covers a broad set of use cases. Explore the various actions that can be performed
-in workflow event callbacks:
-
-* [Workflow](https://relaypro.github.io/relay-js/#class-workflow)
-
-The full API reference is available at https://relaypro.github.io/relay-js .
-
 ## Workflow Registration
 
 More thorough documentation on how to register your workflow on a Relay device
@@ -107,9 +98,16 @@ npm install
 node index.js
 ```
 
+## Guides Documentation
+
+The higher-level guides are available at https://developer.relaypro.com/docs
+
 ## API Reference Documentation
 
 The generated typedoc documentation is available at https://relaypro.github.io/relay-js/
+
+Explore the various actions that can be performed in workflow event callbacks:
+[Workflow](https://relaypro.github.io/relay-js/#class-workflow)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
