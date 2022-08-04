@@ -53,7 +53,7 @@ Features demonstrated here:
 Using the Relay CLI, the workflow can be registered with the following command:
 
 ```bash
-relay workflow:create:phrase --name my-test-workflow --uri wss://yourhost:port/helloworld --trigger test -i 99000XXXXXXXXXX
+relay workflow:create:phrase --name my-test-workflow --uri wss://yourhost:port/helloworld --trigger test --install-all
 ```
 
 In the above sample sample, a workflow callback function is registered with the name `helloworld`. This value
