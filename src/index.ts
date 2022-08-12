@@ -549,27 +549,6 @@ class Workflow {
   }
 
   /**
-   * Sends out a notification message to a group of devices.
-   * @param target the group URN that you would like to notify.
-   * @param originator the device URN that triggered the notification.
-   * @param name a name for your notification.
-   * @param text the text that you would like to be spoken out of the device as your notification.
-   * @param pushOptions push options for if the notification is sent to the Relay app on a virtual device.  Defaults to {}.
-   */
-  async notify(target: Target, originator: SingleTarget, name: string, text: string, pushOptions?: NotificationOptions): Promise<void> {
-    await this._sendNotification(target, originator, Notification.NOTIFY, text, name, pushOptions)
-  }
-
-  /**
-   * Cancels the notification that was sent to a group of devices.
-   * @param target the device URN that is cancelling the notification.
-   * @param name the name of the notification that you would like to cancel.
-   */
-  async cancelNotify(target: Target,name: string): Promise<void> {
-    await this._sendNotification(target, undefined, Notification.CANCEL, undefined, name)
-  }
-
-  /**
    * Sends out an alert to the specified group of devices and the Relay Dash.
    * @param target the group URN that you would like to send an alert to.
    * @param originator the URN of the device that triggered the alert.
