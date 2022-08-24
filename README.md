@@ -71,6 +71,7 @@ app.workflow(wf => {
 })
 ```
 
+
 ## Workflow Registration
 
 More thorough documentation on how to register your workflow on a Relay device
@@ -87,7 +88,7 @@ npm run test
 ```
 
 ## Run a Registered Workflow
- 
+
 ```bash
 git clone git@github.com:relaypro/relay-js.git
 cd relay-js
