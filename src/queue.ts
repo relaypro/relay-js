@@ -24,7 +24,6 @@ export default class Queue {
   }
 
   private next() {
-    // console.log(`${this.queue.length} : ${this.numActive} : ${this.max}`)
     if (this.queue.length) {
       if (this.numActive < this.max) {
         const fn = this.queue.shift()

@@ -43,7 +43,6 @@ describe(`Queue Tests`, () => {
             executeOrder.push(j)
             setTimeout(() => {
               timeoutOrder.push(j)
-              // console.log(`j => ${j}`)
               resolve()
             }, Math.floor(Math.random() * num))
           })

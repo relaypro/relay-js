@@ -24,6 +24,7 @@ export type ValueOf<T> = T[keyof T]
 export type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer R) => any ? R : never
 
 export type Options = {
+  port?: number,
   server?: http.Server | https.Server,
   subscriberId?: string,
   apiKey?: string,

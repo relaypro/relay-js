@@ -4,6 +4,9 @@ import { randomBytes } from 'crypto'
 import { TextDecoder } from 'util'
 import { AnyPrimitive, Device, RawWorkflowEvent } from './types'
 
+import debugFn from 'debug'
+const debug = debugFn(`relay-sdk:utils`)
+
 const decoder = new TextDecoder()
 const ensureString = (possibleString: unknown) => {
   if (Array.isArray(possibleString) && possibleString.every(e => Number.isInteger(e) && e >= 0 && e <= 127)) {
@@ -22,7 +25,7 @@ export const safeParse = (msg: string): undefined | RawWorkflowEvent => {
       return value && ensureString(value)
     })
   } catch(err) {
-    console.log(`failed to parse message =>`, msg)
+    debug(`failed to parse message =>`, msg)
     return undefined
   }
 }

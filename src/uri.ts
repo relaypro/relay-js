@@ -4,6 +4,9 @@ import { URL, URLSearchParams } from 'url'
 
 import { InteractionLifecycle, Target, TargetUris } from './types'
 
+import debugFn from 'debug'
+const debug = debugFn(`relay-sdk:uri`)
+
 const SCHEME = `urn`
 const ROOT = `relay-resource`
 const ID = `id`
@@ -244,7 +247,7 @@ const assertTargets = (target: Target): boolean => {
   if (Array.isArray(target) && target.every(e => typeof e === `string` && isRelayUri(e))) {
     return true
   } else {
-    console.error(`invalid-target-uris => ${target}`)
+    debug(`invalid-target-uris => ${target}`)
     throw new Error(`invalid-target-uris`)
   }
 }

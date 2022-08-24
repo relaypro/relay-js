@@ -6,7 +6,7 @@ import * as enums from './enums'
 
 import { safeParse, makeId, filterInt, toString, arrayMapper, numberArrayMapper, isMatch } from './utils'
 
-import { PORT, HEARTBEAT, TIMEOUT, REFRESH_TIMEOUT, NOTIFICATION_TIMEOUT, EVENT_TIMEOUT, NON_INTERACTIVE_ACTIONS, ERROR_RESPONSE, PROGRESS_EVENT } from './constants'
+import { HEARTBEAT, TIMEOUT, REFRESH_TIMEOUT, NOTIFICATION_TIMEOUT, EVENT_TIMEOUT, NON_INTERACTIVE_ACTIONS, ERROR_RESPONSE, PROGRESS_EVENT } from './constants'
 import {
   NotificationOptions,
   LocalWebSocket,
@@ -48,6 +48,9 @@ const {
 
 export * from './enums'
 
+import debugFn from 'debug'
+const debug = debugFn(`relay-sdk`)
+
 NON_INTERACTIVE_ACTIONS
 
 const createWorkflow = (fn: Workflow): Workflow => fn
@@ -80,7 +83,7 @@ class Workflow {
    * @internal
    */
   constructor(websocket: LocalWebSocket) {
-    console.log(`creating event adapter`)
+    debug(`creating event adapter`)
     this.workQueue = new Queue()
     this.websocket = websocket
     this.websocket.on(`close`, this.onClose.bind(this))
@@ -111,25 +114,23 @@ class Workflow {
           if (error instanceof Error) {
             await this.handlers?.[Event.ERROR]?.({ error })
           } else {
-            console.log(`\`error\` not an instance of Error`)
-            console.error(error)
+            debug(`\`error\` not an instance of Error`, error)
           }
         } catch(err) {
-          console.log(`\`error\` handler failed`)
-          console.error(err)
+          debug(`\`error\` handler failed`, err)
         }
       } else { // if no handler, log
-        console.error(error)
+        debug(`no error handler`, error)
       }
     })
   }
 
   private onMessage(data: RawData, isBinary: boolean): void {
     if (isBinary) {
-      console.warn(`Unexpected binary data over WebSocket`)
+      debug(`Unexpected binary data over WebSocket`)
     } else {
       const message = safeParse(data.toString())
-      console.log(`onMessage`, message)
+      debug(`onMessage`, message)
       if (this.workQueue && message?._type && !message?._id) { // not interested in response events (marked by correlation id)
         const eventNameParts = message._type.match(WORKFLOW_EVENT_REGEX)
         if (eventNameParts?.[1]) {
@@ -142,6 +143,9 @@ class Workflow {
             // narrow to a specific interaction type handler
             if (event?.includes(`interaction_lifecycle`) && !this.handlers?.[event]) {
               event = `interaction_${message.type}` as keyof WorkflowEventHandlers
+            } else if (event?.includes(`start`)) {
+              // protocol is to send sdk info to ibot upon receiving the start event
+              this._logSdkInfo()
             }/* else if (event?.includes(`prompt`)) {
               event = `prompt_${message.type}` as keyof WorkflowEventHandlers
             }*/
@@ -153,7 +157,7 @@ class Workflow {
             }
           })
         } else {
-          console.log(`Unknown message =>`, message)
+          debug(`Unknown message =>`, message)
         }
       }
     }
@@ -163,7 +167,7 @@ class Workflow {
   private async _send(id: string, type: string, payload={}, target: TargetUris|undefined): Promise<void|Record<string, unknown>> {
     return new Promise((resolve, reject) => {
       if (!(this.websocket?.isAlive && this.websocket?.readyState === OPEN)) {
-        console.error({
+        debug({
           isAlive: this.websocket?.isAlive,
           readyState: this.websocket?.readyState,
         })
@@ -180,7 +184,7 @@ class Workflow {
 
       const messageStr = JSON.stringify(message)
 
-      console.info(`_send action =>`, message)
+      debug(`_send action =>`, message)
 
       this.websocket.send(messageStr, (err) => {
         if (err) {
@@ -208,8 +212,7 @@ class Workflow {
     }
 
     const { _id, _type, error, ...params } = event
-    console.log(`processing event ${_id} of type ${_type}`)
-    // console.info(`_sendReceive action response =>`, event)
+    debug(`processing event ${_id} of type ${_type}`)
 
     if (_type === typeResponse) {
       return Object.keys(params).length > 0 ? params as WorkflowEvent : undefined
@@ -222,7 +225,7 @@ class Workflow {
         throw new Error(`Unknown error`)
       }
     } else {
-      console.error(`Unknown response`, event)
+      debug(`Unknown response`, event)
       throw new Error(`Unknown response`)
     }
   }
@@ -236,7 +239,7 @@ class Workflow {
 
       const responseListener = (msg: string) => {
         const event = safeParse(msg)
-        console.info(`_waitForEventCondition#responseListener =>`, event)
+        debug(`_waitForEventCondition#responseListener =>`, event)
         if (event) {
           if (filter(event)) {
             // stop listening as soon as we have a correlated response
@@ -260,7 +263,7 @@ class Workflow {
       return this._waitForEventCondition(event => {
         const _matches = { _type: `wf_api_${eventName}_event`, ...matches }
         const doesMatch = isMatch(event, _matches)
-        console.log(`_waitForEventCondition`, { event, eventName, _matches, doesMatch  })
+        debug(`_waitForEventCondition`, { event, eventName, _matches, doesMatch  })
         return doesMatch
       })
     } finally {
@@ -821,8 +824,6 @@ class Workflow {
 
     const response = await this._waitForEventMatch(Event.SPEECH, { request_id }) as SpeechEvent
 
-    console.log(`listen`, response)
-
     if (transcribe) {
       return { text: response.text, lang: response.lang }
     } else {
@@ -1027,6 +1028,19 @@ class Workflow {
     })
   }
 
+  private _logSdkInfo() {
+    setTimeout(() => {
+      this._cast(`log_analytics_event`, {
+        category: `sdk-info`,
+        content_type: `application/vnd.relay.sdk.info+json`,
+        analytics_content: {
+          language: `relay-js`,
+          version: process.env.npm_package_version,
+        }
+      })
+    }, 0)
+  }
+
   /**
    * Sets a variable with the corresponding name and value. Scope of
    * the variable is from start to end of a workflow.
@@ -1222,9 +1236,16 @@ const initializeRelaySdk = (options: Options={}): Relay => {
     workflows = new Map()
     instances = new Map()
 
-    const serverOptions = options.server ? { server: options.server } : { port: PORT }
+    const port = options.port ?? (process.env.PORT ? parseInt(process.env.PORT) : 8080)
+    const serverOptions = options.server ? { server: options.server } : { port }
     server = new Server(serverOptions, () => {
-      console.log(`Relay SDK WebSocket Server listening => ${PORT}`)
+      if (serverOptions.server) {
+        console.log(`Relay SDK WebSocket attached to supplied Server`)
+        debug(`Attached to supplied server`)
+      } else {
+        console.log(`Relay SDK WebSocket Server listening => ${port}`)
+        debug(`Listening on port ${port}`)
+      }
     })
 
     server.shouldHandle = (request) => {
@@ -1256,16 +1277,16 @@ const initializeRelaySdk = (options: Options={}): Relay => {
           })
 
           websocket.on(`close`, (/*code, reason*/) => {
-            console.info(`Workflow closed =>`, websocket.connectionId)
+            debug(`Workflow closed =>`, websocket.connectionId)
             instances?.delete(websocket.connectionId)
           })
 
           const _workflow = new Workflow(websocket)
           workflow(_workflow)
           instances?.set(websocket.connectionId, _workflow)
-          console.info(`Workflow connection =>`, websocket.connectionId)
+          debug(`Workflow connection =>`, websocket.connectionId)
         } else {
-          console.info(`Workflow not found; terminating websocket =>`, websocket.connectionId)
+          debug(`Workflow not found; terminating websocket =>`, websocket.connectionId)
           websocket.terminate()
         }
       }
@@ -1292,7 +1313,7 @@ const initializeRelaySdk = (options: Options={}): Relay => {
       workflow: (path: string|WorkflowEventHandler, workflow?: WorkflowEventHandler) => {
         if (workflows) {
           if ((typeof path === `function`)) {
-            console.info(`Default workflow set`)
+            debug(`Default workflow set`)
             workflows.set(DEFAULT_WORKFLOW, path)
           } else if (typeof path === `string` && typeof workflow === `function`) {
             const strippedPath = path.replace(/^\/+/,``)

@@ -1,6 +1,5 @@
 // Copyright © 2022 Relay Inc.
 
-export const PORT = process.env.PORT ? parseInt(process.env.PORT) : 8080
 export const HEARTBEAT = process.env.HEARTBEAT ? parseInt(process.env.HEARTBEAT) : 30000
 
 export const TIMEOUT = 5000
