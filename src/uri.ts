@@ -5,7 +5,7 @@ import { URL, URLSearchParams } from 'url'
 import { InteractionLifecycle, Target, TargetUris } from './types'
 
 import debugFn from 'debug'
-const debug = debugFn(`relay-sdk:uri`)
+const debug = debugFn(`relay:uri`)
 
 const SCHEME = `urn`
 const ROOT = `relay-resource`

@@ -5,7 +5,7 @@ import { TextDecoder } from 'util'
 import { AnyPrimitive, Device, RawWorkflowEvent } from './types'
 
 import debugFn from 'debug'
-const debug = debugFn(`relay-sdk:utils`)
+const debug = debugFn(`relay:utils`)
 
 const decoder = new TextDecoder()
 const ensureString = (possibleString: unknown) => {

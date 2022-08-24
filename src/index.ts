@@ -49,7 +49,7 @@ const {
 export * from './enums'
 
 import debugFn from 'debug'
-const debug = debugFn(`relay-sdk`)
+const debug = debugFn(`relay:core`)
 
 NON_INTERACTIVE_ACTIONS
 

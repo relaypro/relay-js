@@ -71,6 +71,109 @@ app.workflow(wf => {
 })
 ```
 
+## Logging
+By default, the relay-js SDK will log minimal output to the console.
+relay-js SDK uses the [debug](https://www.npmjs.com/package/debug) module
+internally to log information. See its documentation on how it can
+integrate with other logging frameworks. You can even use `debug` in your
+own application code.
+
+If you would like more detailed logging, especially if you'd like to
+troubleshoot event messages passed between your application and Relay
+Servers, you can set the `DEBUG` environment variable.
+
+To see all the internal logs used in relay-js SDK, set the `DEBUG`
+environment variable to `relay:*` when launching your app:
+
+```bash
+$ DEBUG=relay:* node index.js
+```
+
+On Windows, use the corresponding command:
+
+```bash
+set DEBUG=relay:* & node index.js
+```
+
+### Advanced options
+
+When running your app, you can set a few environment variables that will
+change the behavior of the debug logging:
+
+| Name | Purpose |
+|-|-|
+|`DEBUG`| Enables/disables specific debugging namespaces. e.g. `DEBUG=relay:*` |
+|`DEBUG_COLORS`| Whether or not to use colors in the debug output. e.g. `DEBUG_COLORS=1` |
+|`DEBUG_DEPTH`| Object inspection depth. e.g. `DEBUG_DEPTH=5` |
+
+For more information about debug, see the [debug](https://www.npmjs.com/package/debug).
+
+## Ports, Express and `http.Server`
+
+### Set port by environment variable
+
+By default, relay-js SDK will attempt to open a WebSocket port on `8080`.
+This can configured in several ways. If your deployment environment allows
+configuring a port through an environment variable, you can set the port
+with `PORT`. For instance, the following will change the port the SDK
+will open.
+
+```bash
+PORT=5080 node index.js
+```
+### Set port by parameter
+
+Another way to change the port is to pass it into the `relay` function.
+For instance, the following will change the port the SDK will open:
+
+```javascript
+import pkg from '@relaypro/sdk'
+const { relay, Event, createWorkflow, Uri } = pkg
+
+const app = relay({ port: 5080 }) // pass in port number here
+
+app.workflow(wf => {
+  wf.on(Event.START, async () => {
+    // handle start event
+  })
+})
+```
+### Integrate with Express or `http.Server`
+
+Express, and other Node Web Application Frameworks, are a wrapper around
+the Node `http.Server` object. The relay-js SDK provided at `@relaypro/sdk`
+plays nicely in these environments as it utilizes the lightweight `ws`
+WebSocket implementation. As described above, `ws` will listen on the
+default 8080 port, or other configured port.
+
+If you are integrating with an existing Web app, or need to do HTTP
+handling, instead of the relay-js SDK running on a separate port, you will
+most likely want to run on the same port.
+
+This can be accomplished by passing in an `http.Server` instance. For
+example, to integreate with an Express app:
+
+```javascript
+import express from 'express'
+
+const app = express()
+// .listen returns an `http.Server`
+const server = app.listen(3000)
+const relayApp = relay({ server })
+```
+By passing in an `http.Server` instance, the relay-js SDK will attach to
+it rather than opening its own server and port. While Express is
+demonstrated in this example, it is possible to similarly integrate with
+other Node Web Application Frameworks that wrap `http.Server`.
+
+## API
+
+The Relay JS SDK covers a broad set of use cases. Explore the various actions that can be performed
+in workflow event callbacks:
+
+* [Workflow](https://relaypro.github.io/relay-js/#class-workflow)
+
+The full API reference is available at https://relaypro.github.io/relay-js .
 
 ## Workflow Registration
 
