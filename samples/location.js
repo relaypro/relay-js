@@ -1,3 +1,5 @@
+// This is a module that is launched from index.js. See the instructions there.
+
 import pkg from '@relaypro/sdk'
 const { Event, createWorkflow } = pkg
 

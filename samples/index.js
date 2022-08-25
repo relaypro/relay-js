@@ -35,3 +35,8 @@ app.workflow(`incident`, incident)
 app.workflow(`audio`, audio)
 app.workflow(`notify`, notify)
 app.workflow(`timer`, timer)
+
+// To get these to run, you will need to register each of these workflows
+// with a trigger using the Relay CLI.  For details on how to do that,
+// refer to the Guides at https://developer.relaypro.com.  The path part
+// of the workflow server URI is the 1st arg in the `app.workflow` call.
