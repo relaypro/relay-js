@@ -53,7 +53,7 @@ Features demonstrated here:
 Using the Relay CLI, the workflow can be registered with the following command:
 
 ```bash
-relay workflow:create:phrase --name my-test-workflow --uri wss://yourhost:port/helloworld --trigger test --install-all
+relay workflow:create:phrase --trigger test --name my-test-workflow --uri wss://yourhost:port/helloworld --install-all
 ```
 
 In the above sample sample, a workflow callback function is registered with the name `helloworld`. This value
@@ -112,7 +112,7 @@ For more information about debug, see the [debug](https://www.npmjs.com/package/
 
 ### Set port by environment variable
 
-By default, relay-js SDK will attempt to open a WebSocket port on `8080`.
+By default, relay-js SDK will attempt to open a WebSocket port listener on `8080`.
 This can configured in several ways. If your deployment environment allows
 configuring a port through an environment variable, you can set the port
 with `PORT`. For instance, the following will change the port the SDK
