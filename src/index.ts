@@ -898,6 +898,16 @@ class Workflow {
   // AND NOT AN INTERACTION / CHANNEL
 
   /**
+   * Creates an empty group
+   * @param name the name of the group to be created
+   * @returns the new group's URN
+   */
+  async createGroup(name: string): Promise<GroupTarget> {
+    const { uri } = await this._call(`create_group`, { name }) as Record<`uri`, GroupTarget>
+    return uri
+  }
+
+  /**
    * Serves as a named timer that can be either interval or timeout.  Allows you to specify
    * the unit of time.
    * @param type can be 'timeout' or 'interval'.  Defaults to 'timeout'.
@@ -934,7 +944,7 @@ class Workflow {
    * @param groupUri the URN of the group that you would like to retrieve the members from.
    * @returns a list of members within the specified group.
    */
-  async getGroupMembers(groupUri: GroupTarget): Promise<string[]> {
+  async getGroupMembers(groupUri: GroupTarget): Promise<SingleTarget[]> {
     const { member_uris } = await this._call(`group_query`, { group_uri: groupUri, query: `list_members` }) as Record<`member_uris`, string[]>
     return member_uris
   }
@@ -952,6 +962,32 @@ class Workflow {
 
     const { is_member } = await this._call(`group_query`, { group_uri: groupUri, query: `is_member` }) as Record<`is_member`, boolean>
     return is_member
+  }
+
+  /**
+   * Removes all members from a group and deletes the group
+   * @param groupUri the Group URN to delete
+   */
+  async deleteGroup(groupUri: GroupTarget): Promise<void> {
+    await this._cast(`delete_group`, { uri: groupUri })
+  }
+
+  /**
+   * Adds members to the group
+   * @param groupUri the Group URN to add members to
+   * @param target a SingleTarget URN or array of SingleTarget URN to add to the group
+   */
+  async addGroupMembers(groupUri: GroupTarget, target: Target): Promise<void> {
+    await this._callTarget(target, `add_group_members`, { group_uri: groupUri })
+  }
+
+  /**
+   * Removes members from the group
+   * @param groupUri the Group URN to remove members from
+   * @param target a SingleTarget URN or array of SingleTarget URN to add to the group
+   */
+  async removeGroupMembers(groupUri: GroupTarget, target: Target): Promise<void> {
+    await this._castTarget(target, `remove_group_members`, { group_uri: groupUri })
   }
 
   /**
