@@ -5,12 +5,12 @@
 // and use the Relay CLI to register it with the Relay server as described
 // in the Guides at https://developer.relaypro.com.
 
-import { relay, Event, createWorkflow, Uri } from '@relaypro/sdk'
+import { relay, Event, createWorkflow } from '@relaypro/sdk'
 
 const app = relay({port: 8080})
 
 const helloWorkflow = createWorkflow(workflow => {
-  const interactionName = 'hello interaction'
+  const interactionName = `hello interaction`
 
   workflow.on(Event.START, async (event) => {
     const { trigger: { args: { source_uri } } } = event
@@ -18,7 +18,7 @@ const helloWorkflow = createWorkflow(workflow => {
   })
 
   workflow.on(Event.INTERACTION_STARTED, async ({ source_uri }) => {
-    await workflow.sayAndWait(source_uri, 'hello world')
+    await workflow.sayAndWait(source_uri, `hello world`)
     await workflow.endInteraction([source_uri], interactionName)
   })
 
