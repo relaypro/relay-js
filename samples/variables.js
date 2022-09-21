@@ -21,7 +21,7 @@ export default createWorkflow(relay => {
     // getVar returns the value that is stored in that variable.
     await relay.say(interaction_uri, `This workflow was triggered at` + await relay.getVar(`my_start_time`))
 
-    await relay.endInteraction(interaction_uri, `date time`)
+    await relay.endInteraction(interaction_uri)
   })
 
   relay.on(Event.INTERACTION_ENDED, async() => {

@@ -24,7 +24,7 @@ export default createWorkflow(relay => {
     // Let the user know that the incident has been resolved and terminate the workflow
     await relay.say(interaction_uri, `The incident has been resolved by admin.`)
 
-    await relay.endInteraction(interaction_uri, `incident`)
+    await relay.endInteraction(interaction_uri)
   })
 
   relay.on(Event.INTERACTION_ENDED, async() => {

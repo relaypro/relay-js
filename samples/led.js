@@ -19,7 +19,7 @@ export default createWorkflow( relay => {
     //All of the LEDs are turned off
     await relay.switchAllLedOff(interaction_uri)
 
-    await relay.endInteraction(interaction_uri, `led`)
+    await relay.endInteraction(interaction_uri)
   })
 
   relay.on(Event.INTERACTION_ENDED, async() => {

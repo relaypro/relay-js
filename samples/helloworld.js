@@ -22,7 +22,7 @@ export default createWorkflow(relay => {
     const greeting = await relay.getVar(`greeting`)
     await relay.sayAndWait(source_uri, `${greeting} ${userProvidedName}! You are currently using ${deviceName}`)
 
-    await relay.endInteraction([source_uri], `hello world`)
+    await relay.endInteraction([source_uri])
   })
 
   relay.on(Event.INTERACTION_ENDED, async() => {

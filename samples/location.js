@@ -34,7 +34,7 @@ export default createWorkflow(relay => {
     const indoorLocation = await relay.getDeviceIndoorLocation(interaction_uri, false)
     await relay.say(interaction_uri, `The device's indoor location is ${indoorLocation}`)
 
-    await relay.endInteraction(interaction_uri, `location`)
+    await relay.endInteraction(interaction_uri)
   })
 
   relay.on(Event.INTERACTION_ENDED, async() => {

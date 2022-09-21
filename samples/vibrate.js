@@ -15,7 +15,7 @@ export default createWorkflow(relay => {
     // The device will vibrate 3 times
     await relay.vibrate(interaction_uri, [500, 800, 800, 800, 800, 800])
 
-    await relay.endInteraction(interaction_uri, `vibrate`)
+    await relay.endInteraction(interaction_uri)
   })
 
   relay.on(Event.INTERACTION_ENDED, async() => {
