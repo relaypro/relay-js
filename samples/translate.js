@@ -17,7 +17,7 @@ export default createWorkflow(relay => {
     // Translates message from English to French
     await relay.say(interaction_uri, await relay.translate(phrase, `en-US`, `fr-FR`))
 
-    await relay.endInteraction(interaction_uri, `translate`)
+    await relay.endInteraction(interaction_uri)
   })
 
   relay.on(Event.INTERACTION_ENDED, async() => {

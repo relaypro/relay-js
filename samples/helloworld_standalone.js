@@ -19,7 +19,7 @@ const helloWorkflow = createWorkflow(workflow => {
 
   workflow.on(Event.INTERACTION_STARTED, async ({ source_uri }) => {
     await workflow.sayAndWait(source_uri, `hello world`)
-    await workflow.endInteraction([source_uri], interactionName)
+    await workflow.endInteraction([source_uri])
   })
 
   workflow.on(Event.INTERACTION_ENDED, async() => {

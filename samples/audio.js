@@ -15,7 +15,7 @@ export default createWorkflow(relay => {
     // (see the Guides at developer.relaypro.com for details on how to do that).
     await relay.playAndWait(interaction_uri, `relay-static://emergency`)
 
-    await relay.endInteraction(interaction_uri, `audio`)
+    await relay.endInteraction(interaction_uri)
   })
 
   relay.on(Event.INTERACTION_ENDED, async() => {

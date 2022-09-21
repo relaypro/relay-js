@@ -23,7 +23,7 @@ export default createWorkflow(relay => {
     const newName = await relay.getDeviceName(interaction_uri)
     await relay.sayAndWait(interaction_uri, `The device's new name is ${newName}`)
 
-    await relay.endInteraction(interaction_uri, `device information`)
+    await relay.endInteraction(interaction_uri)
   })
 
   relay.on(Event.INTERACTION_ENDED, async() => {

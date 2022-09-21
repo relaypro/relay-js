@@ -16,7 +16,7 @@ export default createWorkflow(relay => {
     // Log an analytics event
     await relay.logUserMessage(`This workflow was triggered`, `990007560103795`, `Analytics Event`)
 
-    await relay.endInteraction(interaction_uri, `logging analytics`)
+    await relay.endInteraction(interaction_uri)
   })
 
   relay.on(Event.INTERACTION_ENDED, async() => {

@@ -1,5 +1,9 @@
 # Migration
 
+## From 2.4 to 2.5
+
+- Remove the interactionName parameter from the endInteraction method, as it became unneeded.
+
 ## From Workflows 1.x to 2.x
 
 ### Interactions
