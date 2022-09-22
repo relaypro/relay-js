@@ -6,7 +6,7 @@ import * as enums from './enums'
 
 import { safeParse, makeId, filterInt, toString, arrayMapper, numberArrayMapper, isMatch } from './utils'
 
-import { HEARTBEAT, TIMEOUT, REFRESH_TIMEOUT, NOTIFICATION_TIMEOUT, EVENT_TIMEOUT, NON_INTERACTIVE_ACTIONS, ERROR_RESPONSE, PROGRESS_EVENT } from './constants'
+import { HEARTBEAT, TIMEOUT, REFRESH_TIMEOUT, NOTIFICATION_TIMEOUT, EVENT_TIMEOUT, ERROR_RESPONSE, PROGRESS_EVENT } from './constants'
 import {
   NotificationOptions,
   LocalWebSocket,
@@ -49,9 +49,10 @@ const {
 export * from './enums'
 
 import debugFn from 'debug'
+import { version } from './version'
 const debug = debugFn(`relay:core`)
 
-NON_INTERACTIVE_ACTIONS
+debug(`Relay SDK Version`, version)
 
 const createWorkflow = (fn: Workflow): Workflow => fn
 
@@ -1070,7 +1071,7 @@ class Workflow {
         content_type: `application/vnd.relay.sdk.info+json`,
         analytics_content: {
           language: `relay-js`,
-          version: process.env.npm_package_version,
+          version: version,
         }
       })
     }, 0)
