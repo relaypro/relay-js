@@ -214,6 +214,13 @@ const deviceId = (id: string) => construct(`device`, ID, id)
 const deviceName = (name: string) => construct(`device`, NAME, name)
 
 /**
+ * Creates a URN from an interaction name.
+ * @param name the name of the interaction.
+ * @returns the newly constructed URN.
+ */
+ const interactionName = (name: string) => construct(`interaction`, NAME, name)
+
+ /**
  * Returns a URN containing all of the devices with the specified status.
  * @param interactionName the name of the interaction.
  * @param status the status of the devices.
@@ -299,6 +306,7 @@ export {
   groupMember,
   deviceId,
   deviceName,
+  interactionName,
   allDevicesWithStatus,
   allDevices,
   genericOriginator,
