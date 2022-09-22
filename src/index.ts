@@ -1068,11 +1068,11 @@ class Workflow {
     setTimeout(() => {
       this._cast(`log_analytics_event`, {
         category: `sdk-info`,
-        content_type: `application/vnd.relay.sdk.info+json`,
-        analytics_content: {
+        content_type: `application/vnd.relay.sdk.info.v1+json`,
+        content: JSON.stringify({
           language: `relay-js`,
           version: version,
-        }
+        }),
       })
     }, 0)
   }
