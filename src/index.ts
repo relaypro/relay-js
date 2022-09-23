@@ -331,7 +331,7 @@ class Workflow {
   /**
    * Ends an interaction with the user.  Triggers an INTERACTION_ENDED event to signify
    * that the user is done interacting with the device.
-   * @param target the device that you would like to end an interaction with.
+   * @param target the interaction that you would like to end.
    */
   async endInteraction(target: Target): Promise<void> {
     await this._castTarget(target, `end_interaction`)
