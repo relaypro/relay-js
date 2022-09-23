@@ -218,9 +218,9 @@ const deviceName = (name: string) => construct(`device`, NAME, name)
  * @param name the name of the interaction.
  * @returns the newly constructed URN.
  */
- const interactionName = (name: string) => construct(`interaction`, NAME, name)
+const interactionName = (name: string) => construct(`interaction`, NAME, name)
 
- /**
+/**
  * Returns a URN containing all of the devices with the specified status.
  * @param interactionName the name of the interaction.
  * @param status the status of the devices.
