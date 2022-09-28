@@ -1313,6 +1313,8 @@ const initializeRelaySdk = (options: Options={}): Relay => {
           })
 
           websocket.on(`close`, (/*code, reason*/) => {
+            // show a log line by default
+            console.log(`Workflow closed connection on ${request.url}`)
             debug(`Workflow closed =>`, websocket.connectionId)
             instances?.delete(websocket.connectionId)
           })
@@ -1320,6 +1322,8 @@ const initializeRelaySdk = (options: Options={}): Relay => {
           const _workflow = new Workflow(websocket)
           workflow(_workflow)
           instances?.set(websocket.connectionId, _workflow)
+          // show a log entry by default
+          console.log(`Workflow new connection on ${request.url}`)
           debug(`Workflow connection =>`, websocket.connectionId)
         } else {
           debug(`Workflow not found; terminating websocket =>`, websocket.connectionId)
