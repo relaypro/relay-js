@@ -51,6 +51,11 @@ export enum Event {
    * the caller after using the "Call X" voice command on the Assistant.
    */
   CALL_START_REQUEST = `call_start_request`,
+  /**
+   * The device we called is making progress on getting connected. This may
+   * be interspersed with on_call_ringing. This event can occur on the caller.
+   */
+  CALL_PROGRESSING_EVENT = `call_progressing`
 }
 
 /**
