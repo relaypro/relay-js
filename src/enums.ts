@@ -55,7 +55,7 @@ export enum Event {
    * The device we called is making progress on getting connected. This may
    * be interspersed with on_call_ringing. This event can occur on the caller.
    */
-  CALL_PROGRESSING_EVENT = `call_progressing`
+  CALL_PROGRESSING = `call_progressing`
 }
 
 /**
