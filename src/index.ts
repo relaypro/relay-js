@@ -850,22 +850,47 @@ class Workflow {
     }
   }
 
+  /**
+   * Places a call to another device.
+   * @param target the device which will place the call.
+   * @param call the URN of the device you would like to call.
+   */
   async placeCall(target: SingleTarget, call: PlaceCall): Promise<void> {
     await this._castTarget(target, `call`, call)
   }
 
+  /**
+   * Answers an incoming call on your device.
+   * @param target the device which will answer the call.
+   * @param callRequest the ID of the call to answer.
+   */
   async answerCall(target: SingleTarget, callRequest: string | BaseCallEvent): Promise<void> {
     await this._castTarget(target, `answer`, this._buildCallIdRequestOrThrow(callRequest))
   }
 
+  /**
+   * Ends (hangs up) a call on a device.
+   * @param target the device which will do the hangup.
+   * @param callRequest the call ID. 
+   */
   async hangupCall(target: SingleTarget, callRequest: string | BaseCallEvent): Promise<void> {
     await this._castTarget(target, `hangup`, this._buildCallIdRequestOrThrow(callRequest))
   }
 
+  /**
+   * Registers your device for calls.
+   * @param target the device which you would like to register.
+   * @param request a RegisterRequest that contains the device URN, a password, and when to expire the request.
+   */
   async registerForCalls(target: SingleTarget, request: RegisterRequest): Promise<void> {
     await this._castTarget(target, `register`, request)
   }
 
+  /**
+   * Unregisters your device for calls.
+   * @param target the device you would like to unregister.
+   * @param request an UnregisterRequest tha contains the device URN and password. 
+   */
   async unregisterForCalls(target: SingleTarget, request: UnregisterRequest): Promise<void> {
     await this.registerForCalls(target, { ...request, expires: 0 })
   }

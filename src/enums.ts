@@ -6,21 +6,76 @@
  * or notificaions, incidents, speech, and calls.
  */
 export enum Event {
+  /**
+   * An error has occurred while running your workflow.  If you have DEBUG level
+   * logging turned on, take a look at the logs to track down the error.  In 
+   * most cases, this occurrs when the wrong type of URN is sent in the payload
+   * to the server.
+   */
   ERROR = `error`,
+  /**
+   * Your workflow has started.
+   */
   START = `start`,
+  /**
+   * Your workflow has stopped.
+   */
   STOP = `stop`,
+  /**
+   * An interaction lifecycle event has occurred.  This could indicate that an interaction
+   * has started, resumed, been suspended, ended, or failed.  
+   */
   INTERACTION_LIFECYCLE = `interaction_lifecycle`,
+  /**
+   * Your interaction has started.  This event occurs when startInteraction() is called.
+   */
   INTERACTION_STARTED = `interaction_started`,
+  /**
+   * Your interaction is resuming. 
+   */
   INTERACTION_RESUMED = `interaction_resumed`,
+  /**
+   * Your interaction has been suspended.
+   */
   INTERACTION_SUSPENDED = `interaction_suspended`,
+  /**
+   * Your interaction has ended.  This event occurs when endInteraction() is called.
+   */
   INTERACTION_ENDED = `interaction_ended`,
+  /**
+   * Your interaction has failed.
+   */
   INTERACTION_FAILED = `interaction_failed`,
+  /**
+   * A button has been pressed on your device.  This event occurs on a single, double or triple
+   * tap of the action button or a top of the assistant button.
+   */
   BUTTON = `button`,
+  /**
+   * An unnamed timer has been fired.  
+   */
   TIMER = `timer`,
+  /**
+   * A named timer has been fired.
+   */
   TIMER_FIRED = `timer_fired`,
+  /**
+   * A device has acknowledged an alert that was sent out to a group of devices.
+   */
   NOTIFICATION = `notification`,
+  /**
+   * An incident has occurred.  This event occurs when createIncident() is called.
+   */
   INCIDENT = `incident`,
+  /**
+   * Usually sent out in sayAndWait(), listen(), playAndWait(), and similar functions.
+   * Signifys that the device is done performing a particular action or listening to the
+   * user to speak into the device.
+   */
   PROMPT = `prompt`,
+  /**
+   * You have spoken into the device by holding down the action button.
+   */
   SPEECH = `speech`,
   /**
    * The device we called is ringing. We are waiting for them to answer.
