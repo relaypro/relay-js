@@ -55,7 +55,7 @@ export enum Event {
    */
   BUTTON = `button`,
   /**
-   * An unnamed timer has fired. 
+   * An unnamed timer has fired.
    */
   TIMER = `timer`,
   /**
