@@ -62,6 +62,7 @@ type WorkflowEventMappings = {
   [EventEnum.SPEECH]: SpeechEvent,
   [EventEnum.PROMPT]: PromptEvent,
   [EventEnum.CALL_RINGING]: RingingCallEvent,
+  [EventEnum.CALL_PROGRESSING]: ProgressingCallEvent,
   [EventEnum.CALL_CONNECTED]: ConnectedCallEvent,
   [EventEnum.CALL_DISCONNECTED]: DisconnectedCallEvent,
   [EventEnum.CALL_FAILED]: FailedCallEvent,
