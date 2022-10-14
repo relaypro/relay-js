@@ -170,7 +170,7 @@ export default class RelayApi {
   /**
    * A convenience method for getting all the details of a device.
    * This will return quite a bit of data regarding device configuration and
-   * state. The result, if the query was successful, should have a large JSON dictionary that 
+   * state. The result, if the query was successful, should have a large JSON dictionary that
    * is then mapped to a Device using mapDevice.
    * @param id the IMEI of the target device, such as 990007560023456
    * @returns a Device object containing information on the device, such as the device's name, battery level, etc.
