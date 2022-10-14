@@ -44,7 +44,7 @@ export interface Relay {
   api: RelayApi,
 }
 
-
+// Maps the EventEnum to the corresponding event type
 type WorkflowEventMappings = {
   [EventEnum.ERROR]: ErrorEvent,
   [EventEnum.START]: StartEvent,

@@ -7,15 +7,28 @@ import { InteractionLifecycle, Target, TargetUris } from './types'
 import debugFn from 'debug'
 const debug = debugFn(`relay:uri`)
 
+// The scheme used for creating a URN.
 const SCHEME = `urn`
+
+// The root used for creating a URN.
 const ROOT = `relay-resource`
+
+// Used to specify that the URN is for an ID.
 const ID = `id`
+
+// Used to specify that the URN is for a name.
 const NAME = `name`
+
+// Used to specify the URN is for all devices on an account.
 const ALL = `all`
 
+// URN for all devices on an account.
 const allDevicesOnAcct = `urn:relay-resource:${ALL}:device`
+
+// The beginning of an interaction URN.
 const INTERACTION_ROOT = `urn:relay-resource:name:interaction`
 
+// Used to encode a URN component.
 const encode = (value: string | number | boolean) => encodeURIComponent(value)
 
 type Filter = Record<string, string>
