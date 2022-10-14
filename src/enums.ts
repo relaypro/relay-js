@@ -33,7 +33,7 @@ export enum Event {
    */
   INTERACTION_STARTED = `interaction_started`,
   /**
-   * Your interaction is resuming. 
+   * Your interaction has resumed. 
    */
   INTERACTION_RESUMED = `interaction_resumed`,
   /**
@@ -50,7 +50,7 @@ export enum Event {
   INTERACTION_FAILED = `interaction_failed`,
   /**
    * A button has been pressed on your device during a running workflow.  This event occurs on a single, double or triple
-   * tap of the action button or a top of the assistant button.  Note this is separate from a button
+   * tap of the action button or a tap of the assistant button.  Note this is separate from a button
    * trigger.
    */
   BUTTON = `button`,
