@@ -9,7 +9,7 @@
 export enum Event {
   /**
    * An error has occurred while running your workflow.  If you have DEBUG level
-   * logging turned on, take a look at the logs to track down the error.  In 
+   * logging turned on, take a look at the logs to track down the error.  In
    * most cases, this occurrs when the wrong type of URN is sent in the payload
    * to the server.
    */
@@ -25,7 +25,7 @@ export enum Event {
   STOP = `stop`,
   /**
    * An interaction lifecycle event has occurred.  This could indicate that an interaction
-   * has started, resumed, been suspended, ended, or failed.  
+   * has started, resumed, been suspended, ended, or failed.
    */
   INTERACTION_LIFECYCLE = `interaction_lifecycle`,
   /**
@@ -33,7 +33,7 @@ export enum Event {
    */
   INTERACTION_STARTED = `interaction_started`,
   /**
-   * Your interaction has resumed. 
+   * Your interaction has resumed.
    */
   INTERACTION_RESUMED = `interaction_resumed`,
   /**
@@ -55,7 +55,7 @@ export enum Event {
    */
   BUTTON = `button`,
   /**
-   * An unnamed timer has fired.  
+   * An unnamed timer has fired. 
    */
   TIMER = `timer`,
   /**

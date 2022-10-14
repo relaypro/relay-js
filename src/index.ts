@@ -323,7 +323,7 @@ class Workflow {
    * @param target the device that you would like to start an interaction with. This should
    * be a device URN, meaning it takes the form "urn:relay-resource:<id_type>:<resource_type>:<id>".
    * For example, if I wanted to start an interaction with a device named "Jim", I would pass in
-   * "urn:relay-resource:name:device:jim" to this function as the target parameter.  See the Relay Guide's 
+   * "urn:relay-resource:name:device:jim" to this function as the target parameter.  See the Relay Guide's
    * Targeting Device's section for more information on the different kinds of URNs.
    * @param name a name for your interaction.
    * @param options can be color, home channel, or input types.
@@ -875,7 +875,7 @@ class Workflow {
   /**
    * Ends (hangs up) a call on a device.
    * @param target the device which will do the hangup.
-   * @param callRequest the call ID. 
+   * @param callRequest the call ID.
    */
   async hangupCall(target: SingleTarget, callRequest: string | BaseCallEvent): Promise<void> {
     await this._castTarget(target, `hangup`, this._buildCallIdRequestOrThrow(callRequest))
@@ -893,7 +893,7 @@ class Workflow {
   /**
    * Unregisters your device for calls.
    * @param target the device you would like to unregister.
-   * @param request an UnregisterRequest tha contains the device URN and password. 
+   * @param request an UnregisterRequest tha contains the device URN and password.
    */
   async unregisterForCalls(target: SingleTarget, request: UnregisterRequest): Promise<void> {
     await this.registerForCalls(target, { ...request, expires: 0 })
