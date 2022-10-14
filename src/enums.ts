@@ -3,7 +3,8 @@
 /**
  * Different events that can happen during a workflow, including
  * an error, interaction lifecycle events, button presses, timers
- * or notificaions, incidents, speech, and calls.
+ * or notifications, incidents, speech, and calls. See the Relay Guide's
+ * section on Events for more detailed information on each of these.
  */
 export enum Event {
   /**
@@ -14,11 +15,12 @@ export enum Event {
    */
   ERROR = `error`,
   /**
-   * Your workflow has started.
+   * Your workflow has been triggered.
    */
   START = `start`,
   /**
-   * Your workflow has stopped.
+   * Your workflow has stopped, which might be due to a normal completion after you call
+   * terminate() or from an abnormal completion error.
    */
   STOP = `stop`,
   /**
@@ -27,7 +29,7 @@ export enum Event {
    */
   INTERACTION_LIFECYCLE = `interaction_lifecycle`,
   /**
-   * Your interaction has started.  This event occurs when startInteraction() is called.
+   * You've requested to start an interaction.  This event occurs when startInteraction() is called.
    */
   INTERACTION_STARTED = `interaction_started`,
   /**
@@ -47,16 +49,17 @@ export enum Event {
    */
   INTERACTION_FAILED = `interaction_failed`,
   /**
-   * A button has been pressed on your device.  This event occurs on a single, double or triple
-   * tap of the action button or a top of the assistant button.
+   * A button has been pressed on your device during a running workflow.  This event occurs on a single, double or triple
+   * tap of the action button or a top of the assistant button.  Note this is separate from a button
+   * trigger.
    */
   BUTTON = `button`,
   /**
-   * An unnamed timer has been fired.  
+   * An unnamed timer has fired.  
    */
   TIMER = `timer`,
   /**
-   * A named timer has been fired.
+   * A named timer has fired.
    */
   TIMER_FIRED = `timer_fired`,
   /**
@@ -64,17 +67,17 @@ export enum Event {
    */
   NOTIFICATION = `notification`,
   /**
-   * An incident has occurred.  This event occurs when createIncident() is called.
+   * An incident has been resolved.
    */
   INCIDENT = `incident`,
   /**
-   * Usually sent out in sayAndWait(), listen(), playAndWait(), and similar functions.
-   * Signifys that the device is done performing a particular action or listening to the
-   * user to speak into the device.
+   * When a text-to-speech is being streamed to a Relay device, this event will mark
+   * the beginning and end of that stream delivery.
    */
   PROMPT = `prompt`,
   /**
-   * You have spoken into the device by holding down the action button.
+   * You have spoken into the device by holding down the action button. Typically seen
+   * when the listen() funcitonis happening on a device.
    */
   SPEECH = `speech`,
   /**

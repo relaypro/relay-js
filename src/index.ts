@@ -320,7 +320,11 @@ class Workflow {
    * Starts an interaction with the user.  Triggers an INTERACTION_STARTED event
    * and allows the user to interact with the device via functions that require an
    * interaction URN.
-   * @param target the device that you would like to start an interaction with.
+   * @param target the device that you would like to start an interaction with. This should
+   * be a device URN, meaning it takes the form "urn:relay-resource:<id_type>:<resource_type>:<id>".
+   * For example, if I wanted to start an interaction with a device named "Jim", I would pass in
+   * "urn:relay-resource:name:device:jim" to this function as the target parameter.  See the Relay Guide's 
+   * Targeting Device's section for more information on the different kinds of URNs.
    * @param name a name for your interaction.
    * @param options can be color, home channel, or input types.
    */
@@ -331,7 +335,7 @@ class Workflow {
   /**
    * Ends an interaction with the user.  Triggers an INTERACTION_ENDED event to signify
    * that the user is done interacting with the device.
-   * @param target the interaction that you would like to end.
+   * @param target the URN of the interaction that you are ending.
    */
   async endInteraction(target: Target): Promise<void> {
     await this._castTarget(target, `end_interaction`)
