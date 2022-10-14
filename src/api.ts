@@ -169,11 +169,9 @@ export default class RelayApi {
 
   /**
    * A convenience method for getting all the details of a device.
-   * 
    * This will return quite a bit of data regarding device configuration and
    * state. The result, if the query was successful, should have a large JSON dictionary that 
    * is then mapped to a Device using mapDevice.
-   * 
    * @param id the IMEI of the target device, such as 990007560023456
    * @returns a Device object containing information on the device, such as the device's name, battery level, etc.
    */
@@ -184,11 +182,10 @@ export default class RelayApi {
   }
 
   /**
-   * A convenience method for sending an HTTP trigger to the Relay server. 
+   * A convenience method for sending an HTTP trigger to the Relay server.
    * This generally would be used in a third-party system to start a Relay
    * workflow via an HTTP trigger and optionally pass data to it with
-   * args. 
-   * 
+   * args.
    * @param id the workflow_id as returned from "relay workflow list"
    * @param targets the device targets that the workflow should be considered as having been triggered from.
    * @param args a dict of any key/value arguments you want to pass in to the workflow that gets started by this trigger.
