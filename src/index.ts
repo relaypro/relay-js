@@ -1107,6 +1107,17 @@ class Workflow {
   }
 
   /**
+   * Log a debug message that is visible with the CLI command
+   * `relay workflow debug`. This is helpful for debugging workflows.
+   * @param message what you want to appear in the log stream.
+   */
+  async debugLog(message: string): Promise<void> {
+    await this._cast(`debug_log`, {
+      content: message,
+    })
+  }
+
+  /**
    * Sets a variable with the corresponding name and value. Scope of
    * the variable is from start to end of a workflow.
    * @param name name of the variable to be created.
