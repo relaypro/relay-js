@@ -40,6 +40,7 @@ import RelayApi from './api'
 
 const {
   Event,
+  SubscribeableEvent,
   Language,
   DeviceInfoQuery,
   DeviceInfoField,
@@ -596,6 +597,24 @@ class Workflow {
   // async powerDownDevice(target: Target): Promise<void> {
   //   await this._castTarget(target, `device_power_off`, { restart: false })
   // }
+
+  /**
+   * Subscribe to a set of event types.
+   * @param target the device URN.
+   * @param eventType the type of events you want.  Defaults to none.
+   */
+  async subscribe(target: Target, eventType: enums.SubscribeableEvent): Promise<void> {
+    await this._castTarget(target, `subscribe`, { "event_type": eventType })
+  }
+
+  /**
+   * Unsubscribe to a set of event types that were previously subscribed.
+   * @param target the device URN.
+   * @param eventType the type of events you no longer want.  Defaults to none.
+   */
+  async unsubscribe(target: Target, eventType: enums.SubscribeableEvent): Promise<void> {
+    await this._castTarget(target, `unsubscribe`, { "event_type": eventType })
+  }
 
   // END MULTI-TARGET ACTIONS
 
@@ -1403,4 +1422,4 @@ export {
   Uri,
 }
 
-export type { WorkflowEventHandler, Event, Workflow, Relay, Language, Options }
+export type { WorkflowEventHandler, Event, SubscribeableEvent, Workflow, Relay, Language, Options }

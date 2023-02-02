@@ -113,7 +113,25 @@ export enum Event {
    * The device we called is making progress on getting connected. This may
    * be interspersed with on_call_ringing. This event can occur on the caller.
    */
-  CALL_PROGRESSING = `call_progressing`
+  CALL_PROGRESSING = `call_progressing`,
+  /**
+   * The indoor position for a device changed, could be an enter or exit. Will have
+   * a venue, floor, and room as metadata.
+   */
+  INDOOR_POSITION_UPDATED = `position`,
+  /**
+   * The device crossed a geofence, could be an enter or exit. Will have
+   * a geofence name.
+   */
+  GEOFENCE_UPDATED = `geofence`,
+  /**
+   * The device tapped a Relay-branded NFC tag.
+   */
+  NFC_TAP = `nfc_tap`,
+  /**
+   * An HTTP POST was performed at ____.
+   */
+  HTTP_POST = `http_post`,
 }
 
 /**
@@ -142,6 +160,13 @@ export enum Taps {
   DOUBLE = `double`,
   TRIPLE = `triple`,
   LONG = `long`,
+}
+
+export enum SubscribeableEvent {
+  INDOOR_POSITION = `indoor_position`,
+  GEOFENCE = `outdoor_position`,
+  NFC_TAP = `nfc_tap`,
+  HTTP_POST = `http_post`,
 }
 
 /**
