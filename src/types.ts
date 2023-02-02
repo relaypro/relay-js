@@ -68,6 +68,10 @@ type WorkflowEventMappings = {
   [EventEnum.CALL_FAILED]: FailedCallEvent,
   [EventEnum.CALL_RECEIVED]: ReceivedCallEvent,
   [EventEnum.CALL_START_REQUEST]: StartedCallEvent,
+  [EventEnum.INDOOR_POSITION_UPDATED]: IndoorPositionUpdatedEvent,
+  [EventEnum.GEOFENCE_UPDATED]: GeofenceUpdatedEvent,
+  [EventEnum.NFC_TAP]: NfcTapEvent,
+  [EventEnum.HTTP_POST]: HttpPostEvent,
 }
 
 /**
@@ -201,6 +205,29 @@ export type IncidentEvent = {
   type: IncidentStatus,
   incident_id: string,
   reason: string,
+}
+
+export type IndoorPositionUpdatedEvent = Event & {
+  position_metadata: string,
+  position_tags: [string],
+  transition: `entry` | `exit`,
+}
+
+export type GeofenceUpdatedEvent = Event & {
+  geofence_label: string,
+  transition: `entry` | `exit`,
+}
+
+export type NfcTapEvent = Event & {
+  uid: string,
+  counter: string,
+  tag_content: string,
+}
+
+export type HttpPostEvent = Event & {
+  payload: string,
+  headers: string,
+  query: string,
 }
 
 // END EVENTS
